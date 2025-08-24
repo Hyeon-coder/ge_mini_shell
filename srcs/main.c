@@ -6,7 +6,7 @@
 /* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /* +#+#+#+#+#+   +#+           */
 /* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 18:00:00 by juhyeonl         ###   ########.fr       */
+/* Updated: 2025/08/24 19:30:00 by juhyeonl         ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -65,39 +65,24 @@ void	shell_loop(t_shell *shell)
 	}
 }
 
-// 여러 줄의 입력을 처리하도록 수정
 void	non_interactive_mode(t_shell *shell)
 {
-	char	*buffer;
-	char	**lines;
-	int		i;
-	char	*tmp;
+	char	*line;
+	char	*trimmed_line;
 
-	buffer = (char *)malloc(4097);
-	if (!buffer)
-		return ;
-	i = read(STDIN_FILENO, buffer, 4096);
-	if (i > 0)
+	while (1)
 	{
-		buffer[i] = '\0';
-		// 개행 문자를 기준으로 모든 라인을 분리
-		lines = ft_split(buffer, '\n');
-		free(buffer);
-		if (!lines)
-			return ;
-		i = 0;
-		while (lines[i])
+		line = get_next_line(STDIN_FILENO);
+		if (!line)
+			break ;
+		trimmed_line = ft_strtrim(line, "\n");
+		free(line);
+		if (trimmed_line && *trimmed_line)
 		{
-			// 각 라인을 실행
-			tmp = ft_strtrim(lines[i], " \t");
-			execute_line(tmp, shell);
-			free(tmp);
-			i++;
+			execute_line(trimmed_line, shell);
 		}
-		free_string_array(lines);
+		free(trimmed_line);
 	}
-	else
-		free(buffer);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -111,7 +96,6 @@ int	main(int argc, char **argv, char **envp)
 	shell.env_list = init_env(envp);
 	if (!shell.env_list)
 	{
-		// print_error 함수 시그니처 변경에 따른 수정
 		ft_putstr_fd("minishell: Environment initialization failed\n", 2);
 		return (1);
 	}

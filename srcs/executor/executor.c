@@ -6,7 +6,7 @@
 /* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*+#+#+#+#+#+   +#+           */
 /* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 18:30:00 by juhyeonl         ###   ########.fr       */
+/* Updated: 2025/08/24 19:30:00 by juhyeonl         ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static void	update_underscore_var(t_ast_node *node, t_shell *shell)
 {
 	t_ast_node	*last_cmd;
 	char		*last_arg;
-	// char		*full_path;
+	char		*full_path;
 	int			i;
 
 	if (!node)
@@ -30,9 +30,24 @@ static void	update_underscore_var(t_ast_node *node, t_shell *shell)
 		while (last_cmd->args[i])
 			i++;
 		last_arg = last_cmd->args[i - 1];
-		if (ft_strcmp(last_cmd->args[0], "env") == 0)
-			last_arg = "/usr/bin/env";
-		set_env_value(&(shell->env_list), "_", last_arg);
+		if (is_builtin(last_cmd->args[0]))
+		{
+			if (ft_strcmp(last_cmd->args[0], "env") == 0)
+				set_env_value(&(shell->env_list), "_", "/usr/bin/env");
+			else
+				set_env_value(&(shell->env_list), "_", last_arg);
+		}
+		else
+		{
+			full_path = find_command_path(last_cmd->args[0], shell->env_list);
+			if (full_path)
+			{
+				set_env_value(&(shell->env_list), "_", full_path);
+				free(full_path);
+			}
+			else
+				set_env_value(&(shell->env_list), "_", last_cmd->args[0]);
+		}
 	}
 }
 
@@ -42,11 +57,11 @@ int	executor(t_ast_node *node, t_shell *shell)
 
 	if (!node)
 		return (0);
-	update_underscore_var(node, shell);
 	if (node->type == NODE_PIPE)
 		status = execute_pipeline(node, shell);
 	else
 		status = execute_simple_command(node, shell, 0);
+	update_underscore_var(node, shell);
 	return (status);
 }
 
