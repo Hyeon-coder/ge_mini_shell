@@ -88,9 +88,16 @@ void	non_interactive_mode(t_shell *shell)
 	}
 }
 
+/*
+non_interactive_mode
+	ex) echo "echo abc" | ./minishell	=> it will be false by isatty()
+Then, how about true by isatty()?		=> shell_loop()
+	ex) echo abc
+*/
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
+	int		is_interactive; // 인터랙티브 모드 여부를 저장할 변수
 
 	(void)argc;
 	(void)argv;
@@ -102,11 +109,13 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr_fd("minishell: Environment initialization failed\n", 2);
 		return (1);
 	}
-	if (isatty(STDIN_FILENO))
+	is_interactive = isatty(STDIN_FILENO); // 모드를 미리 확인
+	if (is_interactive)
 		shell_loop(&shell);
 	else
 		non_interactive_mode(&shell);
 	free_env_list(shell.env_list);
-	rl_clear_history();
+	if (is_interactive) // 대화형 모드일 때만 호출
+		rl_clear_history();
 	return (shell.last_exit_status);
 }
