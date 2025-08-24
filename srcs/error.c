@@ -18,7 +18,6 @@ int	set_exit_status(int status)
 	return (status);
 }
 
-// Universal error printing function
 void	print_error(char *s1, char *s2, int exit_code)
 {
 	ft_putstr_fd("minishell: ", 2);

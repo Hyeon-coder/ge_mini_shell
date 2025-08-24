@@ -31,7 +31,12 @@ static void	update_underscore_var(t_ast_node *node, t_shell *shell)
 			i++;
 		last_arg = last_cmd->args[i - 1];
 		if (is_builtin(last_cmd->args[0]))
-			set_env_value(&(shell->env_list), "_", last_arg);
+		{
+			if (ft_strcmp(last_cmd->args[0], "env") == 0)
+				set_env_value(&(shell->env_list), "_", "/usr/bin/env");
+			else
+				set_env_value(&(shell->env_list), "_", last_arg);
+		}
 		else
 		{
 			full_path = find_command_path(last_cmd->args[0], shell->env_list);
