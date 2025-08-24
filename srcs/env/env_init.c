@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/*   Updated: 2025/08/24 15:29:38 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/24 20:55:59 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ static void	add_env_node(t_env **head, t_env *new)
 }
 
 // [신규 추가] SHLVL 업데이트 함수 (테스트 5, 24 해결)
-static void update_shlvl(t_env *head)
+static void update_shlvl(t_env **head)
 {
-    t_env   *node = head;
+    t_env   *node = *head;
     int     level = 1;
     char    *new_value_str;
 
@@ -75,7 +75,7 @@ static void update_shlvl(t_env *head)
     else
     {
         // 새 SHLVL 노드 추가
-        add_env_node(&head, new_env_node(ft_strdup("SHLVL"), new_value_str));
+        add_env_node(head, new_env_node(ft_strdup("SHLVL"), new_value_str));
     }
 }
 
@@ -106,6 +106,6 @@ t_env	*init_env(char **envp)
 		}
 		i++;
 	}
-    update_shlvl(head); // SHLVL 업데이트 호출
+    update_shlvl(&head); // SHLVL 업데이트 호출
 	return (head);
 }

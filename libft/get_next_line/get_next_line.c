@@ -6,11 +6,12 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 15:17:39 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/24 18:17:18 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/24 22:01:09 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+# include <stdio.h>
 
 char	*get_before_newline(const char *s)
 {
@@ -93,34 +94,74 @@ void	ft_read_line(int fd, char **keep, char **tmp)
 	ft_free_strs(&buf, 0, 0);
 }
 
-char	*ft_parse_line(char **keep, char **tmp)
+// 기존 ft_parse_line 함수를 아래 내용으로 완전히 교체합니다.
+char	*ft_parse_line(char **keep)
 {
 	char	*line;
+	char	*new_keep;
+	char	*newline_ptr;
+	size_t	line_len;
 
-	*tmp = ft_strdup(*keep);
-	ft_free_strs(keep, 0, 0);
-	*keep = get_after_newline(*tmp);
-	line = get_before_newline(*tmp);
-	ft_free_strs(tmp, 0, 0);
+	newline_ptr = ft_strchr(*keep, '\n');
+	if (newline_ptr)
+	{
+		// 줄바꿈 문자를 찾았을 경우
+		line_len = (newline_ptr - *keep) + 1;
+		line = ft_substr(*keep, 0, line_len);
+		if ((*keep)[line_len] != '\0')
+			new_keep = ft_strdup(&(*keep)[line_len]);
+		else
+			new_keep = NULL;
+	}
+	else
+	{
+		// 줄바꿈 문자가 없고 파일 끝(EOF)인 경우
+		line = ft_strdup(*keep);
+		new_keep = NULL;
+	}
+	free(*keep); // 이전 keep 메모리를 여기서 안전하게 해제
+	*keep = new_keep; // keep을 나머지 문자열로 업데이트
 	return (line);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	*keep = NULL;
-	char		*tmp;
+	char		*buf;
+	char		*temp;
+	int			bytes_read;
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
+	buf = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buf)
+		return (NULL);
 	line = NULL;
-	tmp = NULL;
-	ft_read_line(fd, &keep, &tmp);
-	if (keep != NULL && *keep != '\0')
-		line = ft_parse_line(&keep, &tmp);
-	if (!line || *line == '\0')
+	bytes_read = 1;
+	// keep에 줄바꿈이 없을 때까지 파일을 읽어서 keep에 추가
+	while (bytes_read > 0 && !ft_strchr(keep, '\n'))
 	{
-		ft_free_strs(&keep, &line, &tmp);
+		bytes_read = read(fd, buf, BUFFER_SIZE);
+		if (bytes_read <= 0)
+			break;
+		buf[bytes_read] = '\0';
+		temp = ft_strjoin(keep, buf);
+		free(keep);
+		keep = temp;
+	}
+	free(buf);
+	if (bytes_read < 0) // read 에러 처리
+	{
+		free(keep);
+		keep = NULL;
+		return (NULL);
+	}
+	if (keep && *keep) // keep에 내용이 남아있으면 line으로 추출
+		line = ft_parse_line(&keep);
+	if (!line || *line == '\0') // 추출된 라인이 비어있으면 NULL 반환
+	{
+		free(line);
 		return (NULL);
 	}
 	return (line);

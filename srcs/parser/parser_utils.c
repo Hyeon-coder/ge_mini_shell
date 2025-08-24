@@ -49,8 +49,11 @@ void	consume_token(t_token **tokens)
 		return ;
 	temp = *tokens;
 	*tokens = (*tokens)->next;
-	free(temp->value);
-	free(temp);
+
+	// 아래 두 줄이 남아있다면, 여기가 충돌의 원인입니다.
+	// 디버깅을 위해 printf를 추가하고, 최종적으로는 free를 삭제해야 합니다.
+	printf("[DEBUG] Consume Freeing Token->value: %p (%s)\n", (void *)temp->value, temp->value);
+	printf("[DEBUG] Consume Freeing Token: %p\n", (void *)temp);
 }
 
 static void	add_redir_to_node(t_ast_node *node, t_redir *new_redir)
@@ -71,10 +74,10 @@ static void	add_redir_to_node(t_ast_node *node, t_redir *new_redir)
 static int	handle_redir_token(t_ast_node *node, t_token **tokens)
 {
 	t_redir	*redir;
-	t_token	*redir_token;
+	t_token_type redir_type; // 타입만 저장
 
-	redir_token = *tokens;
-	consume_token(tokens);
+	redir_type = (*tokens)->type; // 현재 토큰의 타입을 저장
+	consume_token(tokens); // 리디렉션 토큰 (<, > 등)을 건너뜀
 	if (!(*tokens) || (*tokens)->type != TOKEN_WORD)
 	{
 		print_error("syntax error near unexpected token", NULL, 258);
@@ -83,11 +86,11 @@ static int	handle_redir_token(t_ast_node *node, t_token **tokens)
 	redir = (t_redir *)malloc(sizeof(t_redir));
 	if (!redir)
 		return (0);
-	redir->type = redir_token->type;
+	redir->type = redir_type;
 	redir->filename = ft_strdup((*tokens)->value);
 	redir->next = NULL;
 	add_redir_to_node(node, redir);
-	consume_token(tokens);
+	consume_token(tokens); // 파일명 토큰을 건너뜀
 	return (1);
 }
 

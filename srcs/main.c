@@ -17,6 +17,7 @@ int	g_exit_status;
 static void	execute_line(char *line, t_shell *shell)
 {
 	t_token		*tokens;
+	t_token		*tokens_head; // <-- 원본 시작 주소를 저장할 포인터
 	t_ast_node	*ast;
 	char		*trimmed_line;
 
@@ -27,24 +28,25 @@ static void	execute_line(char *line, t_shell *shell)
 		return ;
 	}
 	tokens = lexer(trimmed_line);
+	tokens_head = tokens; // <-- 여기서 시작 주소를 저장합니다.
 	if (!tokens)
 	{
-		shell->last_exit_status = g_exit_status;
+		// ...
 		free(trimmed_line);
 		return ;
 	}
 	ast = parser(&tokens);
 	if (!ast)
 	{
-		cleanup(tokens, NULL);
-		shell->last_exit_status = g_exit_status;
+		cleanup(tokens_head, NULL); // <-- 원본 주소 사용
+		// ...
 		free(trimmed_line);
 		return ;
 	}
 	expand_ast(ast, shell);
 	shell->last_exit_status = executor(ast, shell);
 	g_exit_status = shell->last_exit_status;
-	cleanup(tokens, ast);
+	cleanup(tokens_head, ast); // <-- 원본 주소 사용
 	free(trimmed_line);
 }
 
@@ -80,6 +82,7 @@ void	non_interactive_mode(t_shell *shell)
 	char	*line;
 
 	line = get_next_line(STDIN_FILENO);
+	printf("[DEBUG] inside non_interactive_mode\n");
 	while (line)
 	{
 		execute_line(line, shell);
@@ -110,6 +113,7 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	}
 	is_interactive = isatty(STDIN_FILENO); // 모드를 미리 확인
+	printf("[DEBUG] HERE, isatty=%d\n",is_interactive);
 	if (is_interactive)
 		shell_loop(&shell);
 	else
