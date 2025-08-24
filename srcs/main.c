@@ -54,9 +54,10 @@ static void	execute_line(char *line, t_shell *shell)
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_shell	shell;
-	char	*line;
-	char	*prompt; // 프롬프트를 담을 변수 추가
+	t_shell			shell;
+	char			*line;
+	char			*prompt;
+	struct termios	term; // 터미널 속성 저장을 위한 구조체
 
 	(void)argc;
 	(void)argv;
@@ -68,16 +69,20 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr_fd("minishell: Environment initialization failed\n", 2);
 		return (1);
 	}
-	// isatty를 사용해 대화형 모드인지 확인하고 프롬프트를 설정
 	if (isatty(STDIN_FILENO))
 		prompt = "minishell$ ";
 	else
-		prompt = ""; // 비대화형 모드에서는 빈 프롬프트 사용
-
+	{
+		prompt = "";
+		// 비대화형 모드일 때 터미널의 ECHO 속성을 끕니다.
+		tcgetattr(STDIN_FILENO, &term);
+		term.c_lflag &= ~ECHOCTL;
+		tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	}
 	while (1)
 	{
 		setup_signals();
-		line = readline(prompt); // 설정된 프롬프트 변수 사용
+		line = readline(prompt);
 		if (!line)
 		{
 			if (isatty(STDIN_FILENO))
@@ -91,14 +96,14 @@ int	main(int argc, char **argv, char **envp)
 		}
 		if (*line)
 		{
-			if (isatty(STDIN_FILENO)) // 대화형 모드일 때만 히스토리에 추가
+			if (isatty(STDIN_FILENO))
 				add_history(line);
 			execute_line(line, &shell);
 		}
 		free(line);
 	}
 	free_env_list(shell.env_list);
-	if (isatty(STDIN_FILENO)) // 대화형 모드일 때만 히스토리 클리어
+	if (isatty(STDIN_FILENO))
 		rl_clear_history();
 	return (shell.last_exit_status);
 }

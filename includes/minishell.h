@@ -18,6 +18,7 @@
 # include <unistd.h>
 # include <string.h>
 # include <signal.h>
+# include <termios.h>
 # include <errno.h>
 # include <sys/wait.h>
 # include <sys/stat.h>
