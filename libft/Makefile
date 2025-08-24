@@ -6,14 +6,14 @@
 #    By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/12 23:58:00 by JuHyeon           #+#    #+#              #
-#    Updated: 2025/08/24 19:37:20 by juhyeonl         ###   ########.fr        #
+#    Updated: 2025/08/24 19:43:35 by juhyeonl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libft.a
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -I.
 AR = ar rcs
 RM = rm -f
 

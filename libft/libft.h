@@ -6,7 +6,7 @@
 /* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*+#+#+#+#+#+   +#+           */
 /* Created: 2024/11/01 17:42:38 by JuHyeon           #+#    #+#             */
-/* Updated: 2025/08/24 20:00:00 by juhyeonl         ###   ########.fr       */
+/* Updated: 2025/08/24 20:30:00 by juhyeonl         ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -86,8 +86,17 @@ int		ft_isspace(int c);
 
 /* ---------- Get_Next_Line Functions ---------- */
 char	*get_next_line(int fd);
+int		contains_newline(const char *s);
+char	*join_strs(const char *s1, const char *s2);
+void	*ft_malloc_zero(size_t count, size_t size);
+void	ft_free_strs(char **str, char **str2, char **str3);
 
 /* ---------- Ft_Printf Functions ---------- */
 int		ft_printf(const char *format, ...);
+int		ft_putchar_rt(char c);
+int		ft_putstr_rt(char *str);
+int		ft_putpointer(void *ptr);
+char	*ft_itoa_base(unsigned long num, char *base);
+int		ft_form_check(const char *format, va_list args);
 
 #endif
