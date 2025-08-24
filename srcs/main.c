@@ -52,11 +52,11 @@ static void	execute_line(char *line, t_shell *shell)
 }
 
 
-// shell_loop와 non_interactive_mode를 삭제하고 main 함수를 아래와 같이 변경합니다.
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
 	char	*line;
+	char	*prompt; // 프롬프트를 담을 변수 추가
 
 	(void)argc;
 	(void)argv;
@@ -68,30 +68,37 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr_fd("minishell: Environment initialization failed\n", 2);
 		return (1);
 	}
-	// 대화형/비대화형 모두 처리하는 단일 루프
+	// isatty를 사용해 대화형 모드인지 확인하고 프롬프트를 설정
+	if (isatty(STDIN_FILENO))
+		prompt = "minishell$ ";
+	else
+		prompt = ""; // 비대화형 모드에서는 빈 프롬프트 사용
+
 	while (1)
 	{
 		setup_signals();
-		line = readline("minishell$ ");
-		if (!line) // EOF (ctrl-D 또는 파이프의 끝) 감지
+		line = readline(prompt); // 설정된 프롬프트 변수 사용
+		if (!line)
 		{
 			if (isatty(STDIN_FILENO))
 				ft_putendl_fd("exit", STDOUT_FILENO);
 			break ;
 		}
-		if (g_exit_status == 130) // ctrl-C 인터럽트 처리
+		if (g_exit_status == 130)
 		{
 			shell.last_exit_status = 130;
 			g_exit_status = 0;
 		}
-		if (*line) // 입력된 라인이 비어있지 않은 경우
+		if (*line)
 		{
-			add_history(line);
+			if (isatty(STDIN_FILENO)) // 대화형 모드일 때만 히스토리에 추가
+				add_history(line);
 			execute_line(line, &shell);
 		}
 		free(line);
 	}
 	free_env_list(shell.env_list);
-	rl_clear_history();
+	if (isatty(STDIN_FILENO)) // 대화형 모드일 때만 히스토리 클리어
+		rl_clear_history();
 	return (shell.last_exit_status);
 }
