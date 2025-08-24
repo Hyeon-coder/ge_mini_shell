@@ -25,5 +25,5 @@ void	print_error(char *s1, char *s2, int exit_code)
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(s2, 2);
 	ft_putchar_fd('\n', 2);
-	set_exit_status(exit_code);
+	g_exit_status = exit_code;
 }

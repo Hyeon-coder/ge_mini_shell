@@ -26,11 +26,11 @@ static void	sort_and_print_env(t_shell *shell)
 	count = 0;
 	while (envp[count])
 		count++;
-	i = 0;
-	while (i < count)
+	i = -1;
+	while (++i < count)
 	{
-		j = i + 1;
-		while (j < count)
+		j = i;
+		while (++j < count)
 		{
 			if (ft_strcmp(envp[i], envp[j]) > 0)
 			{
@@ -38,16 +38,14 @@ static void	sort_and_print_env(t_shell *shell)
 				envp[i] = envp[j];
 				envp[j] = tmp;
 			}
-			j++;
 		}
-		i++;
 	}
-	i = 0;
-	while (i < count)
+	i = -1;
+	while (++i < count)
 	{
 		if (ft_strncmp(envp[i], "_=", 2) != 0)
 		{
-			ft_putstr_fd("declare -x ", 1);
+			ft_putstr_fd("export ", 1);
 			j = 0;
 			while (envp[i][j] && envp[i][j] != '=')
 				ft_putchar_fd(envp[i][j++], 1);
@@ -60,7 +58,6 @@ static void	sort_and_print_env(t_shell *shell)
 			}
 			ft_putchar_fd('\n', 1);
 		}
-		i++;
 	}
 	free_string_array(envp);
 }
@@ -87,7 +84,6 @@ static int	add_or_update_env(char *arg, t_shell *shell)
 	char	*key;
 	char	*value;
 	char	*eq_ptr;
-	char	*err_msg;
 
 	eq_ptr = ft_strchr(arg, '=');
 	if (eq_ptr)
@@ -96,9 +92,7 @@ static int	add_or_update_env(char *arg, t_shell *shell)
 		key = ft_strdup(arg);
 	if (!key || !is_valid_identifier(key))
 	{
-		err_msg = ft_strjoin("`", arg);
-		print_error("export", ft_strjoin(err_msg, "': not a valid identifier"), 1);
-		free(err_msg);
+		print_error("export", arg, 1);
 		free(key);
 		return (1);
 	}

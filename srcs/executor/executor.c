@@ -16,7 +16,7 @@ static void	update_underscore_var(t_ast_node *node, t_shell *shell)
 {
 	t_ast_node	*last_cmd;
 	char		*last_arg;
-	char		*full_path;
+	// char		*full_path;
 	int			i;
 
 	if (!node)
