@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_form_check.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <ljh3900@gmail.com>                +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 13:37:49 by JuHyeon           #+#    #+#             */
-/*   Updated: 2024/11/23 16:31:20 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/24 18:17:25 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include "libft.h"
 
 static int	parse_char(const char *format, va_list args)
 {

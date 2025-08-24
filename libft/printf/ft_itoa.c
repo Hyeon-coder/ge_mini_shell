@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <ljh3900@gmail.com>                +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/03 19:16:13 by JuHyeon           #+#    #+#             */
-/*   Updated: 2024/11/15 20:32:27 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/24 18:17:33 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 //#include "libft.h"
-#include "ft_printf.h"
+#include "libft.h"
 
 int	cnt_num(int n)
 {

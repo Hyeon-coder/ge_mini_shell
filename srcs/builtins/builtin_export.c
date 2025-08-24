@@ -84,6 +84,7 @@ static int	add_or_update_env(char *arg, t_shell *shell)
 	char	*key;
 	char	*value;
 	char	*eq_ptr;
+	char	*err_msg;
 
 	eq_ptr = ft_strchr(arg, '=');
 	if (eq_ptr)
@@ -92,7 +93,9 @@ static int	add_or_update_env(char *arg, t_shell *shell)
 		key = ft_strdup(arg);
 	if (!key || !is_valid_identifier(key))
 	{
-		print_error("export", arg, 1);
+		err_msg = ft_strjoin("`", arg);
+		print_error("export", ft_strjoin(err_msg, "': not a valid identifier"), 1);
+		free(err_msg);
 		free(key);
 		return (1);
 	}

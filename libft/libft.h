@@ -1,25 +1,26 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   libft.h                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/01 17:42:38 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/24 11:46:16 by juhyeonl         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* libft.h                                            :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2024/11/01 17:42:38 by JuHyeon           #+#    #+#             */
+/* Updated: 2025/08/24 20:00:00 by juhyeonl         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
 
-# include <stdio.h>
 # include <stdlib.h>
-# include <string.h>
-# include <stddef.h>
-# include "get_next_line/get_next_line.h"
-# include "printf/ft_printf.h"
 # include <unistd.h>
+# include <stdarg.h>
+# include <fcntl.h>
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 42
+# endif
 
 typedef struct s_list
 {
@@ -27,6 +28,7 @@ typedef struct s_list
 	struct s_list	*next;
 }					t_list;
 
+/* ---------- Libft Core Functions ---------- */
 int		ft_atoi(const char *nptr);
 void	ft_bzero(void *s, size_t n);
 void	*ft_calloc(size_t count, size_t size);
@@ -81,5 +83,11 @@ char	*ft_strjoin_free(char *s1, char const *s2);
 char	*ft_strjoin_three(char const *s1, char const *s2, char const *s3);
 void	append_substr(char **dest, char const *src, int start, int end);
 int		ft_isspace(int c);
+
+/* ---------- Get_Next_Line Functions ---------- */
+char	*get_next_line(int fd);
+
+/* ---------- Ft_Printf Functions ---------- */
+int		ft_printf(const char *format, ...);
 
 #endif

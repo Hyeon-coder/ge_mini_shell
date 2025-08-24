@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <juhyeonl@student.hive.fi>         +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 15:18:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/02/23 20:23:16 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/24 18:17:03 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "libft.h"
 
 int	contains_newline(const char *s)
 {
@@ -50,28 +50,6 @@ char	*join_strs(const char *s1, const char *s2)
 	while (s2 && s2[++i])
 		s[len + i] = s2[i];
 	return (s);
-}
-
-char	*ft_strdup(const char *s1)
-{
-	char	*s2;
-	int		i;
-
-	if (!s1)
-		return (ft_strdup(""));
-	i = 0;
-	while (s1[i])
-		i++;
-	s2 = ft_malloc_zero(i + 1, sizeof * s2);
-	if (!s2)
-		return (NULL);
-	i = 0;
-	while (s1[i])
-	{
-		s2[i] = s1[i];
-		i++;
-	}
-	return (s2);
 }
 
 void	*ft_malloc_zero(size_t count, size_t size)

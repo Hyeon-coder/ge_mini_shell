@@ -20,7 +20,7 @@ static void	execute_line(char *line, t_shell *shell)
 	t_ast_node	*ast;
 	char		*trimmed_line;
 
-	trimmed_line = ft_strtrim(line, " \t");
+	trimmed_line = ft_strtrim(line, " \t\n");
 	if (!trimmed_line || !*trimmed_line)
 	{
 		free(trimmed_line);

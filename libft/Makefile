@@ -6,7 +6,7 @@
 #    By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/12 23:58:00 by JuHyeon           #+#    #+#              #
-#    Updated: 2025/08/24 11:46:04 by juhyeonl         ###   ########.fr        #
+#    Updated: 2025/08/24 18:12:12 by juhyeonl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,8 @@ CFLAGS = -Wall -Wextra -Werror
 AR = ar rcs
 RM = rm -f
 
-SRC = \
+# Libft Core Sources
+SRC_FILES = \
 	char/ft_isalnum.c char/ft_isalpha.c char/ft_isascii.c char/ft_isdigit.c char/ft_isprint.c \
 	char/ft_tolower.c char/ft_toupper.c \
 	conversion/ft_atoi.c conversion/ft_itoa.c \
@@ -34,34 +35,33 @@ SRC = \
 	string/ft_strcpy.c string/ft_strcat.c string/ft_strstr.c ft_strjoin_helpers.c \
 	ft_isspace.c
 
-OBJ = $(SRC:.c=.o)
-
-PRINTF_DIR = printf
-PRINTF_LIB = $(PRINTF_DIR)/printf.a
-
+# GNL Sources
 GNL_DIR = get_next_line
-GNL_LIB = $(GNL_DIR)/get_next_line.a
+GNL_FILES = get_next_line.c get_next_line_utils.c
+GNL_SRCS = $(addprefix $(GNL_DIR)/, $(GNL_FILES))
 
-all: $(NAME) submodules
+# Printf Sources
+PRINTF_DIR = printf
+PRINTF_FILES = ft_printf.c ft_putchar_rt.c ft_putstr_rt.c ft_strchr.c ft_strlen.c \
+               ft_itoa.c ft_itoa_base.c ft_form_check.c ft_putpointer.c
+PRINTF_SRCS = $(addprefix $(PRINTF_DIR)/, $(PRINTF_FILES))
 
-$(NAME): $(OBJ)
-	$(AR) $(NAME) $(OBJ)
+# All sources and objects
+SRCS = $(SRC_FILES) $(GNL_SRCS) $(PRINTF_SRCS)
+OBJS = $(SRCS:.c=.o)
 
-submodules:
-	$(MAKE) -C $(PRINTF_DIR)
-	$(MAKE) -C $(GNL_DIR)
+all: $(NAME)
+
+$(NAME): $(OBJS)
+	$(AR) $(NAME) $(OBJS)
 
 clean:
-	$(RM) $(OBJ)
-	$(MAKE) -C $(PRINTF_DIR) clean
-	$(MAKE) -C $(GNL_DIR) clean
+	$(RM) $(OBJS)
 
 fclean: clean
 	$(RM) $(NAME)
-	$(MAKE) -C $(PRINTF_DIR) fclean
-	$(MAKE) -C $(GNL_DIR) fclean
 
 re: fclean all
 
-.PHONY: all clean fclean re submodules
-.SECONDARY: $(OBJ)
+.PHONY: all clean fclean re
+.SECONDARY: $(OBJS)
