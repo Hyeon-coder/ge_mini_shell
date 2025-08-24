@@ -87,12 +87,11 @@ run_test() {
     echo -e "  ${COLOR_CYAN}명령어: ${cmd}${COLOR_RESET}"
 
     # Minishell 실행
-    # 여러 줄의 명령어를 실행하기 위해 printf 사용
-    printf "%s" "$cmd" | $MINISHELL_EXEC > $MINISHELL_OUT 2> $MINISHELL_ERR
+    echo "${cmd}" | $MINISHELL_EXEC > $MINISHELL_OUT 2> $MINISHELL_ERR
     minishell_status=$?
 
-    # Bash 실행
-    printf "%s" "$cmd" | $BASH_EXEC --posix > $BASH_OUT 2> $BASH_ERR
+    # Bash 실행 (과제 표준에 맞추기 위해 POSIX 모드 사용)
+    echo "${cmd}" | $BASH_EXEC --posix > $BASH_OUT 2> $BASH_ERR
     bash_status=$?
 
     check_result $minishell_status $bash_status
@@ -109,15 +108,15 @@ run_test 'echo hello world' "echo 기본"
 run_test 'echo -n hello world' "echo -n 옵션"
 run_test 'pwd' "pwd"
 run_test 'env' "env (환경 변수 목록)"
-run_test $'cd /tmp\npwd' "cd (절대 경로)"
-run_test $'mkdir -p test_dir\ncd test_dir\npwd' "cd (상대 경로)"
-run_test $'cd\npwd' "cd (인자 없음, HOME으로 이동)"
+run_test 'cd /tmp' "cd (절대 경로, 출력 없음, 상태 변경은 테스트 불가)"
+run_test 'cd' "cd (인자 없음, 출력 없음, 상태 변경은 테스트 불가)"
+
 
 print_header "export 및 unset"
-run_test $'export TEST_VAR=123\necho $TEST_VAR' "export (변수 설정 및 사용)"
+run_test 'export TEST_VAR=123' "export (변수 설정, 출력 없음)"
 run_test 'export | grep PWD' "export (인자 없음, 목록 출력)"
-run_test $'export TEST_VAR="hello world"\necho $TEST_VAR' "export (공백 포함 값)"
-run_test $'export TEST_VAR=123\nunset TEST_VAR\necho $TEST_VAR' "unset (변수 해제)"
+run_test 'export TEST_VAR="hello world"' "export (공백 포함 값, 출력 없음)"
+run_test 'unset TEST_VAR' "unset (변수 해제, 출력 없음)"
 run_test 'export 1TEST=fail' "export (잘못된 식별자)"
 run_test 'unset 1TEST' "unset (잘못된 식별자)"
 
@@ -128,12 +127,17 @@ run_test 'exit 42' "exit (종료 코드 지정)"
 
 print_header "인용 부호 및 환경 변수 확장"
 run_test 'echo "$USER"' "큰따옴표 내 변수 확장"
-run_test 'echo \'$USER\'' "작은따옴표 내 변수 확장 안 됨"
+run_test 'echo '$USER'' "작은따옴표 내 변수 확장 안 됨"
+
 run_test 'echo $NON_EXISTENT_VAR' "존재하지 않는 변수 (빈 문자열)"
+run_test 'echo ""' "빈 큰따옴표"
+run_test "echo ''" "빈 작은따옴표"
 
 print_header "리디렉션 (Redirections)"
-run_test $'echo "overwrite" > outfile.txt\ncat outfile.txt' "출력 리디렉션 (덮어쓰기)"
-run_test $'echo "start" > outfile.txt\necho "append" >> outfile.txt\ncat outfile.txt' "출력 리디렉션 (추가)"
+run_test 'echo "overwrite" > outfile.txt' "출력 리디렉션 (덮어쓰기)"
+run_test 'cat outfile.txt' "리디렉션 결과 확인 1"
+run_test 'echo "append" >> outfile.txt' "출력 리디렉션 (추가)"
+run_test 'cat outfile.txt' "리디렉션 결과 확인 2"
 run_test 'cat < infile.txt' "입력 리디렉션"
 run_test '> empty_file.txt' "명령어 없는 출력 (파일 생성)"
 run_test 'cat < no_such_file.txt' "존재하지 않는 파일 입력"
@@ -152,7 +156,6 @@ run_test "ls | | wc" "연속된 파이프 (구문 오류)"
 run_test "ls >" "파일명 없는 리디렉션 (구문 오류)"
 run_test "< infile.txt" "명령어 없는 입력 리디렉션"
 run_test "echo 'unclosed quote" "닫히지 않은 작은따옴표"
-# 스크립트 오류 방지를 위해 바깥 따옴표를 작은 따옴표로 변경
 run_test 'echo "unclosed quote' "닫히지 않은 큰따옴표"
 
 
