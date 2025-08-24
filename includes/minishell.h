@@ -3,10 +3,10 @@
 /* :::      ::::::::   */
 /* minishell.h                                        :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
-/* By: your_login <your_login@student.42.fr>      +#+  +:+       +#+        */
-/*+#+#+#+#+#+   +#+           */
+/* By: your_login <your_login@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
 /* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 12:15:00 by your_login       ###   ########.fr       */
+/* Updated: 2025/08/24/ 17:00:00 by your_login       ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -94,6 +94,9 @@ void		shell_loop(t_shell *shell);
 
 /* --- Signals (signals.c) --- */
 void		setup_signals(void);
+void		setup_signals_parent(void);
+void		setup_signals_child(void);
+
 
 /* --- Error (error.c) --- */
 void		print_error(char *cmd, char *arg, int exit_code);
@@ -127,11 +130,13 @@ char		*expand_string(char *str, t_shell *shell);
 
 /* --- Executor (executor/) --- */
 int			executor(t_ast_node *node, t_shell *shell);
-int			execute_simple_command(t_ast_node *node, t_shell *shell);
+int			execute_simple_command(t_ast_node *node, t_shell *shell, int is_child);
 int			execute_pipeline(t_ast_node *node, t_shell *shell);
 int			apply_redirections(t_redir *redirs);
 int			apply_redirections_for_empty(t_redir *redirs);
 char		*find_command_path(char *cmd, t_env *env_list);
+int			_executor(t_ast_node *node, t_shell *shell, int is_child);
+
 
 /* --- Builtins (builtins/) --- */
 int			execute_builtin(char **args, t_shell *shell);
@@ -145,8 +150,6 @@ int			builtin_env(t_shell *shell);
 int			builtin_exit(char **args, t_shell *shell);
 
 /* --- Memory (memory/) --- */
-// void		free_string_array(char **arr);
-// void		cleanup(char *line, t_token *tokens, t_ast_node *ast);
 void		free_string_array(char **arr);
 void		cleanup(t_token *tokens, t_ast_node *ast);
 

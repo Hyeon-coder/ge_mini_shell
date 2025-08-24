@@ -3,10 +3,10 @@
 /* :::      ::::::::   */
 /* builtin_unset.c                                    :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
-/* By: your_login <your_login@student.42.fr>      +#+  +:+       +#+        */
-/*+#+#+#+#+#+   +#+           */
+/* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
 /* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 12:25:00 by your_login       ###   ########.fr       */
+/* Updated: 2025/08/24 17:30:00 by juhyeonl         ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -16,10 +16,9 @@ static int	is_valid_unset_identifier(char *str)
 {
 	int	i;
 
-	i = 0;
-	if (!ft_isalpha(str[i]) && str[i] != '_')
+	if (!str || str[0] == '\0')
 		return (0);
-	i++;
+	i = 0;
 	while (str[i])
 	{
 		if (!ft_isalnum(str[i]) && str[i] != '_')
@@ -65,7 +64,7 @@ int	builtin_unset(char **args, t_shell *shell)
 	{
 		if (!is_valid_unset_identifier(args[i]))
 		{
-			print_error("unset", "not a valid identifier", 1);
+			print_error("unset", args[i], 1);
 			status = 1;
 		}
 		else

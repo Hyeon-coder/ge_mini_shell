@@ -3,36 +3,40 @@
 /* :::      ::::::::   */
 /* builtin_export.c                                   :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
-/* By: your_login <your_login@student.42.fr>      +#+  +:+       +#+        */
-/*+#+#+#+#+#+   +#+           */
+/* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
 /* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 13:30:00 by your_login       ###   ########.fr       */
+/* Updated: 2025/08/24 17:30:00 by juhyeonl         ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	sort_and_print_env(char **envp)
+static void	sort_and_print_env(t_shell *shell)
 {
+	char	**envp;
 	int		i;
 	int		j;
 	char	*tmp;
 	int		count;
 
+	envp = env_list_to_array(shell->env_list);
+	if (!envp)
+		return ;
 	count = 0;
 	while (envp[count])
 		count++;
 	i = 0;
-	while (i < count - 1)
+	while (i < count)
 	{
-		j = 0;
-		while (j < count - i - 1)
+		j = i + 1;
+		while (j < count)
 		{
-			if (ft_strcmp(envp[j], envp[j + 1]) > 0)
+			if (ft_strcmp(envp[i], envp[j]) > 0)
 			{
-				tmp = envp[j];
-				envp[j] = envp[j + 1];
-				envp[j + 1] = tmp;
+				tmp = envp[i];
+				envp[i] = envp[j];
+				envp[j] = tmp;
 			}
 			j++;
 		}
@@ -41,11 +45,25 @@ static void	sort_and_print_env(char **envp)
 	i = 0;
 	while (i < count)
 	{
-		ft_putstr_fd("declare -x ", 1);
-		ft_putstr_fd(envp[i], 1);
-		ft_putendl_fd("\"", 1);
+		// '_' 변수는 export 목록에 포함되지 않음
+		if (ft_strncmp(envp[i], "_=", 2) != 0)
+		{
+			ft_putstr_fd("export ", 1);
+			j = 0;
+			while (envp[i][j] && envp[i][j] != '=')
+				ft_putchar_fd(envp[i][j++], 1);
+			if (envp[i][j] == '=')
+			{
+				ft_putchar_fd('=', 1);
+				ft_putchar_fd('"', 1);
+				ft_putstr_fd(&envp[i][j + 1], 1);
+				ft_putchar_fd('"', 1);
+			}
+			ft_putchar_fd('\n', 1);
+		}
 		i++;
 	}
+	free_string_array(envp);
 }
 
 static int	is_valid_identifier(char *str)
@@ -65,7 +83,7 @@ static int	is_valid_identifier(char *str)
 	return (1);
 }
 
-static void	add_or_update_env(char *arg, t_shell *shell)
+static int	add_or_update_env(char *arg, t_shell *shell)
 {
 	char	*key;
 	char	*value;
@@ -82,40 +100,38 @@ static void	add_or_update_env(char *arg, t_shell *shell)
 		key = ft_strdup(arg);
 		value = NULL;
 	}
-	if (!is_valid_identifier(key))
+	if (!key || !is_valid_identifier(key))
 	{
-		print_error("export", "not a valid identifier", 1);
+		print_error("export", arg, 1);
 		free(key);
 		if (value)
 			free(value);
-		return ;
+		return (1);
 	}
 	set_env_value(&(shell->env_list), key, value);
 	free(key);
 	if (value)
 		free(value);
+	return (0);
 }
 
 int	builtin_export(char **args, t_shell *shell)
 {
-	int		i;
-	char	**envp;
+	int	i;
+	int	status;
 
+	status = 0;
 	if (!args[1])
 	{
-		envp = env_list_to_array(shell->env_list);
-		if (envp)
-		{
-			sort_and_print_env(envp);
-			free_string_array(envp);
-		}
+		sort_and_print_env(shell);
 		return (0);
 	}
 	i = 1;
 	while (args[i])
 	{
-		add_or_update_env(args[i], shell);
+		if (add_or_update_env(args[i], shell) != 0)
+			status = 1;
 		i++;
 	}
-	return (0);
+	return (status);
 }

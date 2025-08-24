@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/*   Updated: 2025/08/24 15:30:12 by juhyeonl         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* main.c                                             :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
+/* Updated: 2025/08/24 17:00:00 by your_login       ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "minishell.h"
@@ -22,22 +22,19 @@ static void	execute_line(char *line, t_shell *shell)
 	tokens = lexer(line);
 	if (!tokens)
     {
-        // Lexer 실패 시(예: 닫히지 않은 따옴표) g_exit_status 반영
         shell->last_exit_status = g_exit_status;
 		return ;
     }
 	ast = parser(&tokens);
 	if (!ast)
 	{
-        // Parser 실패 시(구문 오류) g_exit_status 반영
 		cleanup(tokens, NULL);
         shell->last_exit_status = g_exit_status;
 		return ;
 	}
 	expand_ast(ast, shell);
-    // executor 내부에서 '_' 업데이트 및 실행 수행
 	shell->last_exit_status = executor(ast, shell);
-    g_exit_status = shell->last_exit_status; // 실행 후 전역 변수 동기화
+    g_exit_status = shell->last_exit_status;
 	cleanup(tokens, ast);
 }
 
@@ -48,19 +45,17 @@ void	shell_loop(t_shell *shell)
 	while (1)
 	{
 		setup_signals();
-        g_exit_status = 0; // 다음 명령어를 위해 초기화
 		line = readline("minishell$ ");
 		if (!line)
 		{
-            // Ctrl+D (EOF) 처리
 			ft_putendl_fd("exit", 1);
 			break ;
 		}
-
-        // readline 중 Ctrl+C 입력 시 상태 반영
-        if (g_exit_status == 1)
-            shell->last_exit_status = 1;
-
+		if (g_exit_status == 130)
+		{
+			shell->last_exit_status = 130;
+			g_exit_status = 0;
+		}
 		if (*line)
 		{
 			add_history(line);
@@ -70,7 +65,6 @@ void	shell_loop(t_shell *shell)
 	}
 }
 
-// non_interactive_mode, main 함수는 큰 변경 없음
 void	non_interactive_mode(t_shell *shell)
 {
 	char	buffer[4096];
