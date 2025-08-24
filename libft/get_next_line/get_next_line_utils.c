@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 15:18:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/24 21:17:48 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/24 22:39:09 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,23 +74,19 @@ void	*ft_malloc_zero(size_t count, size_t size)
 #include <stdio.h>
 void	ft_free_strs(char **str, char **str2, char **str3)
 {
-	printf("[DEBUG] gnl_utils-ft_free_strs1\n");
 	if (str && *str)
 	{
 		free(*str);
 		*str = NULL;
 	}
-	printf("[DEBUG] gnl_utils-ft_free_strs2\n");
 	if (str2 && *str2)
 	{
 		free(*str2);
 		*str2 = NULL;
 	}
-	printf("[DEBUG] gnl_utils-ft_free_strs3\n");
 	if (str3 && *str3)
 	{
 		free(*str3);
 		*str3 = NULL;
 	}
-	printf("[DEBUG] gnl_utils-ft_free_strs4\n");
 }

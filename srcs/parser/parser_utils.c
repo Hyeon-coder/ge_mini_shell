@@ -43,17 +43,9 @@ int	count_args_in_cmd(t_token **tokens)
 
 void	consume_token(t_token **tokens)
 {
-	t_token	*temp;
-
 	if (!tokens || !*tokens)
 		return ;
-	temp = *tokens;
 	*tokens = (*tokens)->next;
-
-	// 아래 두 줄이 남아있다면, 여기가 충돌의 원인입니다.
-	// 디버깅을 위해 printf를 추가하고, 최종적으로는 free를 삭제해야 합니다.
-	printf("[DEBUG] Consume Freeing Token->value: %p (%s)\n", (void *)temp->value, temp->value);
-	printf("[DEBUG] Consume Freeing Token: %p\n", (void *)temp);
 }
 
 static void	add_redir_to_node(t_ast_node *node, t_redir *new_redir)

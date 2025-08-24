@@ -22,8 +22,6 @@ t_token	*new_token(char *value, t_token_type type)
 	token->value = value;
 	token->type = type;
 	token->next = NULL;
-	// 디버그 출력 추가
-	printf("[DEBUG] Malloc Token: %p (Value: %s)\n", (void *)token, value);
 	return (token);
 }
 
@@ -48,24 +46,14 @@ void	free_tokens(t_token *tokens)
 {
 	t_token	*tmp;
 
-	printf("[DEBUG] --- Entering free_tokens ---\n");
 	while (tokens)
 	{
 		tmp = tokens->next;
 		if (tokens->value)
-		{
-			printf("[DEBUG] Cleanup Freeing Token->value: %p (%s)\n", (void *)tokens->value, tokens->value);
 			free(tokens->value);
-		}
-		else
-		{
-			printf("[DEBUG] Cleanup Skipping NULL Token->value in Token: %p\n", (void *)tokens);
-		}
-		printf("[DEBUG] Cleanup Freeing Token: %p\n", (void *)tokens);
 		free(tokens);
 		tokens = tmp;
 	}
-	printf("[DEBUG] --- Exiting free_tokens ---\n");
 }
 
 int	is_special_char(char c)

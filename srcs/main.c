@@ -4,9 +4,9 @@
 /* main.c                                             :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
 /* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
-/*+#+#+#+#+#+   +#+           */
+/* +#+#+#+#+#+   +#+           */
 /* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 19:30:00 by juhyeonl         ###   ########.fr       */
+/* Updated: 2025/08/24 22:30:00 by juhyeonl         ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 int	g_exit_status;
 
+// execute_line 함수는 그대로 유지합니다.
 static void	execute_line(char *line, t_shell *shell)
 {
 	t_token		*tokens;
-	t_token		*tokens_head; // <-- 원본 시작 주소를 저장할 포인터
+	t_token		*tokens_head;
 	t_ast_node	*ast;
 	char		*trimmed_line;
 
@@ -28,79 +29,34 @@ static void	execute_line(char *line, t_shell *shell)
 		return ;
 	}
 	tokens = lexer(trimmed_line);
-	tokens_head = tokens; // <-- 여기서 시작 주소를 저장합니다.
+	tokens_head = tokens;
 	if (!tokens)
 	{
-		// ...
+		shell->last_exit_status = g_exit_status;
 		free(trimmed_line);
 		return ;
 	}
 	ast = parser(&tokens);
 	if (!ast)
 	{
-		cleanup(tokens_head, NULL); // <-- 원본 주소 사용
-		// ...
+		cleanup(tokens_head, NULL);
+		shell->last_exit_status = g_exit_status;
 		free(trimmed_line);
 		return ;
 	}
 	expand_ast(ast, shell);
 	shell->last_exit_status = executor(ast, shell);
 	g_exit_status = shell->last_exit_status;
-	cleanup(tokens_head, ast); // <-- 원본 주소 사용
+	cleanup(tokens_head, ast);
 	free(trimmed_line);
 }
 
-void	shell_loop(t_shell *shell)
-{
-	char	*line;
 
-	while (1)
-	{
-		setup_signals();
-		line = readline("minishell$ ");
-		if (!line)
-		{
-			ft_putendl_fd("exit", 1);
-			break ;
-		}
-		if (g_exit_status == 130)
-		{
-			shell->last_exit_status = 130;
-			g_exit_status = 0;
-		}
-		if (*line)
-		{
-			add_history(line);
-			execute_line(line, shell);
-		}
-		free(line);
-	}
-}
-
-void	non_interactive_mode(t_shell *shell)
-{
-	char	*line;
-
-	line = get_next_line(STDIN_FILENO);
-	printf("[DEBUG] inside non_interactive_mode\n");
-	while (line)
-	{
-		execute_line(line, shell);
-		free(line);
-		line = get_next_line(STDIN_FILENO);
-	}
-}
-
-/*
-non_interactive_mode
-	ex) echo "echo abc" | ./minishell	=> it will be false by isatty()
-Then, how about true by isatty()?		=> shell_loop()
-	ex) echo abc
-*/
+// shell_loop와 non_interactive_mode를 삭제하고 main 함수를 아래와 같이 변경합니다.
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
-	int		is_interactive; // 인터랙티브 모드 여부를 저장할 변수
+	char	*line;
 
 	(void)argc;
 	(void)argv;
@@ -112,14 +68,30 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr_fd("minishell: Environment initialization failed\n", 2);
 		return (1);
 	}
-	is_interactive = isatty(STDIN_FILENO); // 모드를 미리 확인
-	printf("[DEBUG] HERE, isatty=%d\n",is_interactive);
-	if (is_interactive)
-		shell_loop(&shell);
-	else
-		non_interactive_mode(&shell);
+	// 대화형/비대화형 모두 처리하는 단일 루프
+	while (1)
+	{
+		setup_signals();
+		line = readline("minishell$ ");
+		if (!line) // EOF (ctrl-D 또는 파이프의 끝) 감지
+		{
+			if (isatty(STDIN_FILENO))
+				ft_putendl_fd("exit", STDOUT_FILENO);
+			break ;
+		}
+		if (g_exit_status == 130) // ctrl-C 인터럽트 처리
+		{
+			shell.last_exit_status = 130;
+			g_exit_status = 0;
+		}
+		if (*line) // 입력된 라인이 비어있지 않은 경우
+		{
+			add_history(line);
+			execute_line(line, &shell);
+		}
+		free(line);
+	}
 	free_env_list(shell.env_list);
-	if (is_interactive) // 대화형 모드일 때만 호출
-		rl_clear_history();
+	rl_clear_history();
 	return (shell.last_exit_status);
 }
