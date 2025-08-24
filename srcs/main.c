@@ -51,13 +51,12 @@ static void	execute_line(char *line, t_shell *shell)
 	free(trimmed_line);
 }
 
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell			shell;
 	char			*line;
 	char			*prompt;
-	struct termios	term; // 터미널 속성 저장을 위한 구조체
+	struct termios	term;
 
 	(void)argc;
 	(void)argv;
@@ -69,14 +68,15 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr_fd("minishell: Environment initialization failed\n", 2);
 		return (1);
 	}
+
 	if (isatty(STDIN_FILENO))
 		prompt = "minishell$ ";
 	else
 	{
 		prompt = "";
-		// 비대화형 모드일 때 터미널의 ECHO 속성을 끕니다.
+		// 비대화형 모드일 때 표준 입력의 터미널 에코 속성을 끕니다.
 		tcgetattr(STDIN_FILENO, &term);
-		term.c_lflag &= ~ECHOCTL;
+		term.c_lflag &= ~ECHO; // ECHOCTL이 아닌 ECHO 플래그를 끕니다.
 		tcsetattr(STDIN_FILENO, TCSANOW, &term);
 	}
 	while (1)
