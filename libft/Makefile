@@ -6,7 +6,7 @@
 #    By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/12 23:58:00 by JuHyeon           #+#    #+#              #
-#    Updated: 2025/08/24 19:43:35 by juhyeonl         ###   ########.fr        #
+#    Updated: 2025/08/24 20:24:32 by juhyeonl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,7 @@ GNL_SRCS = $(addprefix $(GNL_DIR)/, $(GNL_FILES))
 
 # Printf Sources
 PRINTF_DIR = printf
-PRINTF_FILES = ft_printf.c ft_putchar_rt.c ft_putstr_rt.c ft_strchr.c ft_strlen.c \
+PRINTF_FILES = ft_printf.c ft_putchar_rt.c ft_putstr_rt.c ft_strchr.c \
                ft_itoa.c ft_itoa_base.c ft_form_check.c ft_putpointer.c
 PRINTF_SRCS = $(addprefix $(PRINTF_DIR)/, $(PRINTF_FILES))
 

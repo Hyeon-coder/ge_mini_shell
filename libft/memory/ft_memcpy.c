@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <juhyeonl@student.hive.fi>         +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 14:26:43 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/02/28 15:52:04 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/24 20:23:19 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "libft.h"
 
 /*
 	Copies memory from one location to another. (메모리 블록을 다른 메모리 블록으로 복사)
