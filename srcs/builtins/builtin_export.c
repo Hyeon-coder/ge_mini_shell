@@ -4,9 +4,9 @@
 /* builtin_export.c                                   :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
 /* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
+/*+#+#+#+#+#+   +#+           */
 /* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 17:30:00 by juhyeonl         ###   ########.fr       */
+/* Updated: 2025/08/24 18:30:00 by juhyeonl         ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -45,10 +45,9 @@ static void	sort_and_print_env(t_shell *shell)
 	i = 0;
 	while (i < count)
 	{
-		// '_' 변수는 export 목록에 포함되지 않음
 		if (ft_strncmp(envp[i], "_=", 2) != 0)
 		{
-			ft_putstr_fd("export ", 1);
+			ft_putstr_fd("declare -x ", 1);
 			j = 0;
 			while (envp[i][j] && envp[i][j] != '=')
 				ft_putchar_fd(envp[i][j++], 1);
@@ -88,26 +87,25 @@ static int	add_or_update_env(char *arg, t_shell *shell)
 	char	*key;
 	char	*value;
 	char	*eq_ptr;
+	char	*err_msg;
 
 	eq_ptr = ft_strchr(arg, '=');
 	if (eq_ptr)
-	{
 		key = ft_substr(arg, 0, eq_ptr - arg);
-		value = ft_strdup(eq_ptr + 1);
-	}
 	else
-	{
 		key = ft_strdup(arg);
-		value = NULL;
-	}
 	if (!key || !is_valid_identifier(key))
 	{
-		print_error("export", arg, 1);
+		err_msg = ft_strjoin("`", arg);
+		print_error("export", ft_strjoin(err_msg, "': not a valid identifier"), 1);
+		free(err_msg);
 		free(key);
-		if (value)
-			free(value);
 		return (1);
 	}
+	if (eq_ptr)
+		value = ft_strdup(eq_ptr + 1);
+	else
+		value = NULL;
 	set_env_value(&(shell->env_list), key, value);
 	free(key);
 	if (value)

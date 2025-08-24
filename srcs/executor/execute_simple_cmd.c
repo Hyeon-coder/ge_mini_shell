@@ -4,9 +4,9 @@
 /* execute_simple_cmd.c                               :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
 /* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
+/*+#+#+#+#+#+   +#+           */
 /* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 17:00:00 by your_login       ###   ########.fr       */
+/* Updated: 2025/08/24 18:30:00 by juhyeonl         ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -27,14 +27,12 @@ static void	child_process(t_ast_node *node, t_shell *shell)
 	path = find_command_path(node->args[0], shell->env_list);
 	if (!path)
 	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(node->args[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
+		print_error(node->args[0], "command not found", 127);
 		exit(127);
 	}
 	envp = env_list_to_array(shell->env_list);
 	execve(path, node->args, envp);
-	print_error("execve", node->args[0], 126);
+	print_error("execve", strerror(errno), 126);
 	free(path);
 	free_string_array(envp);
 	exit(126);
@@ -58,13 +56,13 @@ static int	wait_for_child(pid_t pid)
 	return (1);
 }
 
-static int	is_parent_builtin(char *cmd)
+static int	is_parent_builtin(char *cmd, char **args)
 {
 	if (!cmd)
 		return (0);
 	if (ft_strcmp(cmd, "cd") == 0)
 		return (1);
-	if (ft_strcmp(cmd, "export") == 0 && cmd[1] != '\0')
+	if (ft_strcmp(cmd, "export") == 0 && args[1])
 		return (1);
 	if (ft_strcmp(cmd, "unset") == 0)
 		return (1);
@@ -85,12 +83,8 @@ int	execute_simple_command(t_ast_node *node, t_shell *shell, int is_child)
 		exit(1);
 	}
 	if (!node->args || !node->args[0])
-	{
-		if (node->redirs)
-			return (apply_redirections_for_empty(node->redirs));
-		return (0);
-	}
-	if (is_parent_builtin(node->args[0]))
+		return (apply_redirections_for_empty(node->redirs));
+	if (is_parent_builtin(node->args[0], node->args))
 	{
 		original_fds[0] = dup(STDIN_FILENO);
 		original_fds[1] = dup(STDOUT_FILENO);
@@ -106,7 +100,10 @@ int	execute_simple_command(t_ast_node *node, t_shell *shell, int is_child)
 	}
 	pid = fork();
 	if (pid == -1)
-		return (print_error("fork", NULL, 1), 1);
+	{
+		perror("minishell: fork");
+		return (1);
+	}
 	if (pid == 0)
 		child_process(node, shell);
 	return (wait_for_child(pid));
