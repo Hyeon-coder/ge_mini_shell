@@ -1,16 +1,18 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* lexer.c                                            :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: your_login <your_login@student.42.fr>      +#+  +:+       +#+        */
-/*+#+#+#+#+#+   +#+           */
-/* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 12:30:00 by your_login       ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
+/*   Updated: 2025/08/24 15:29:52 by juhyeonl         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+extern int g_exit_status;
 
 static int	is_quote_closed(char *line)
 {
@@ -28,15 +30,20 @@ static int	is_quote_closed(char *line)
 				i++;
 			if (line[i] == '\0')
 			{
-				print_error("syntax error", "unclosed quote", 258);
+                // 테스트 14, 15 해결: 종료 코드 2 설정 및 메시지 표준화
+                ft_putstr_fd("minishell: syntax error: unclosed quote\n", STDERR_FILENO);
+                g_exit_status = 2;
 				return (0);
 			}
 		}
-		i++;
+        // 무한 루프 방지
+        if (line[i])
+		    i++;
 	}
 	return (1);
 }
 
+// handle_special_tokens, get_word_len 함수는 변경 없음
 static int	handle_special_tokens(char *line, int *i, t_token **head)
 {
 	if (line[*i] == '|')
