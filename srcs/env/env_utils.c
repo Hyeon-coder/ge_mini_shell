@@ -3,10 +3,10 @@
 /* :::      ::::::::   */
 /* env_utils.c                                        :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
-/* By: your_login <your_login@student.42.fr>      +#+  +:+       +#+        */
-/*+#+#+#+#+#+   +#+           */
+/* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
 /* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 11:27:00 by your_login       ###   ########.fr       */
+/* Updated: 2025/08/24 20:15:00 by juhyeonl         ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -49,7 +49,10 @@ void	set_env_value(t_env **env_list, char *key, char *value)
 	if (!current)
 		return ;
 	current->key = ft_strdup(key);
-	current->value = ft_strdup(value);
+	if (value)
+		current->value = ft_strdup(value);
+	else
+		current->value = NULL;
 	current->next = *env_list;
 	*env_list = current;
 }
@@ -65,7 +68,8 @@ char	**env_list_to_array(t_env *env_list)
 	current = env_list;
 	while (current)
 	{
-		count++;
+		if (current->value) // 값이 있는 변수만 count
+			count++;
 		current = current->next;
 	}
 	envp = (char **)ft_calloc(count + 1, sizeof(char *));
@@ -76,10 +80,10 @@ char	**env_list_to_array(t_env *env_list)
 	while (current)
 	{
 		if (current->value)
+		{
 			envp[i] = ft_strjoin_three(current->key, "=", current->value);
-		else
-			envp[i] = ft_strdup(current->key);
-		i++;
+			i++;
+		}
 		current = current->next;
 	}
 	return (envp);
@@ -93,7 +97,8 @@ void	free_env_list(t_env *env_list)
 	{
 		tmp = env_list->next;
 		free(env_list->key);
-		free(env_list->value);
+		if (env_list->value)
+			free(env_list->value);
 		free(env_list);
 		env_list = tmp;
 	}
