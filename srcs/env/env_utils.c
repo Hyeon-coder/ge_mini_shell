@@ -37,7 +37,10 @@ void	set_env_value(t_env **env_list, char *key, char *value)
 		{
 			if (current->value)
 				free(current->value);
-			current->value = ft_strdup(value);
+			if (value)
+				current->value = ft_strdup(value);
+			else
+				current->value = NULL;
 			return ;
 		}
 		current = current->next;
@@ -72,7 +75,10 @@ char	**env_list_to_array(t_env *env_list)
 	current = env_list;
 	while (current)
 	{
-		envp[i] = ft_strjoin_three(current->key, "=", current->value);
+		if (current->value)
+			envp[i] = ft_strjoin_three(current->key, "=", current->value);
+		else
+			envp[i] = ft_strdup(current->key);
 		i++;
 		current = current->next;
 	}
