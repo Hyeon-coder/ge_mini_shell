@@ -1,59 +1,47 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* executor.c                                         :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
-/*+#+#+#+#+#+   +#+           */
-/* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 19:30:00 by juhyeonl         ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/25 12:15:43 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/25 12:15:45 by juhyeonl         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/*
+** Updates the '_' environment variable to the last argument of the
+** last command in the pipeline.
+*/
 static void	update_underscore_var(t_ast_node *node, t_shell *shell)
 {
-	t_ast_node	*last_cmd;
+	t_ast_node	*last_cmd_node;
 	char		*last_arg;
-	char		*full_path;
 	int			i;
 
 	if (!node)
 		return ;
-	last_cmd = node;
-	while (last_cmd->type == NODE_PIPE)
-		last_cmd = last_cmd->right;
-	if (last_cmd->args && last_cmd->args[0])
-	{
-		i = 0;
-		while (last_cmd->args[i])
-			i++;
-		last_arg = last_cmd->args[i - 1];
-		if (is_builtin(last_cmd->args[0]))
-		{
-			if (ft_strcmp(last_cmd->args[0], "env") == 0)
-				set_env_value(&(shell->env_list), "_", "/usr/bin/env");
-			else
-				set_env_value(&(shell->env_list), "_", last_arg);
-		}
-		else
-		{
-			full_path = find_command_path(last_cmd->args[0], shell->env_list);
-			if (full_path)
-			{
-				set_env_value(&(shell->env_list), "_", full_path);
-				free(full_path);
-			}
-			else
-				set_env_value(&(shell->env_list), "_", last_cmd->args[0]);
-		}
-	}
+	last_cmd_node = node;
+	while (last_cmd_node->type == NODE_PIPE)
+		last_cmd_node = last_cmd_node->right;
+	if (!last_cmd_node->args || !last_cmd_node->args[0])
+		return ;
+	i = 0;
+	while (last_cmd_node->args[i])
+		i++;
+	last_arg = last_cmd_node->args[i - 1];
+	set_env_value(&(shell->env_list), "_", last_arg);
 }
 
+/*
+** Main executor function that traverses the AST and executes commands.
+*/
 int	executor(t_ast_node *node, t_shell *shell)
 {
-	int status;
+	int	status;
 
 	if (!node)
 		return (0);
@@ -65,6 +53,9 @@ int	executor(t_ast_node *node, t_shell *shell)
 	return (status);
 }
 
+/*
+** A recursive helper for the executor, especially for pipelines.
+*/
 int	_executor(t_ast_node *node, t_shell *shell, int is_child)
 {
 	if (!node)

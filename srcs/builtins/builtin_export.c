@@ -1,36 +1,31 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* builtin_export.c                                   :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
-/*+#+#+#+#+#+   +#+           */
-/* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 19:30:00 by juhyeonl         ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_export.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/25 10:53:52 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/25 10:59:42 by juhyeonl         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	sort_and_print_env(t_shell *shell)
+/*
+** Sorts the environment variable array alphabetically.
+*/
+static void	bubble_sort_env(char **envp, int count)
 {
-	char	**envp;
 	int		i;
 	int		j;
 	char	*tmp;
-	int		count;
 
-	envp = env_list_to_array(shell->env_list);
-	if (!envp)
-		return ;
-	count = 0;
-	while (envp[count])
-		count++;
-	i = -1;
-	while (++i < count)
+	i = 0;
+	while (i < count)
 	{
-		j = i;
-		while (++j < count)
+		j = i + 1;
+		while (j < count)
 		{
 			if (ft_strcmp(envp[i], envp[j]) > 0)
 			{
@@ -38,10 +33,22 @@ static void	sort_and_print_env(t_shell *shell)
 				envp[i] = envp[j];
 				envp[j] = tmp;
 			}
+			j++;
 		}
+		i++;
 	}
-	i = -1;
-	while (++i < count)
+}
+
+/*
+** Prints the sorted environment variables in the 'export' format.
+*/
+static void	print_exported_env(char **envp)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], "_=", 2) != 0)
 		{
@@ -58,10 +65,32 @@ static void	sort_and_print_env(t_shell *shell)
 			}
 			ft_putchar_fd('\n', 1);
 		}
+		i++;
 	}
+}
+
+/*
+** Converts the environment list to an array, sorts it, and prints it.
+*/
+static void	sort_and_print_env(t_shell *shell)
+{
+	char	**envp;
+	int		count;
+
+	envp = env_list_to_array(shell->env_list);
+	if (!envp)
+		return ;
+	count = 0;
+	while (envp[count])
+		count++;
+	bubble_sort_env(envp, count);
+	print_exported_env(envp);
 	free_string_array(envp);
 }
 
+/*
+** Checks if a string is a valid identifier for an environment variable.
+*/
 static int	is_valid_identifier(char *str)
 {
 	int	i;
@@ -79,12 +108,15 @@ static int	is_valid_identifier(char *str)
 	return (1);
 }
 
+/*
+** Parses the argument, validates it, and adds or updates the environment
+** variable.
+*/
 static int	add_or_update_env(char *arg, t_shell *shell)
 {
 	char	*key;
 	char	*value;
 	char	*eq_ptr;
-	char	*err_msg;
 
 	eq_ptr = ft_strchr(arg, '=');
 	if (eq_ptr)
@@ -93,9 +125,9 @@ static int	add_or_update_env(char *arg, t_shell *shell)
 		key = ft_strdup(arg);
 	if (!key || !is_valid_identifier(key))
 	{
-		err_msg = ft_strjoin("`", arg);
-		print_error("export", ft_strjoin(err_msg, "': not a valid identifier"), 1);
-		free(err_msg);
+		print_error("export", \
+			ft_strjoin_free(ft_strjoin("`", arg), \
+			"': not a valid identifier"), 1);
 		free(key);
 		return (1);
 	}
@@ -105,11 +137,14 @@ static int	add_or_update_env(char *arg, t_shell *shell)
 		value = NULL;
 	set_env_value(&(shell->env_list), key, value);
 	free(key);
-	if (value)
-		free(value);
+	free(value);
 	return (0);
 }
 
+/*
+** Sets environment variables. With no arguments, it prints all environment
+** variables. Otherwise, it sets the variables provided in the arguments.
+*/
 int	builtin_export(char **args, t_shell *shell)
 {
 	int	i;

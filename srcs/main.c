@@ -1,20 +1,22 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* main.c                                             :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/08/24 11:27:00 by your_login        #+#    #+#             */
-/* Updated: 2025/08/24 22:30:00 by juhyeonl         ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/25 10:44:51 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/25 10:44:53 by juhyeonl         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 int	g_exit_status;
 
-// execute_line 함수는 그대로 유지합니다.
+/*
+** Trims, tokenizes, parses, expands, and executes a single line of command.
+*/
 static void	execute_line(char *line, t_shell *shell)
 {
 	t_token		*tokens;
@@ -51,12 +53,61 @@ static void	execute_line(char *line, t_shell *shell)
 	free(trimmed_line);
 }
 
+/*
+** The main loop for interactive mode. It displays a prompt and reads
+** commands using readline.
+*/
+void	shell_loop(t_shell *shell)
+{
+	char	*line;
+
+	while (1)
+	{
+		setup_signals();
+		line = readline("minishell$ ");
+		if (!line)
+		{
+			ft_putendl_fd("exit", STDOUT_FILENO);
+			break ;
+		}
+		if (g_exit_status == 130)
+		{
+			shell->last_exit_status = 130;
+			g_exit_status = 0;
+		}
+		if (*line)
+		{
+			add_history(line);
+			execute_line(line, shell);
+		}
+		free(line);
+	}
+}
+
+/*
+** Handles non-interactive mode, reading commands line by line from
+** standard input using get_next_line.
+*/
+void	non_interactive_mode(t_shell *shell)
+{
+	char	*line;
+
+	line = get_next_line(STDIN_FILENO);
+	while (line)
+	{
+		execute_line(line, shell);
+		free(line);
+		line = get_next_line(STDIN_FILENO);
+	}
+}
+
+/*
+** Initializes the shell, determines the mode (interactive or non-interactive),
+** and starts the appropriate loop.
+*/
 int	main(int argc, char **argv, char **envp)
 {
-	t_shell			shell;
-	char			*line;
-	char			*prompt;
-	struct termios	term;
+	t_shell	shell;
 
 	(void)argc;
 	(void)argv;
@@ -68,40 +119,10 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr_fd("minishell: Environment initialization failed\n", 2);
 		return (1);
 	}
-
 	if (isatty(STDIN_FILENO))
-		prompt = "minishell$ ";
+		shell_loop(&shell);
 	else
-	{
-		prompt = "";
-		// 비대화형 모드일 때 표준 입력의 터미널 에코 속성을 끕니다.
-		tcgetattr(STDIN_FILENO, &term);
-		term.c_lflag &= ~ECHO; // ECHOCTL이 아닌 ECHO 플래그를 끕니다.
-		tcsetattr(STDIN_FILENO, TCSANOW, &term);
-	}
-	while (1)
-	{
-		setup_signals();
-		line = readline(prompt);
-		if (!line)
-		{
-			if (isatty(STDIN_FILENO))
-				ft_putendl_fd("exit", STDOUT_FILENO);
-			break ;
-		}
-		if (g_exit_status == 130)
-		{
-			shell.last_exit_status = 130;
-			g_exit_status = 0;
-		}
-		if (*line)
-		{
-			if (isatty(STDIN_FILENO))
-				add_history(line);
-			execute_line(line, &shell);
-		}
-		free(line);
-	}
+		non_interactive_mode(&shell);
 	free_env_list(shell.env_list);
 	if (isatty(STDIN_FILENO))
 		rl_clear_history();
