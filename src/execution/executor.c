@@ -38,9 +38,26 @@ static int	is_builtin(char *cmd)
 static void	execute_builtin(t_ms *ms, t_cmd *cmd)
 {
 	(void)ms;
-	// TODO: Call the actual builtin functions.
-	ft_putstr_fd("This is a builtin command: ", 1);
-	ft_putendl_fd(cmd->full_cmd[0], 1);
+	if (ft_strcmp(cmd->full_cmd[0], "pwd") == 0)
+		builtin_pwd();
+	else if (ft_strcmp(cmd->full_cmd[0], "echo") == 0)
+		builtin_echo(cmd);
+	else if (ft_strcmp(cmd->full_cmd[0], "cd") == 0)
+		builtin_cd(ms, cmd);
+	else if (ft_strcmp(cmd->full_cmd[0], "exit") == 0)
+		builtin_exit(ms, cmd);
+	else if (ft_strcmp(cmd->full_cmd[0], "env") == 0)
+		builtin_env(ms, cmd);
+	else if (ft_strcmp(cmd->full_cmd[0], "export") == 0)
+		builtin_export(ms, cmd);
+	else if (ft_strcmp(cmd->full_cmd[0], "unset") == 0)
+		builtin_unset(ms, cmd);
+	else
+	{
+		// TODO: Call the other actual builtin functions.
+		ft_putstr_fd("This is a builtin command: ", 1);
+		ft_putendl_fd(cmd->full_cmd[0], 1);
+	}
 }
 
 /*
@@ -107,4 +124,50 @@ void	run_executor(t_ms *ms, int i)
 			execute_simple_command(ms, ms->ast->cmd);
 	}
 	// TODO: Handle NODE_PIPE here.
+}
+
+static void	print_exported_vars(t_ms *ms)
+{
+	int	i;
+
+	i = 0;
+	// TODO: Implement sorting for `export` output to match bash.
+	while (ms->envp[i])
+	{
+		ft_putstr_fd("declare -x ", 1);
+		ft_putendl_fd(ms->envp[i], 1);
+		i++;
+	}
+}
+
+/*
+** Executes the 'export' builtin command.
+** Adds or updates environment variables.
+** With no arguments, it prints all environment variables.
+*/
+void	builtin_export(t_ms *ms, t_cmd *cmd)
+{
+	char	*var;
+	char	*key;
+	int		i;
+	int		key_len;
+
+	if (!cmd->full_cmd[1])
+	{
+		print_exported_vars(ms);
+		return ;
+	}
+	i = 1;
+	while (cmd->full_cmd[i])
+	{
+		var = cmd->full_cmd[i];
+		key_len = 0;
+		while (var[key_len] && var[key_len] != '=')
+			key_len++;
+		key = ft_substr(var, 0, key_len);
+		// TODO: Add proper validation for key (e.g., must be valid identifier)
+		set_env_var(ms, key, find_var(ms, (char *[]){var, NULL}, key));
+		free(key);
+		i++;
+	}
 }

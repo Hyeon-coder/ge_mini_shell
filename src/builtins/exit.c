@@ -1,17 +1,73 @@
+/* ************************************************************************** */
+/* */
+/* :::      ::::::::   */
+/* exit.c                                             :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2025/08/29/ 01:20:00 by <your_login>      #+#    #+#             */
+/* Updated: 2025/08/29/ 01:20:02 by <your_login>     ###   ########.fr       */
+/* */
+/* ************************************************************************** */
 
 #include "minishell.h"
 
-/**
- * @brief minishell을 종료하는 함수.
- * * @param ms minishell 구조체 (나중에 메모리 해제를 위해 사용)
- * @param ex_code 종료 코드
- * @param error 에러 발생 여부 (현재는 사용 안함)
- */
+/*
+** Prints "exit" to stderr and terminates the shell after freeing memory.
+*/
 void	bi_exit(t_ms *ms, int ex_code, int error)
 {
-	(void)ms;
 	(void)error;
-
-	// TODO: 여기에 free_ms(ms)와 같이 모든 할당된 메모리를 해제하는 로직을 추가해야 합니다.
+	// TODO: Add free_ms(ms) here later to prevent memory leaks.
+	if (ms) // Placeholder to use ms
+		ft_putendl_fd("exit", 2);
 	exit(ex_code);
+}
+
+/*
+** Checks if a string represents a valid number (long long).
+*/
+static bool	is_numeric_str(const char *str)
+{
+	int	i;
+
+	i = 0;
+	if (str[i] == '+' || str[i] == '-')
+		i++;
+	if (!str[i])
+		return (false);
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i]))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
+/*
+** Executes the 'exit' builtin command.
+** Handles exit codes and argument validation.
+*/
+void	builtin_exit(t_ms *ms, t_cmd *cmd)
+{
+	int	exit_code;
+
+	exit_code = 0;
+	if (!cmd->full_cmd[1])
+		bi_exit(ms, ms->exit_status, 0);
+	if (!is_numeric_str(cmd->full_cmd[1]))
+	{
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd(cmd->full_cmd[1], 2);
+		ft_putendl_fd(": numeric argument required", 2);
+		bi_exit(ms, 255, 0);
+	}
+	if (cmd->full_cmd[2])
+	{
+		ft_putendl_fd("minishell: exit: too many arguments", 2);
+		return ;
+	}
+	exit_code = ft_atoi(cmd->full_cmd[1]);
+	bi_exit(ms, exit_code, 0);
 }

@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/29 00:31:42 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 01:54:58 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,14 @@ char		*find_var(t_ms *ms, char **envp, char *name);
 bool		export_var_to_envp(t_ms *ms, char *var);
 void		arr_dup_fail(t_ms *ms, char **arr, int j);
 int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
-
+void		builtin_pwd(void);
+void		builtin_echo(t_cmd *cmd);
+void		builtin_cd(t_ms *ms, t_cmd *cmd);
+void		builtin_exit(t_ms *ms, t_cmd *cmd);
+void		builtin_env(t_ms *ms, t_cmd *cmd);
+void		builtin_export(t_ms *ms, t_cmd *cmd);
+void		builtin_unset(t_ms *ms, t_cmd *cmd);
+void		set_env_var(t_ms *ms, char *key, char *value);
 
 ////////////////////////////////// Utils //////////////////////////////////////
 void		*x_malloc(t_ms *ms, size_t size);

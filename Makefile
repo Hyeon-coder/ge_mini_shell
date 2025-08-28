@@ -49,7 +49,8 @@ SRC = \
 	$(SRC_DIR)$(PAR_DIR)parser_utils.c \
 	$(SRC_DIR)$(EXEC_DIR)executor.c $(SRC_DIR)$(EXEC_DIR)error.c $(SRC_DIR)$(EXEC_DIR)heredoc.c \
 	$(SRC_DIR)$(EXEC_DIR)path.c \
-	$(SRC_DIR)$(BLT_DIR)exit.c $(SRC_DIR)$(BLT_DIR)env_utils.c $(SRC_DIR)$(BLT_DIR)export.c
+	$(SRC_DIR)$(BLT_DIR)exit.c $(SRC_DIR)$(BLT_DIR)env_utils.c $(SRC_DIR)$(BLT_DIR)export.c \
+	$(SRC_DIR)$(BLT_DIR)builtins.c
 	
 OBJ = $(SRC:$(SRC_DIR)%=$(OBJ_DIR)/%)
 OBJ := $(OBJ:.c=.o)

@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 00:45:06 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 00:45:08 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 01:49:28 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,35 @@ char	*find_var(t_ms *ms, char **envp, char *name)
 		i++;
 	}
 	return (NULL);
+}
+
+/*
+** Sets or updates an environment variable.
+** If the key exists, its value is updated.
+** If the key does not exist, a new variable is added to the environment.
+*/
+void	set_env_var(t_ms *ms, char *key, char *value)
+{
+	int		i;
+	size_t	len;
+	char	*new_var;
+	char	*tmp;
+
+	i = -1;
+	len = ft_strlen(key);
+	tmp = ft_strjoin(key, "=");
+	new_var = ft_strjoin(tmp, value);
+	free(tmp);
+	while (ms->envp[++i])
+	{
+		if (ft_strncmp(ms->envp[i], key, len) == 0 && ms->envp[i][len] == '=')
+		{
+			free(ms->envp[i]);
+			ms->envp[i] = new_var;
+			return ;
+		}
+	}
+	ft_add_to_array(&ms->envp, new_var);
+	ms->elements++;
+	free(new_var);
 }
