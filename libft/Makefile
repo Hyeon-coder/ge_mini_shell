@@ -3,65 +3,61 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+         #
+#    By: mpierce <mpierce@student.hive.fi>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/05/12 23:58:00 by JuHyeon           #+#    #+#              #
-#    Updated: 2025/08/24 20:24:32 by juhyeonl         ###   ########.fr        #
+#    Created: 2024/10/28 15:08:55 by clu               #+#    #+#              #
+#    Updated: 2025/04/18 13:08:11 by mpierce          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+# Program Name
 NAME = libft.a
 
+# Compiler and Flags
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -I.
-AR = ar rcs
-RM = rm -f
+CFLAGS = -Wall -Werror -Wextra -g
 
-# Libft Core Sources
-SRC_FILES = \
-	char/ft_isalnum.c char/ft_isalpha.c char/ft_isascii.c char/ft_isdigit.c char/ft_isprint.c \
-	char/ft_tolower.c char/ft_toupper.c \
-	conversion/ft_atoi.c conversion/ft_itoa.c \
-	linked_list/ft_lstadd_back.c linked_list/ft_lstclear.c linked_list/ft_lstiter.c \
-	linked_list/ft_lstmap.c linked_list/ft_lstsize.c linked_list/ft_lstadd_front.c \
-	linked_list/ft_lstdelone.c linked_list/ft_lstlast.c linked_list/ft_lstnew.c \
-	memory/ft_bzero.c memory/ft_calloc.c memory/ft_memchr.c memory/ft_memcmp.c \
-	memory/ft_memcpy.c memory/ft_memmove.c memory/ft_memset.c memory/ft_realloc.c \
-	print/ft_error.c print/ft_putchar_fd.c print/ft_putendl_fd.c print/ft_putnbr_fd.c print/ft_putstr_fd.c \
-	string/ft_split.c string/ft_strdup.c string/ft_strjoin.c string/ft_strlcpy.c \
-	string/ft_strmapi.c string/ft_strnstr.c string/ft_strtrim.c string/ft_strchr.c \
-	string/ft_striteri.c string/ft_strlcat.c string/ft_strlen.c string/ft_strncmp.c \
-	string/ft_strrchr.c string/ft_substr.c string/ft_strcmp.c string/ft_strndup.c \
-	string/ft_strcpy.c string/ft_strcat.c string/ft_strstr.c ft_strjoin_helpers.c \
-	ft_isspace.c
+# Directories
+SRC_DIR	= ./src
+OBJ_DIR	= ./obj
 
-# GNL Sources
-GNL_DIR = get_next_line
-GNL_FILES = get_next_line.c get_next_line_utils.c
-GNL_SRCS = $(addprefix $(GNL_DIR)/, $(GNL_FILES))
+# Header
+HEADER = -I./include
 
-# Printf Sources
-PRINTF_DIR = printf
-PRINTF_FILES = ft_printf.c ft_putchar_rt.c ft_putstr_rt.c ft_strchr.c \
-               ft_itoa.c ft_itoa_base.c ft_form_check.c ft_putpointer.c
-PRINTF_SRCS = $(addprefix $(PRINTF_DIR)/, $(PRINTF_FILES))
+# Source files and object files
+SRC = $(SRC_DIR)/ft_add_to_array.c $(SRC_DIR)/ft_atoi.c $(SRC_DIR)/ft_atol.c $(SRC_DIR)/ft_atoll.c $(SRC_DIR)/ft_bzero.c $(SRC_DIR)/ft_calloc.c $(SRC_DIR)/ft_format_check.c \
+	$(SRC_DIR)/ft_free_array.c $(SRC_DIR)/ft_isalnum.c $(SRC_DIR)/ft_isalpha.c $(SRC_DIR)/ft_isascii.c $(SRC_DIR)/ft_isdigit.c $(SRC_DIR)/ft_isprint.c \
+	$(SRC_DIR)/ft_is_whitespace.c $(SRC_DIR)/ft_itoa.c $(SRC_DIR)/ft_lstadd_back_bonus.c $(SRC_DIR)/ft_lstadd_front_bonus.c $(SRC_DIR)/ft_lstclear_bonus.c \
+	$(SRC_DIR)/ft_lstdelone_bonus.c $(SRC_DIR)/ft_lstiter_bonus.c $(SRC_DIR)/ft_lstlast_bonus.c $(SRC_DIR)/ft_lstmap_bonus.c $(SRC_DIR)/ft_lstnew_bonus.c \
+	$(SRC_DIR)/ft_lstsize_bonus.c $(SRC_DIR)/ft_memchr.c $(SRC_DIR)/ft_memcmp.c $(SRC_DIR)/ft_memcpy.c $(SRC_DIR)/ft_memmove.c $(SRC_DIR)/ft_memset.c $(SRC_DIR)/ft_printf.c \
+	$(SRC_DIR)/ft_putchar.c $(SRC_DIR)/ft_putchar_fd.c $(SRC_DIR)/ft_putendl_fd.c $(SRC_DIR)/ft_puthex.c $(SRC_DIR)/ft_puthex_low.c $(SRC_DIR)/ft_puthex_up.c $(SRC_DIR)/ft_putnbr.c \
+	$(SRC_DIR)/ft_putnbr_fd.c $(SRC_DIR)/ft_putnbr_i.c $(SRC_DIR)/ft_putptr.c $(SRC_DIR)/ft_putstr.c $(SRC_DIR)/ft_putstr_fd.c $(SRC_DIR)/ft_realloc.c $(SRC_DIR)/ft_split.c \
+	$(SRC_DIR)/ft_strchr.c $(SRC_DIR)/ft_strcmp.c $(SRC_DIR)/ft_strdup.c $(SRC_DIR)/ft_striteri.c $(SRC_DIR)/ft_strjoin.c $(SRC_DIR)/ft_strlcat.c $(SRC_DIR)/ft_strlcpy.c \
+	$(SRC_DIR)/ft_strlen.c $(SRC_DIR)/ft_strmapi.c $(SRC_DIR)/ft_strncmp.c $(SRC_DIR)/ft_strndup.c $(SRC_DIR)/ft_strnstr.c $(SRC_DIR)/ft_strrchr.c $(SRC_DIR)/ft_strtrim.c \
+	$(SRC_DIR)/ft_substr.c $(SRC_DIR)/ft_swap.c $(SRC_DIR)/ft_tolower.c $(SRC_DIR)/ft_toupper.c $(SRC_DIR)/get_next_line.c 
 
-# All sources and objects
-SRCS = $(SRC_FILES) $(GNL_SRCS) $(PRINTF_SRCS)
-OBJS = $(SRCS:.c=.o)
+OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	$(AR) $(NAME) $(OBJS)
+$(NAME): $(OBJ)
+	@echo "Creating static library $(NAME)"
+	@ar rcs $(NAME) $(OBJ)
+	@echo "Done"
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) $(HEADER) -c $< -o $@
 
 clean:
-	$(RM) $(OBJS)
+	@echo "Cleaning libft object files"
+	@rm -f $(OBJ)
+	@rm -rf $(OBJ_DIR)
 
 fclean: clean
-	$(RM) $(NAME)
+	@echo "Cleanining $(NAME)"
+	@rm -f $(NAME)
 
 re: fclean all
 
 .PHONY: all clean fclean re
-.SECONDARY: $(OBJS)

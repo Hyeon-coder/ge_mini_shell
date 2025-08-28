@@ -1,78 +1,97 @@
-# Makefile for Minishell
+# **************************************************************************** #
+#																			  #
+#														 :::	  ::::::::	#
+#	Makefile										   :+:	  :+:	:+:	#
+#													 +:+ +:+		 +:+	  #
+#	By: mpierce <mpierce@student.hive.fi>		  +#+  +:+	   +#+		 #
+#												 +#+#+#+#+#+   +#+			#
+#	Created: 2025/03/12 14:45:55 by clu			   #+#	#+#			  #
+#	Updated: 2025/04/18 17:09:58 by mpierce		  ###   ########.fr		#
+#																			  #
+# **************************************************************************** #
 
-# Program name
+# Program Name
 NAME = minishell
 
-# Compiler and flags
-CC = cc
-CFLAGS = -Wall -Wextra -Werror
-# Readline library for prompt
-LDFLAGS = -lreadline
+# Comiler and Flags
+CC 		= cc
+CFLAGS 	= -Wall -Werror -Wextra
 
 # Directories
-SRC_DIR = srcs
-OBJ_DIR = objs
-INC_DIR = includes
-LIBFT_DIR = libft
+SRC_DIR 		= ./src
+EXEC_DIR		= execution/
+EXP_DIR			= parse_input/expander/
+LEX_DIR			= parse_input/lexer/
+PAR_DIR			= parse_input/parser/
+PARSE_DIR		= parse_input/
+UTL_DIR			= utils/
+BLT_DIR			= builtins/
+OBJ_DIR 		= ./obj
+LIBFT_DIR 		= ./libft
 
-# Source files
-SRCS_FILES =	main.c \
-				signals.c \
-				error.c \
-				env/env_utils.c \
-				env/env_init.c \
-				lexer/lexer.c \
-				lexer/lexer_utils.c \
-				parser/parser.c \
-				parser/parser_utils.c \
-				parser/ast_utils.c \
-				expander/expander.c \
-				expander/expander_utils.c \
-				executor/executor.c \
-				executor/execute_simple_cmd.c \
-				executor/execute_pipeline.c \
-				executor/redirect.c \
-				executor/find_path.c \
-				builtins/builtin_cd.c \
-				builtins/builtin_echo.c \
-				builtins/builtin_env.c \
-				builtins/builtin_exit.c \
-				builtins/builtin_export.c \
-				builtins/builtin_pwd.c \
-				builtins/builtin_unset.c \
-				builtins/builtins.c \
-				memory/memory.c
-
-SRCS = $(addprefix $(SRC_DIR)/, $(SRCS_FILES))
-OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
-
-# Libft
+# Libraries
 LIBFT = $(LIBFT_DIR)/libft.a
 
-# Includes
-INCS = -I$(INC_DIR) -I$(LIBFT_DIR)
+# Header files
+HEADERS = -I./include -I$(LIBFT_DIR)/include
+HEADERS_DEP = include/minishell.h
 
-# Rules
-all: $(NAME)
+# Source files and object files
+SRC = \
+	$(SRC_DIR)$(EXEC_DIR)file_handler.c $(SRC_DIR)$(EXEC_DIR)exec_cmds.c $(SRC_DIR)$(EXEC_DIR)exec_master.c \
+	$(SRC_DIR)$(EXEC_DIR)exec_pipeline.c $(SRC_DIR)$(EXEC_DIR)execve.c $(SRC_DIR)$(EXEC_DIR)exec_utils.c \
+	$(SRC_DIR)$(EXEC_DIR)heredoc_utils.c $(SRC_DIR)$(EXEC_DIR)only_redir.c $(SRC_DIR)$(EXP_DIR)expand.c \
+	$(SRC_DIR)$(EXP_DIR)expand_utils.c $(SRC_DIR)$(LEX_DIR)operators.c \
+	$(SRC_DIR)$(LEX_DIR)quotes.c $(SRC_DIR)$(LEX_DIR)lexer.c $(SRC_DIR)$(LEX_DIR)tokens.c \
+	$(SRC_DIR)$(LEX_DIR)words.c $(SRC_DIR)$(PAR_DIR)ast.c $(SRC_DIR)$(EXEC_DIR)execve_utils.c \
+	$(SRC_DIR)$(PAR_DIR)parser.c $(SRC_DIR)$(PARSE_DIR)process_input_utils.c \
+	$(SRC_DIR)$(PARSE_DIR)process_input.c $(SRC_DIR)$(UTL_DIR)error_utils.c $(SRC_DIR)$(UTL_DIR)shlvl.c \
+	$(SRC_DIR)$(UTL_DIR)utils.c $(SRC_DIR)$(UTL_DIR)prompt.c $(SRC_DIR)$(UTL_DIR)free.c $(SRC_DIR)$(UTL_DIR)free_utils.c \
+	$(SRC_DIR)$(UTL_DIR)signals.c $(SRC_DIR)$(BLT_DIR)builtin_utils.c $(SRC_DIR)$(BLT_DIR)cd_utils.c \
+	$(SRC_DIR)$(BLT_DIR)exit.c $(SRC_DIR)$(BLT_DIR)export_utils.c $(SRC_DIR)$(BLT_DIR)cd.c \
+	$(SRC_DIR)$(BLT_DIR)echo.c $(SRC_DIR)$(BLT_DIR)export.c $(SRC_DIR)$(BLT_DIR)misc.c $(SRC_DIR)main.c \
+	$(SRC_DIR)$(PAR_DIR)redirects.c $(SRC_DIR)$(PAR_DIR)validate.c $(SRC_DIR)$(EXEC_DIR)update_env.c \
+	$(SRC_DIR)$(EXP_DIR)retoken.c $(SRC_DIR)$(PAR_DIR)redirects_utils.c $(SRC_DIR)$(PAR_DIR)parser_utils.c \
+	$(SRC_DIR)$(BLT_DIR)extras.c 
+OBJ = $(SRC:$(SRC_DIR)%=$(OBJ_DIR)/%)
+OBJ := $(OBJ:.c=.o)
 
-$(NAME): $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(LDFLAGS) -o $(NAME)
+all: $(LIBFT) $(NAME)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(INCS) -c $< -o $@
+$(NAME): $(OBJ)
+	@echo "Compiling $(NAME) ..."
+	@$(CC) $(CFLAGS) $(OBJ) $(LIBFT) $(HEADERS) -o $(NAME) -lreadline
+	@echo "Done"
 
+# Compile the object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS_DEP)
+	@mkdir -p $(dir $@)
+	@echo "Compiling $<..."
+	@$(CC) $(CFLAGS) $(HEADERS) -c $< -o $@
+
+# Compile the Libft library
 $(LIBFT):
-	@$(MAKE) -C $(LIBFT_DIR)
+	@echo "Compiling Libft..."
+	@make -C $(LIBFT_DIR) --no-print-directory
+	@echo "Done"
 
 clean:
-	@$(MAKE) -C $(LIBFT_DIR) clean
+	@make -C $(LIBFT_DIR) clean --no-print-directory
 	@rm -rf $(OBJ_DIR)
+	@echo "Cleaned up all object files"
 
 fclean: clean
-	@$(MAKE) -C $(LIBFT_DIR) fclean
 	@rm -f $(NAME)
+	@make -C $(LIBFT_DIR) fclean --no-print-directory
+	@echo "Cleaned up $(NAME)"
+	@echo "Cleaned up everything"
 
 re: fclean all
+	@echo "Remade everything"
 
-.PHONY: all clean fclean re
+full: re
+	@make -C $(LIBFT_DIR) clean --no-print-directory
+	@rm -rf $(OBJ_DIR)
+	@echo "Cleaned up all object files"
+
+.PHONY: all clean fclean re full
