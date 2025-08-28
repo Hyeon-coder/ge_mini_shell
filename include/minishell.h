@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/29 01:54:58 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 02:22:35 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,20 +205,16 @@ bool		setup_heredoc(t_ms *ms, t_token *token, t_infile **infile);
 bool		check_heredoc_limit(t_ms *ms);
 
 ////////////////////////////////// Builtins ///////////////////////////////////
-void		bi_exit(t_ms *ms, int ex_code, int error);
-void		ms_error(t_ms *ms, char *msg, int ex_code, int free_msg);
 char		*find_var(t_ms *ms, char **envp, char *name);
-bool		export_var_to_envp(t_ms *ms, char *var);
-void		arr_dup_fail(t_ms *ms, char **arr, int j);
-int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
-void		builtin_pwd(void);
-void		builtin_echo(t_cmd *cmd);
-void		builtin_cd(t_ms *ms, t_cmd *cmd);
-void		builtin_exit(t_ms *ms, t_cmd *cmd);
-void		builtin_env(t_ms *ms, t_cmd *cmd);
-void		builtin_export(t_ms *ms, t_cmd *cmd);
-void		builtin_unset(t_ms *ms, t_cmd *cmd);
 void		set_env_var(t_ms *ms, char *key, char *value);
+void		builtin_cd(t_ms *ms, t_cmd *cmd);
+void		builtin_echo(t_cmd *cmd);
+void		builtin_env(t_ms *ms, t_cmd *cmd);
+void		bi_exit(t_ms *ms, int ex_code, int error);
+void		builtin_exit(t_ms *ms, t_cmd *cmd);
+void		builtin_export(t_ms *ms, t_cmd *cmd);
+void		builtin_pwd(void);
+void		builtin_unset(t_ms *ms, t_cmd *cmd);
 
 ////////////////////////////////// Utils //////////////////////////////////////
 void		*x_malloc(t_ms *ms, size_t size);
@@ -242,8 +238,14 @@ void		update_env(t_ms *ms);
 void		error_join(t_ms *ms, char *name, char *error);
 
 ////////////////////////////////// Executor ///////////////////////////////////
+void		ms_error(t_ms *ms, char *msg, int ex_code, int free_msg);
+void		arr_dup_fail(t_ms *ms, char **arr, int j);
 void		run_executor(t_ms *ms, int i);
+void		builtin_export(t_ms *ms, t_cmd *cmd);
+int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
 char		*get_command_path(t_ms *ms, char *cmd);
+int			handle_output_redirection(t_cmd *cmd);
+void		restore_output(int original_stdout); 
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);

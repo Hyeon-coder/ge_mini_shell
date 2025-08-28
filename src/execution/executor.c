@@ -12,11 +12,6 @@
 
 #include "minishell.h"
 
-static int	is_builtin(char *cmd);
-static void	execute_builtin(t_ms *ms, t_cmd *cmd);
-static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path);
-static void	execute_simple_command(t_ms *ms, t_cmd *cmd);
-
 /*
 ** Checks if the given command is one of the builtins.
 */
@@ -170,4 +165,32 @@ void	builtin_export(t_ms *ms, t_cmd *cmd)
 		free(key);
 		i++;
 	}
+}
+
+/*
+** Executes a single command, handling redirections before execution.
+*/
+static void	execute_simple_command(t_ms *ms, t_cmd *cmd)
+{
+	char	*cmd_path;
+	int		original_stdout;
+
+	original_stdout = handle_output_redirection(cmd);
+	if (original_stdout == -1)
+		return ;
+	if (is_builtin(cmd->full_cmd[0]))
+		execute_builtin(ms, cmd);
+	else
+	{
+		cmd_path = get_command_path(ms, cmd->full_cmd[0]);
+		if (!cmd_path)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->full_cmd[0], 2);
+			ft_putendl_fd(": command not found", 2);
+		}
+		else
+			run_external_cmd(ms, cmd, cmd_path);
+	}
+	restore_output(original_stdout);
 }
