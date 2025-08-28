@@ -48,6 +48,7 @@ SRC = \
 	$(SRC_DIR)$(PAR_DIR)validate.c $(SRC_DIR)$(EXP_DIR)retoken.c $(SRC_DIR)$(PAR_DIR)redirects_utils.c \
 	$(SRC_DIR)$(PAR_DIR)parser_utils.c \
 	$(SRC_DIR)$(EXEC_DIR)executor.c $(SRC_DIR)$(EXEC_DIR)error.c $(SRC_DIR)$(EXEC_DIR)heredoc.c \
+	$(SRC_DIR)$(EXEC_DIR)path.c \
 	$(SRC_DIR)$(BLT_DIR)exit.c $(SRC_DIR)$(BLT_DIR)env_utils.c $(SRC_DIR)$(BLT_DIR)export.c
 	
 OBJ = $(SRC:$(SRC_DIR)%=$(OBJ_DIR)/%)

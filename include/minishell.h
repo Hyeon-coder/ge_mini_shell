@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/29 00:25:34 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 00:31:42 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,6 +236,7 @@ void		error_join(t_ms *ms, char *name, char *error);
 
 ////////////////////////////////// Executor ///////////////////////////////////
 void		run_executor(t_ms *ms, int i);
+char		*get_command_path(t_ms *ms, char *cmd);
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);
