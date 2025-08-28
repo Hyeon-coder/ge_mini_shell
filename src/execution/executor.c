@@ -83,29 +83,6 @@ static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path)
 }
 
 /*
-** Executes a single command, dispatching to builtins or external commands.
-*/
-static void	execute_simple_command(t_ms *ms, t_cmd *cmd)
-{
-	char	*cmd_path;
-
-	if (is_builtin(cmd->full_cmd[0]))
-	{
-		execute_builtin(ms, cmd);
-		return ;
-	}
-	cmd_path = get_command_path(ms, cmd->full_cmd[0]);
-	if (!cmd_path)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd->full_cmd[0], 2);
-		ft_putendl_fd(": command not found", 2);
-		return ;
-	}
-	run_external_cmd(ms, cmd, cmd_path);
-}
-
-/*
 ** Top-level function to start the execution of commands from the AST.
 */
 void	run_executor(t_ms *ms, int i)

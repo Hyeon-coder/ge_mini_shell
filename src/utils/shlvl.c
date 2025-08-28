@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shlvl.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mpierce <mpierce@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:15:11 by mpierce           #+#    #+#             */
-/*   Updated: 2025/05/09 17:36:51 by mpierce          ###   ########.fr       */
+/*   Updated: 2025/08/29 02:28:07 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	shlvl(t_ms *ms)
 	lvlstr = find_var(ms, ms->envp, "SHLVL");
 	if (!lvlstr)
 	{
-		export_var_to_envp(ms, "SHLVL=1");
+		set_env_var(ms, "SHLVL=1", "1");
 		return ;
 	}
 	lvlint = ft_atoi(lvlstr);
@@ -71,6 +71,6 @@ void	shlvl(t_ms *ms)
 	if (!lvlstr)
 		ms_error(ms, "ft_itoa failire", 1, 0);
 	temp = shlvl_join(ms, "SHLVL=", lvlstr);
-	export_var_to_envp(ms, temp);
+	set_env_var(ms, "SHLVL", temp + 6);
 	shlvl_free(temp, lvlstr);
 }
