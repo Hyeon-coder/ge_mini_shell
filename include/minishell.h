@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/28 00:11:19 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 00:25:34 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,29 +205,13 @@ bool		setup_heredoc(t_ms *ms, t_token *token, t_infile **infile);
 bool		check_heredoc_limit(t_ms *ms);
 
 ////////////////////////////////// Builtins ///////////////////////////////////
-int			print_error(t_ms *ms, char *name, char *msg);
+void		bi_exit(t_ms *ms, int ex_code, int error);
+void		ms_error(t_ms *ms, char *msg, int ex_code, int free_msg);
 char		*find_var(t_ms *ms, char **envp, char *name);
 bool		export_var_to_envp(t_ms *ms, char *var);
-int			find_in_envp(t_ms *ms, char **envp, char *var);
-void		bi_exit(t_ms *ms, int ex_code, int error);
-int			parse_cd(t_ms *ms, char **dir);
-int			write_pwd(t_ms *ms);
-void		write_env(t_ms *ms);
-void		unset_envp(t_ms *ms, char *name);
-int			echo(t_ms *ms, char **lines, bool nl, int flags);
-void		dup_envp(t_ms *ms, char **temp, int i, int j);
 void		arr_dup_fail(t_ms *ms, char **arr, int j);
-void		export_print_env(t_ms *ms);
-bool		check_valid_identifier(t_ms *ms, char *name);
-char		*append_var(t_ms *ms, char *var, char *name, int j);
-void		getcwd_error(t_ms *ms, char *s1, char *s2);
-void		run_unset(t_ms *ms, t_cmd *cmd);
-void		oldpwd(t_ms *ms);
-void		run_export(t_ms *ms, char *var, char *name, bool append);
-void		exit_args(t_ms *ms, char **full_cmd, int i);
-void		run_export_args(t_ms *ms, char **full_cmd);
-void		invalid_export(t_ms *ms, char *name);
-void		check_valid_arg_exit(t_ms *ms, char *code);
+int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
+
 
 ////////////////////////////////// Utils //////////////////////////////////////
 void		*x_malloc(t_ms *ms, size_t size);
@@ -251,36 +235,7 @@ void		update_env(t_ms *ms);
 void		error_join(t_ms *ms, char *name, char *error);
 
 ////////////////////////////////// Executor ///////////////////////////////////
-void		ms_error(t_ms *ms, char *msg, int ex_code, int free_msg);
-void		validation(t_ms *ms, t_cmd *cmd);
-void		close_fd(t_ms *ms);
-void		run_execve(t_ms *ms, t_cmd *cmd);
-void		full_error_msg(t_ms *ms, char *s1, char *s2);
-void		parse_cmds(t_ms *ms, t_ast *ast);
-void		run_pipes(t_ms *ms, t_ast *ast);
-void		run_cmd(t_ms *ms, t_cmd *cmd);
-int			handle_infiles(t_ms *ms, t_infile **infile);
-int			handle_outfiles(t_ms *ms, char **outfile, int *append);
-int			handle_heredoc(t_ms *ms, const char *heredoc, char *name, int quo);
-int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
-void		free_heredoc(t_ms *ms);
-void		ft_free_infile(t_infile **array);
-void		run_execve(t_ms *ms, t_cmd *cmd);
 void		run_executor(t_ms *ms, int i);
-void		close_pipes(t_ms *ms);
-int			handle_files(t_ms *ms, t_cmd *cmd);
-char		*heredoc_name(t_ms *ms, int i);
-int			redirect_out_helper(t_ms *ms, char *file, int dir);
-void		run_no_cmd(t_ms *ms, t_ast *ast);
-void		reset_std(t_ms *ms);
-void		close_heredoc_sigint(t_ms *ms, char *name);
-void		heredoc_help(t_ms *ms, char *line, int fd, int quo);
-void		find_exe(t_ms *ms, t_cmd *cmd);
-char		*get_path(t_ms *ms, t_cmd *cmd, char **envp, int i);
-void		next_pipe(t_ms *ms, int last);
-int			readline_break(char *line, int fd);
-char		*get_line(char *temp, char *line);
-void		wait_help(t_ms *ms);
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);
