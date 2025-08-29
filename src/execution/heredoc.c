@@ -6,7 +6,7 @@
 /* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
 /*+#+#+#+#+#+   +#+           */
 /* Created: 2025/08/29 03:20:00 by <your_login>      #+#    #+#             */
-/* Updated: 2025/08/29 09:00:00 by <your_login>     ###   ########.fr       */
+/* Updated: 2025/08/29 09:30:00 by <your_login>     ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ static void	heredoc_sigint_handler(int sig)
 	(void)sig;
 	g_signal = SIGINT;
 	rl_done = 1;
+	close(STDIN_FILENO);
 }
 
 static char	*generate_heredoc_filename(t_ms *ms)
@@ -24,14 +25,13 @@ static char	*generate_heredoc_filename(t_ms *ms)
 	char	*num_str;
 	char	*filename;
 
-	num_str = ft_itoa(ms->heredoc_no);
+	num_str = ft_itoa(ms->heredoc_no++);
 	if (!num_str)
 		ms_error(ms, "ft_itoa failed in heredoc", 1, 0);
 	filename = ft_strjoin(".heredoc_", num_str);
 	free(num_str);
 	if (!filename)
 		ms_error(ms, "ft_strjoin failed in heredoc", 1, 0);
-	ms->heredoc_no++;
 	return (filename);
 }
 
@@ -68,9 +68,9 @@ static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 	while (!rl_done)
 	{
 		line = readline("> ");
-		if (!line || g_signal == SIGINT)
+		if (!line)
 			break ;
-		if (ft_strcmp(line, lim) == 0)
+		if (g_signal == SIGINT || ft_strcmp(line, lim) == 0)
 		{
 			free(line);
 			break ;
@@ -90,7 +90,9 @@ int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 {
 	int		fd;
 	char	*filename;
+	int		stdin_copy;
 
+	stdin_copy = dup(STDIN_FILENO);
 	filename = generate_heredoc_filename(ms);
 	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
@@ -101,6 +103,8 @@ int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 	}
 	heredoc_loop(ms, lim, fd, quo);
 	close(fd);
+	dup2(stdin_copy, STDIN_FILENO);
+	close(stdin_copy);
 	if (ms->heredoc_stop)
 	{
 		unlink(filename);

@@ -1,150 +1,122 @@
 /* ************************************************************************** */
 /* */
 /* :::      ::::::::   */
-/* executor.c                                         :+:      :+:    :+:   */
+/* heredoc.c                                          :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
 /* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/08/29 00:20:00 by <your_login>      #+#    #+#             */
-/* Updated: 2025/08/29 06:40:06 by <your_login>     ###   ########.fr       */
+/*+#+#+#+#+#+   +#+           */
+/* Created: 2025/08/29 03:20:00 by <your_login>      #+#    #+#             */
+/* Updated: 2025/08/29 09:45:00 by <your_login>     ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <termios.h>
 
-static int	is_builtin(char *cmd);
-static void	execute_builtin(t_ms *ms, t_cmd *cmd);
-static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path);
-static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout);
-static void	dispatch_command(t_ms *ms, t_cmd *cmd);
-
-static int	is_builtin(char *cmd)
+static void	heredoc_sigint_handler(int sig)
 {
-	if (!cmd)
-		return (0);
-	if (ft_strcmp(cmd, "echo") == 0 || ft_strcmp(cmd, "cd") == 0
-		|| ft_strcmp(cmd, "pwd") == 0 || ft_strcmp(cmd, "export") == 0
-		|| ft_strcmp(cmd, "unset") == 0 || ft_strcmp(cmd, "env") == 0
-		|| ft_strcmp(cmd, "exit") == 0)
-		return (1);
+	(void)sig;
+	g_signal = SIGINT;
+	close(STDIN_FILENO);
+}
+
+static char	*generate_heredoc_filename(t_ms *ms)
+{
+	char	*num_str;
+	char	*filename;
+
+	num_str = ft_itoa(ms->heredoc_no++);
+	if (!num_str)
+		ms_error(ms, "ft_itoa failed in heredoc", 1, 0);
+	filename = ft_strjoin(".heredoc_", num_str);
+	free(num_str);
+	if (!filename)
+		ms_error(ms, "ft_strjoin failed in heredoc", 1, 0);
+	return (filename);
+}
+
+static void	write_to_heredoc(t_ms *ms, char *line, int fd, int expand)
+{
+	char	*expanded_line;
+	bool	was_expanded;
+
+	if (expand)
+	{
+		was_expanded = false;
+		expanded_line = expand_input(ms, line, &was_expanded);
+		ft_putendl_fd(expanded_line, fd);
+		free(expanded_line);
+	}
+	else
+		ft_putendl_fd(line, fd);
+	free(line);
+}
+
+static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
+{
+	char				*line;
+	struct sigaction	sa_old;
+	struct sigaction	sa_new;
+	struct termios		original_termios;
+	struct termios		new_termios;
+
+	g_signal = 0;
+	tcgetattr(STDIN_FILENO, &original_termios);
+	new_termios = original_termios;
+	new_termios.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
+	ft_memset(&sa_new, 0, sizeof(sa_new));
+	sa_new.sa_handler = heredoc_sigint_handler;
+	sigaction(SIGINT, &sa_new, &sa_old);
+	while (1)
+	{
+		line = readline("> ");
+		if (!line)
+			break ;
+		if (g_signal == SIGINT || ft_strcmp(line, lim) == 0)
+		{
+			free(line);
+			break ;
+		}
+		write_to_heredoc(ms, line, fd, (quo == UNQUOTED));
+	}
+	sigaction(SIGINT, &sa_old, NULL);
+	tcsetattr(STDIN_FILENO, TCSANOW, &original_termios);
+	if (g_signal == SIGINT)
+	{
+		ms->exit_status = 1;
+		ms->heredoc_stop = true;
+	}
 	return (0);
 }
 
-static void	execute_builtin(t_ms *ms, t_cmd *cmd)
+int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 {
-	if (ft_strcmp(cmd->full_cmd[0], "pwd") == 0)
-		builtin_pwd();
-	else if (ft_strcmp(cmd->full_cmd[0], "echo") == 0)
-		builtin_echo(cmd);
-	else if (ft_strcmp(cmd->full_cmd[0], "cd") == 0)
-		builtin_cd(ms, cmd);
-	else if (ft_strcmp(cmd->full_cmd[0], "exit") == 0)
-		builtin_exit(ms, cmd);
-	else if (ft_strcmp(cmd->full_cmd[0], "env") == 0)
-		builtin_env(ms, cmd);
-	else if (ft_strcmp(cmd->full_cmd[0], "export") == 0)
-		builtin_export(ms, cmd);
-	else if (ft_strcmp(cmd->full_cmd[0], "unset") == 0)
-		builtin_unset(ms, cmd);
-}
+	int		fd;
+	char	*filename;
+	int		stdin_copy;
 
-static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path)
-{
-	pid_t	pid;
-	int		status;
-
-	set_noninteractive_signals();
-	pid = fork();
-	if (pid == -1)
+	stdin_copy = dup(STDIN_FILENO);
+	filename = generate_heredoc_filename(ms);
+	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
 	{
-		ft_putstr_fd("minishell: fork: ", 2);
-		ft_putendl_fd(strerror(errno), 2);
-		return ;
+		free(filename);
+		ms_error(ms, "open failed for heredoc", 1, 0);
+		close(stdin_copy);
+		return (1);
 	}
-	if (pid == 0)
+	heredoc_loop(ms, lim, fd, quo);
+	close(fd);
+	dup2(stdin_copy, STDIN_FILENO);
+	close(stdin_copy);
+	if (ms->heredoc_stop)
 	{
-		reset_child_signals();
-		execve(path, cmd->full_cmd, ms->envp);
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd->full_cmd[0], 2);
-		ft_putstr_fd(": ", 2);
-		ft_putendl_fd(strerror(errno), 2);
-		exit(127);
+		unlink(filename);
+		free(filename);
+		return (0);
 	}
-	waitpid(pid, &status, 0);
-	set_interactive_signals();
-	if (WIFEXITED(status))
-		ms->exit_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-		ms->exit_status = 128 + WTERMSIG(status);
-	free(path);
-}
-
-static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout)
-{
-	*og_stdin = handle_input_redirection(cmd);
-	if (*og_stdin == -1)
-		return (false);
-	*og_stdout = handle_output_redirection(cmd);
-	if (*og_stdout == -1)
-	{
-		restore_input(*og_stdin);
-		return (false);
-	}
-	return (true);
-}
-
-static void	dispatch_command(t_ms *ms, t_cmd *cmd)
-{
-	char	*cmd_path;
-
-	if (is_builtin(cmd->full_cmd[0]))
-		execute_builtin(ms, cmd);
-	else
-	{
-		cmd_path = get_command_path(ms, cmd->full_cmd[0]);
-		if (!cmd_path)
-		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->full_cmd[0], 2);
-			ft_putendl_fd(": command not found", 2);
-			ms->exit_status = 127;
-		}
-		else
-			run_external_cmd(ms, cmd, cmd_path);
-	}
-}
-
-void	execute_simple_command(t_ms *ms, t_cmd *cmd)
-{
-	int	original_stdin;
-	int	original_stdout;
-
-	if (!setup_redirections(cmd, &original_stdin, &original_stdout))
-	{
-		ms->exit_status = 1;
-		return ;
-	}
-	if (!cmd->full_cmd || !cmd->full_cmd[0])
-	{
-		restore_input(original_stdin);
-		restore_output(original_stdout);
-		return ;
-	}
-	dispatch_command(ms, cmd);
-	restore_input(original_stdin);
-	restore_output(original_stdout);
-}
-
-void	run_executor(t_ms *ms, t_ast *ast)
-{
-	if (!ast || ms->heredoc_stop)
-		return ;
-	if (ast->type == NODE_PIPE)
-		execute_pipeline(ms, ast);
-	else if (ast->type == NODE_COMMAND)
-	{
-		if (ast->cmd)
-			execute_simple_command(ms, ast->cmd);
-	}
+	free(infile->name);
+	infile->name = filename;
+	return (0);
 }

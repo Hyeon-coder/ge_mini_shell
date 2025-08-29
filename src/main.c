@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 13:18:00 by mpierce           #+#    #+#             */
-/*   Updated: 2025/08/29 07:06:41 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 07:13:10 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,13 +97,13 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	init_ms(&ms, envp);
-	ms.heredoc_stop = false;
 	get_minishell(&ms);
 	shlvl(&ms);
 	set_interactive_signals();
 	get_prompt(&ms);
 	while (true)
 	{
+		ms.heredoc_stop = false;
 		process_input(&ms);
 		get_prompt(&ms);
 		free_structs(&ms);
