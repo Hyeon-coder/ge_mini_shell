@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:38:08 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 22:21:42 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/30 01:24:05 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	setup_heredoc_handlers(struct termios *orig_termios,\
 	struct termios		new_termios;
 
 	g_signal = 0;
+	ft_memset(&new_termios, 0, sizeof(struct termios));
 	tcgetattr(STDIN_FILENO, orig_termios);
 	new_termios = *orig_termios;
 	new_termios.c_lflag &= ~ECHOCTL;

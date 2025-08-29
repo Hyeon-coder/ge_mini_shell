@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:05:44 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 14:15:55 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/30 01:23:20 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,14 @@ static char	*get_target_path(t_ms *ms, t_cmd *cmd)
 		path = find_var(ms, ms->envp, "HOME");
 		if (!path)
 			ft_putendl_fd("minishell: cd: HOME not set", 2);
-		return (path);
+		return (ft_strdup(path));
 	}
 	if (ft_strcmp(path, "-") == 0)
 	{
 		path = find_var(ms, ms->envp, "OLDPWD");
 		if (!path)
 			ft_putendl_fd("minishell: cd: OLDPWD not set", 2);
-		return (path);
+		return (ft_strdup(path));
 	}
 	if (ft_strncmp(path, "~/", 2) == 0)
 		return (expand_tilde_prefix(ms, path));
@@ -87,10 +87,5 @@ void	builtin_cd(t_ms *ms, t_cmd *cmd)
 	}
 	else
 		update_pwd_variables(ms);
-	if (cmd->full_cmd[1] && ft_strncmp(cmd->full_cmd[1], "~/", 2) == 0)
-		free(path);
-	else if (cmd->full_cmd[1] && ft_strcmp(cmd->full_cmd[1], path) != 0)
-		;
-	else if (cmd->full_cmd[1])
-		free(path);
+	free(path);
 }

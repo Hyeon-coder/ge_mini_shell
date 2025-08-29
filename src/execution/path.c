@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 00:32:27 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 00:32:29 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/30 01:21:23 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ static char	*search_in_paths(char **dirs, char *cmd)
 		free(cmd_path);
 		i++;
 	}
+	ft_free_array(dirs);
 	return (NULL);
 }
 
