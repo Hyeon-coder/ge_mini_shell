@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/29 03:17:13 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 03:39:14 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,6 +249,7 @@ int			handle_output_redirection(t_cmd *cmd);
 void		restore_output(int original_stdout);
 int			handle_input_redirection(t_cmd *cmd);
 void		restore_input(int original_stdin);
+int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);

@@ -80,7 +80,38 @@ void	restore_output(int original_stdout)
 }
 
 /*
+** Opens each input file in sequence, closing the previous one.
+** This ensures that only the last redirection is effective.
+** Returns the file descriptor of the last valid file, or -1 on error.
+*/
+static int	process_infile_loop(t_cmd *cmd)
+{
+	int	i;
+	int	fd;
+
+	i = 0;
+	fd = -1;
+	while (cmd->infile[i])
+	{
+		if (fd != -1)
+			close(fd);
+		fd = open(cmd->infile[i]->name, O_RDONLY);
+		if (fd == -1)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->infile[i]->name, 2);
+			ft_putstr_fd(": ", 2);
+			ft_putendl_fd(strerror(errno), 2);
+			return (-1);
+		}
+		i++;
+	}
+	return (fd);
+}
+
+/*
 ** Handles input redirection ('<') by opening the file and duplicating the fd.
+** It processes all infiles but only the last one is used for stdin.
 ** Returns the original stdin fd for later restoration, or -1 on failure.
 */
 int	handle_input_redirection(t_cmd *cmd)
@@ -88,23 +119,20 @@ int	handle_input_redirection(t_cmd *cmd)
 	int	fd;
 	int	original_stdin;
 
-	if (cmd->infile && cmd->infile[0] && cmd->infile[0]->heredoc == 0)
+	if (!cmd->infile || !cmd->infile[0])
+		return (STDIN_FILENO);
+	fd = process_infile_loop(cmd);
+	if (fd == -1)
+		return (-1);
+	original_stdin = dup(STDIN_FILENO);
+	if (dup2(fd, STDIN_FILENO) == -1)
 	{
-		fd = open(cmd->infile[0]->name, O_RDONLY);
-		if (fd == -1)
-		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->infile[0]->name, 2);
-			ft_putstr_fd(": ", 2);
-			ft_putendl_fd(strerror(errno), 2);
-			return (-1);
-		}
-		original_stdin = dup(STDIN_FILENO);
-		dup2(fd, STDIN_FILENO);
 		close(fd);
-		return (original_stdin);
+		// Optional: Add error message for dup2 failure if needed
+		return (-1);
 	}
-	return (STDIN_FILENO);
+	close(fd);
+	return (original_stdin);
 }
 
 /*
