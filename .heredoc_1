@@ -1,5 +1,0 @@
-t output.txt
-
-# 최종 정리
-rm -f test_file.txt output.txt
-exit
