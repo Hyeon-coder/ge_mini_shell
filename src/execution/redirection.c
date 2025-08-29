@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* redirection.c                                      :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/08/29 03:00:13 by <your_login>      #+#    #+#             */
-/* Updated: 2025/08/29 04:15:15 by <your_login>     ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/29 14:18:39 by JuHyeon           #+#    #+#             */
+/*   Updated: 2025/08/29 14:18:51 by JuHyeon          ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
@@ -128,7 +128,6 @@ int	handle_input_redirection(t_cmd *cmd)
 	if (dup2(fd, STDIN_FILENO) == -1)
 	{
 		close(fd);
-		// Optional: Add error message for dup2 failure if needed
 		return (-1);
 	}
 	close(fd);

@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:08:34 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 02:08:35 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 14:11:03 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static void	remove_env_var(t_ms *ms, int idx_to_remove)
 
 	new_envp = malloc(sizeof(char *) * ms->elements);
 	if (!new_envp)
-		return ; // TODO: Proper error handling
+		return ;
 	i = 0;
 	j = 0;
 	while (i < ms->elements)
@@ -75,7 +75,6 @@ void	builtin_unset(t_ms *ms, t_cmd *cmd)
 	i = 1;
 	while (cmd->full_cmd[i])
 	{
-		// TODO: Add validation for the key format.
 		target_idx = find_var_index(ms->envp, cmd->full_cmd[i]);
 		if (target_idx != -1)
 			remove_env_var(ms, target_idx);

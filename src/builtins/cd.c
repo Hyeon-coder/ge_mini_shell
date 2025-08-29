@@ -6,11 +6,24 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:05:44 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 02:05:54 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 14:15:55 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** Handles path expansion for paths starting with '~/'.
+*/
+static char	*expand_tilde_prefix(t_ms *ms, char *path)
+{
+	char	*home;
+
+	home = find_var(ms, ms->envp, "HOME");
+	if (!home)
+		return (NULL);
+	return (ft_strjoin(home, path + 1));
+}
 
 /*
 ** Determines the target path for the 'cd' command based on its arguments.
@@ -19,7 +32,6 @@
 static char	*get_target_path(t_ms *ms, t_cmd *cmd)
 {
 	char	*path;
-	char	*home;
 
 	path = cmd->full_cmd[1];
 	if (!path || ft_strcmp(path, "~") == 0)
@@ -37,12 +49,7 @@ static char	*get_target_path(t_ms *ms, t_cmd *cmd)
 		return (path);
 	}
 	if (ft_strncmp(path, "~/", 2) == 0)
-	{
-		home = find_var(ms, ms->envp, "HOME");
-		if (!home)
-			return (NULL);
-		return (ft_strjoin(home, path + 1));
-	}
+		return (expand_tilde_prefix(ms, path));
 	return (ft_strdup(path));
 }
 

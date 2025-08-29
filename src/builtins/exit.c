@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* exit.c                                             :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/08/29/ 01:20:00 by <your_login>      #+#    #+#             */
-/* Updated: 2025/08/29/ 01:20:02 by <your_login>     ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/29 14:12:20 by JuHyeon           #+#    #+#             */
+/*   Updated: 2025/08/29 14:12:40 by JuHyeon          ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
@@ -18,8 +18,7 @@
 void	bi_exit(t_ms *ms, int ex_code, int error)
 {
 	(void)error;
-	// TODO: Add free_ms(ms) here later to prevent memory leaks.
-	if (ms) // Placeholder to use ms
+	if (ms)
 		ft_putendl_fd("exit", 2);
 	exit(ex_code);
 }

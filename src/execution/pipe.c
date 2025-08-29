@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* pipe.c                                             :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
-/*+#+#+#+#+#+   +#+           */
-/* Created: 2025/08/29 05:00:00 by <your_login>      #+#    #+#             */
-/* Updated: 2025/08/29 05:30:00 by <your_login>     ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipe.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/29 14:17:39 by JuHyeon           #+#    #+#             */
+/*   Updated: 2025/08/29 14:17:52 by JuHyeon          ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
@@ -31,7 +31,6 @@ static void	child_process_routine(t_ms *ms, t_ast *node, int in_fd, int out_fd)
 		execute_simple_command(ms, node->cmd);
 	exit(ms->exit_status);
 }
-
 
 static void	wait_for_children(t_ms *ms, pid_t last_pid)
 {
