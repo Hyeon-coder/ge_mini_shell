@@ -6,11 +6,12 @@
 /* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
 /*+#+#+#+#+#+   +#+           */
 /* Created: 2025/08/29 03:20:00 by <your_login>      #+#    #+#             */
-/* Updated: 2025/08/29 09:30:00 by <your_login>     ###   ########.fr       */
+/* Updated: 2025/08/29 09:45:00 by <your_login>     ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <termios.h>
 
 static void	heredoc_sigint_handler(int sig)
 {
@@ -55,13 +56,17 @@ static void	write_to_heredoc(t_ms *ms, char *line, int fd, int expand)
 static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 {
 	char				*line;
-	bool				should_expand;
 	struct sigaction	sa_old;
 	struct sigaction	sa_new;
+	struct termios		original_termios;
+	struct termios		new_termios;
 
-	should_expand = (quo == UNQUOTED);
 	g_signal = 0;
 	rl_done = 0;
+	tcgetattr(STDIN_FILENO, &original_termios);
+	new_termios = original_termios;
+	new_termios.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
 	ft_memset(&sa_new, 0, sizeof(sa_new));
 	sa_new.sa_handler = heredoc_sigint_handler;
 	sigaction(SIGINT, &sa_new, &sa_old);
@@ -75,9 +80,10 @@ static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 			free(line);
 			break ;
 		}
-		write_to_heredoc(ms, line, fd, should_expand);
+		write_to_heredoc(ms, line, fd, (quo == UNQUOTED));
 	}
 	sigaction(SIGINT, &sa_old, NULL);
+	tcsetattr(STDIN_FILENO, TCSANOW, &original_termios);
 	if (g_signal == SIGINT)
 	{
 		ms->exit_status = 1;
@@ -99,6 +105,7 @@ int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 	{
 		free(filename);
 		ms_error(ms, "open failed for heredoc", 1, 0);
+		close(stdin_copy);
 		return (1);
 	}
 	heredoc_loop(ms, lim, fd, quo);
