@@ -57,7 +57,6 @@ static void	wait_for_children(t_ms *ms, pid_t last_pid)
 		;
 }
 
-// ... execute_pipeline 함수는 동일 ...
 void	execute_pipeline(t_ms *ms, t_ast *ast)
 {
 	int		pipe_fds[2];

@@ -4,13 +4,20 @@
 /* heredoc.c                                          :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
 /* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
-/* +#+           */
+/*+#+#+#+#+#+   +#+           */
 /* Created: 2025/08/29 03:20:00 by <your_login>      #+#    #+#             */
-/* Updated: 2025/08/29 03:45:00 by <your_login>     ###   ########.fr       */
+/* Updated: 2025/08/29 08:30:00 by <your_login>     ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static void	heredoc_sigint_handler(int sig)
+{
+	(void)sig;
+	g_signal = SIGINT;
+	rl_done = 1;
+}
 
 static char	*generate_heredoc_filename(t_ms *ms)
 {
@@ -45,32 +52,37 @@ static void	write_to_heredoc(t_ms *ms, char *line, int fd, int expand)
 	free(line);
 }
 
-
 static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 {
-	char	*line;
-	bool	should_expand;
+	char				*line;
+	bool				should_expand;
+	struct sigaction	sa_old;
+	struct sigaction	sa_new;
 
 	should_expand = (quo == UNQUOTED);
 	g_signal = 0;
-	while (1)
+	rl_done = 0;
+	ft_memset(&sa_new, 0, sizeof(sa_new));
+	sa_new.sa_handler = heredoc_sigint_handler;
+	sigaction(SIGINT, &sa_new, &sa_old);
+	while (!rl_done)
 	{
 		line = readline("> ");
-		if (!line)
-		{
-			if (g_signal == SIGINT)
-			{
-				ms->exit_status = 1;
-				return (1);
-			}
+		if (!line || g_signal == SIGINT)
 			break ;
-		}
 		if (ft_strcmp(line, lim) == 0)
 		{
 			free(line);
 			break ;
 		}
 		write_to_heredoc(ms, line, fd, should_expand);
+	}
+	sigaction(SIGINT, &sa_old, NULL);
+	if (g_signal == SIGINT)
+	{
+		ms->exit_status = 1;
+		ft_putstr_fd("\n", STDERR_FILENO);
+		return (1);
 	}
 	return (0);
 }
