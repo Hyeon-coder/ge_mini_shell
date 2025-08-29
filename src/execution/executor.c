@@ -4,9 +4,9 @@
 /* executor.c                                         :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
 /* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
-/*+#+#+#+#+#+   +#+           */
+/* +#+#+#+#+#+   +#+           */
 /* Created: 2025/08/29 00:20:00 by <your_login>      #+#    #+#             */
-/* Updated: 2025/08/29 04:45:00 by <your_login>     ###   ########.fr       */
+/* Updated: 2025/08/29 06:40:06 by <your_login>     ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -18,9 +18,6 @@ static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path);
 static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout);
 static void	dispatch_command(t_ms *ms, t_cmd *cmd);
 
-/*
-** Checks if the given command is one of the builtins.
-*/
 static int	is_builtin(char *cmd)
 {
 	if (!cmd)
@@ -33,9 +30,6 @@ static int	is_builtin(char *cmd)
 	return (0);
 }
 
-/*
-** Dispatches and executes the appropriate builtin command.
-*/
 static void	execute_builtin(t_ms *ms, t_cmd *cmd)
 {
 	if (ft_strcmp(cmd->full_cmd[0], "pwd") == 0)
@@ -54,14 +48,12 @@ static void	execute_builtin(t_ms *ms, t_cmd *cmd)
 		builtin_unset(ms, cmd);
 }
 
-/*
-** Creates a child process to execute an external command using execve.
-*/
 static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path)
 {
 	pid_t	pid;
 	int		status;
 
+	set_noninteractive_signals();
 	pid = fork();
 	if (pid == -1)
 	{
@@ -71,6 +63,7 @@ static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path)
 	}
 	if (pid == 0)
 	{
+		reset_child_signals();
 		execve(path, cmd->full_cmd, ms->envp);
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd->full_cmd[0], 2);
@@ -79,15 +72,14 @@ static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path)
 		exit(127);
 	}
 	waitpid(pid, &status, 0);
+	set_interactive_signals();
 	if (WIFEXITED(status))
 		ms->exit_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		ms->exit_status = 128 + WTERMSIG(status);
 	free(path);
 }
 
-/*
-** Sets up both input and output redirections for a command.
-** Returns true on success, false on failure.
-*/
 static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout)
 {
 	*og_stdin = handle_input_redirection(cmd);
@@ -102,9 +94,6 @@ static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout)
 	return (true);
 }
 
-/*
-** Decides whether to run a builtin or an external command.
-*/
 static void	dispatch_command(t_ms *ms, t_cmd *cmd)
 {
 	char	*cmd_path;
@@ -126,10 +115,6 @@ static void	dispatch_command(t_ms *ms, t_cmd *cmd)
 	}
 }
 
-/*
-** Executes a single command, handling redirections before execution.
-** This function is no longer static so it can be called from pipe.c
-*/
 void	execute_simple_command(t_ms *ms, t_cmd *cmd)
 {
 	int	original_stdin;
@@ -151,11 +136,6 @@ void	execute_simple_command(t_ms *ms, t_cmd *cmd)
 	restore_output(original_stdout);
 }
 
-
-/*
-** Top-level function to start the execution of commands from the AST.
-** It recursively traverses the AST.
-*/
 void	run_executor(t_ms *ms, t_ast *ast)
 {
 	if (!ast)

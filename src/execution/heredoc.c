@@ -45,17 +45,26 @@ static void	write_to_heredoc(t_ms *ms, char *line, int fd, int expand)
 	free(line);
 }
 
+
 static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 {
 	char	*line;
 	bool	should_expand;
 
 	should_expand = (quo == UNQUOTED);
+	g_signal = 0;
 	while (1)
 	{
 		line = readline("> ");
 		if (!line)
+		{
+			if (g_signal == SIGINT)
+			{
+				ms->exit_status = 1;
+				return (1);
+			}
 			break ;
+		}
 		if (ft_strcmp(line, lim) == 0)
 		{
 			free(line);

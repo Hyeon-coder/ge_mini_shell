@@ -1,11 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   echo.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/29 05:43:44 by JuHyeon           #+#    #+#             */
+/*   Updated: 2025/08/29 05:43:45 by JuHyeon          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "minishell.h"
 
-/*
-** Executes the 'echo' builtin command.
-** Prints the arguments to standard output.
-** Handles the '-n' option to suppress the trailing newline.
-*/
 void	builtin_echo(t_cmd *cmd)
 {
 	int		i;
@@ -13,7 +19,7 @@ void	builtin_echo(t_cmd *cmd)
 
 	newline = true;
 	i = 1;
-	if (cmd->full_cmd[i] && ft_strcmp(cmd->full_cmd[i], "-n") == 0)
+	while (cmd->full_cmd[i] && ft_strcmp(cmd->full_cmd[i], "-n") == 0)
 	{
 		newline = false;
 		i++;

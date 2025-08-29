@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mpierce <mpierce@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 13:18:00 by mpierce           #+#    #+#             */
-/*   Updated: 2025/05/22 14:10:47 by mpierce          ###   ########.fr       */
+/*   Updated: 2025/08/29 05:06:45 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int	main(int argc, char **argv, char **envp)
 	init_ms(&ms, envp);
 	get_minishell(&ms);
 	shlvl(&ms);
-	set_signals();
+	set_interactive_signals();
 	get_prompt(&ms);
 	while (true)
 	{

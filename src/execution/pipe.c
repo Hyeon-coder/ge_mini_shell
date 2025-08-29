@@ -14,6 +14,7 @@
 
 static void	child_process_routine(t_ms *ms, t_ast *node, int in_fd, int out_fd)
 {
+	reset_child_signals();
 	if (in_fd != STDIN_FILENO)
 	{
 		dup2(in_fd, STDIN_FILENO);
@@ -31,10 +32,12 @@ static void	child_process_routine(t_ms *ms, t_ast *node, int in_fd, int out_fd)
 	exit(ms->exit_status);
 }
 
+
 static void	wait_for_children(t_ms *ms, pid_t last_pid)
 {
 	int	status;
 	int	exit_code;
+	int	sig;
 
 	waitpid(last_pid, &status, 0);
 	if (WIFEXITED(status))
@@ -44,13 +47,17 @@ static void	wait_for_children(t_ms *ms, pid_t last_pid)
 	}
 	else if (WIFSIGNALED(status))
 	{
-		exit_code = 128 + WTERMSIG(status);
+		sig = WTERMSIG(status);
+		exit_code = 128 + sig;
 		ms->exit_status = exit_code;
+		if (sig == SIGINT)
+			ft_putstr_fd("\n", STDERR_FILENO);
 	}
 	while (wait(NULL) > 0)
 		;
 }
 
+// ... execute_pipeline 함수는 동일 ...
 void	execute_pipeline(t_ms *ms, t_ast *ast)
 {
 	int		pipe_fds[2];
@@ -58,6 +65,7 @@ void	execute_pipeline(t_ms *ms, t_ast *ast)
 	int		in_fd;
 
 	in_fd = STDIN_FILENO;
+	set_noninteractive_signals();
 	while (ast->type == NODE_PIPE)
 	{
 		pipe(pipe_fds);
@@ -76,4 +84,5 @@ void	execute_pipeline(t_ms *ms, t_ast *ast)
 	if (in_fd != STDIN_FILENO)
 		close(in_fd);
 	wait_for_children(ms, pid);
+	set_interactive_signals();
 }

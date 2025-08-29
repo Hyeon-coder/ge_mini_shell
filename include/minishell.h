@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/29 04:09:16 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 05:03:58 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,24 +241,20 @@ void		error_join(t_ms *ms, char *name, char *error);
 void		ms_error(t_ms *ms, char *msg, int ex_code, int free_msg);
 void		arr_dup_fail(t_ms *ms, char **arr, int j);
 void		run_executor(t_ms *ms, t_ast *ast);
-void		execute_simple_command(t_ms *ms, t_cmd *cmd);
 void		execute_pipeline(t_ms *ms, t_ast *ast);
-void		builtin_export(t_ms *ms, t_cmd *cmd);
+void		execute_simple_command(t_ms *ms, t_cmd *cmd);
 int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
 char		*get_command_path(t_ms *ms, char *cmd);
 int			handle_output_redirection(t_cmd *cmd);
 void		restore_output(int original_stdout);
 int			handle_input_redirection(t_cmd *cmd);
 void		restore_input(int original_stdin);
-int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);
-void		handle_signal(int sig);
-int			heredoc_sigint(void);
 t_ms		*get_minishell(t_ms *ms);
-void		set_signals(void);
-void		reset_signals(void);
-void		hold_signals(void);
+void		set_interactive_signals(void);
+void		set_noninteractive_signals(void);
+void		reset_child_signals(void);
 
 #endif
