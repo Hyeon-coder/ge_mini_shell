@@ -4,13 +4,19 @@
 /* executor.c                                         :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
 /* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
+/*+#+#+#+#+#+   +#+           */
 /* Created: 2025/08/29 00:20:00 by <your_login>      #+#    #+#             */
-/* Updated: 2025/08/29 00:55:15 by <your_login>     ###   ########.fr       */
+/* Updated: 2025/08/29 04:45:00 by <your_login>     ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static int	is_builtin(char *cmd);
+static void	execute_builtin(t_ms *ms, t_cmd *cmd);
+static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path);
+static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout);
+static void	dispatch_command(t_ms *ms, t_cmd *cmd);
 
 /*
 ** Checks if the given command is one of the builtins.
@@ -32,7 +38,6 @@ static int	is_builtin(char *cmd)
 */
 static void	execute_builtin(t_ms *ms, t_cmd *cmd)
 {
-	(void)ms;
 	if (ft_strcmp(cmd->full_cmd[0], "pwd") == 0)
 		builtin_pwd();
 	else if (ft_strcmp(cmd->full_cmd[0], "echo") == 0)
@@ -47,12 +52,6 @@ static void	execute_builtin(t_ms *ms, t_cmd *cmd)
 		builtin_export(ms, cmd);
 	else if (ft_strcmp(cmd->full_cmd[0], "unset") == 0)
 		builtin_unset(ms, cmd);
-	else
-	{
-		// TODO: Call the other actual builtin functions.
-		ft_putstr_fd("This is a builtin command: ", 1);
-		ft_putendl_fd(cmd->full_cmd[0], 1);
-	}
 }
 
 /*
@@ -83,78 +82,30 @@ static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path)
 }
 
 /*
-** Top-level function to start the execution of commands from the AST.
+** Sets up both input and output redirections for a command.
+** Returns true on success, false on failure.
 */
-void	run_executor(t_ms *ms, int i)
+static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout)
 {
-	(void)i;
-	if (!ms || !ms->ast)
-		return ;
-	if (ms->ast->type == NODE_COMMAND)
+	*og_stdin = handle_input_redirection(cmd);
+	if (*og_stdin == -1)
+		return (false);
+	*og_stdout = handle_output_redirection(cmd);
+	if (*og_stdout == -1)
 	{
-		if (ms->ast->cmd && ms->ast->cmd->full_cmd)
-			execute_simple_command(ms, ms->ast->cmd);
+		restore_input(*og_stdin);
+		return (false);
 	}
-	// TODO: Handle NODE_PIPE here.
-}
-
-static void	print_exported_vars(t_ms *ms)
-{
-	int	i;
-
-	i = 0;
-	// TODO: Implement sorting for `export` output to match bash.
-	while (ms->envp[i])
-	{
-		ft_putstr_fd("declare -x ", 1);
-		ft_putendl_fd(ms->envp[i], 1);
-		i++;
-	}
+	return (true);
 }
 
 /*
-** Executes the 'export' builtin command.
-** Adds or updates environment variables.
-** With no arguments, it prints all environment variables.
+** Decides whether to run a builtin or an external command.
 */
-void	builtin_export(t_ms *ms, t_cmd *cmd)
-{
-	char	*var;
-	char	*key;
-	int		i;
-	int		key_len;
-
-	if (!cmd->full_cmd[1])
-	{
-		print_exported_vars(ms);
-		return ;
-	}
-	i = 1;
-	while (cmd->full_cmd[i])
-	{
-		var = cmd->full_cmd[i];
-		key_len = 0;
-		while (var[key_len] && var[key_len] != '=')
-			key_len++;
-		key = ft_substr(var, 0, key_len);
-		// TODO: Add proper validation for key (e.g., must be valid identifier)
-		set_env_var(ms, key, find_var(ms, (char *[]){var, NULL}, key));
-		free(key);
-		i++;
-	}
-}
-
-/*
-** Executes a single command, handling redirections before execution.
-*/
-static void	execute_simple_command(t_ms *ms, t_cmd *cmd)
+static void	dispatch_command(t_ms *ms, t_cmd *cmd)
 {
 	char	*cmd_path;
-	int		original_stdout;
 
-	original_stdout = handle_output_redirection(cmd);
-	if (original_stdout == -1)
-		return ;
 	if (is_builtin(cmd->full_cmd[0]))
 		execute_builtin(ms, cmd);
 	else
@@ -169,5 +120,36 @@ static void	execute_simple_command(t_ms *ms, t_cmd *cmd)
 		else
 			run_external_cmd(ms, cmd, cmd_path);
 	}
+}
+
+/*
+** Executes a single command, handling redirections before execution.
+*/
+static void	execute_simple_command(t_ms *ms, t_cmd *cmd)
+{
+	int	original_stdin;
+	int	original_stdout;
+
+	if (!setup_redirections(cmd, &original_stdin, &original_stdout))
+		return ;
+	dispatch_command(ms, cmd);
+	restore_input(original_stdin);
 	restore_output(original_stdout);
+}
+
+/*
+** Top-level function to start the execution of commands from the AST.
+** It recursively traverses the AST.
+*/
+void	run_executor(t_ms *ms, t_ast *ast)
+{
+	if (!ast)
+		return ;
+	if (ast->type == NODE_PIPE)
+		execute_pipe(ms, ast);
+	else if (ast->type == NODE_COMMAND)
+	{
+		if (ast->cmd && ast->cmd->full_cmd)
+			execute_simple_command(ms, ast->cmd);
+	}
 }

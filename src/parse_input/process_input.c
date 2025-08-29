@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_input.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clu <clu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:54:23 by clu               #+#    #+#             */
-/*   Updated: 2025/05/19 00:41:29 by clu              ###   ########.fr       */
+/*   Updated: 2025/08/29 03:18:21 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static void	parse_and_execute(t_ms *ms)
 		ft_putstr_fd(HEREDOC_LIM, STDERR_FILENO);
 		return ;
 	}
-	run_executor(ms, -1);
+	run_executor(ms, ms->ast);
 }
 
 /*
