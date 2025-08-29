@@ -6,33 +6,38 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:32 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 17:36:33 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/30 00:49:23 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path);
 static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout);
 static void	dispatch_command(t_ms *ms, t_cmd *cmd);
 
-static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path)
+static void	run_external_cmd(t_ms *ms, t_cmd *cmd)
 {
 	pid_t	pid;
+	char 	*path;
 
 	set_noninteractive_signals();
 	pid = fork();
 	if (pid == -1)
-	{
-		ft_putstr_fd("minishell: fork: ", 2);
-		ft_putendl_fd(strerror(errno), 2);
 		return ;
-	}
 	if (pid == 0)
-		execute_child_process(ms, cmd, path);
+	{
+		path = get_command_path(ms, cmd->full_cmd[0]);
+		if (!path)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->full_cmd[0], 2);
+			ft_putendl_fd(": command not found", 2);
+			exit(127);
+		}
+		execute_child_process(ms, cmd, path); 
+	}
 	wait_for_child_process(ms, pid);
 	set_interactive_signals();
-	free(path);
 }
 
 static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout)
@@ -51,23 +56,10 @@ static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout)
 
 static void	dispatch_command(t_ms *ms, t_cmd *cmd)
 {
-	char	*cmd_path;
-
 	if (is_builtin(cmd->full_cmd[0]))
 		execute_builtin(ms, cmd);
 	else
-	{
-		cmd_path = get_command_path(ms, cmd->full_cmd[0]);
-		if (!cmd_path)
-		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->full_cmd[0], 2);
-			ft_putendl_fd(": command not found", 2);
-			ms->exit_status = 127;
-		}
-		else
-			run_external_cmd(ms, cmd, cmd_path);
-	}
+		run_external_cmd(ms, cmd);
 }
 
 void	execute_simple_command(t_ms *ms, t_cmd *cmd)

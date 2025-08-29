@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:17:39 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 14:17:52 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/30 01:04:20 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,10 @@ void	execute_pipeline(t_ms *ms, t_ast *ast)
 		pipe(pipe_fds);
 		pid = fork();
 		if (pid == 0)
+		{
+            close(pipe_fds[0]);
 			child_process_routine(ms, ast->left, in_fd, pipe_fds[1]);
+        }
 		close(pipe_fds[1]);
 		if (in_fd != STDIN_FILENO)
 			close(in_fd);

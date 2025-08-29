@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:41 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 17:36:44 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/30 00:50:13 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,12 @@ void	execute_child_process(t_ms *ms, t_cmd *cmd, char *path)
 {
 	reset_child_signals();
 	execve(path, cmd->full_cmd, ms->envp);
+    free(path);
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(cmd->full_cmd[0], 2);
 	ft_putstr_fd(": ", 2);
 	ft_putendl_fd(strerror(errno), 2);
-	exit(127);
+	exit(126);
 }
 
 void	wait_for_child_process(t_ms *ms, pid_t pid)

@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:53:24 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 22:27:48 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/30 00:51:02 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ void	heredoc_sigint_handler(int sig)
 {
 	(void)sig;
 	g_signal = SIGINT;
-	ioctl(STDIN_FILENO, TIOCSTI, "\n");
-	rl_replace_line("", 0);
 	rl_on_new_line();
+	rl_replace_line("", 0);
+    rl_redisplay();
 }
 
 static void	write_to_heredoc(t_ms *ms, char *line, int fd, int expand)
