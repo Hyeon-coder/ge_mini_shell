@@ -138,7 +138,7 @@ void	execute_simple_command(t_ms *ms, t_cmd *cmd)
 
 void	run_executor(t_ms *ms, t_ast *ast)
 {
-	if (!ast)
+	if (!ast || ms->heredoc_stop)
 		return ;
 	if (ast->type == NODE_PIPE)
 		execute_pipeline(ms, ast);

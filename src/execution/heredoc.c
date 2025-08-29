@@ -6,7 +6,7 @@
 /* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
 /*+#+#+#+#+#+   +#+           */
 /* Created: 2025/08/29 03:20:00 by <your_login>      #+#    #+#             */
-/* Updated: 2025/08/29 08:30:00 by <your_login>     ###   ########.fr       */
+/* Updated: 2025/08/29 09:00:00 by <your_login>     ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -81,8 +81,7 @@ static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 	if (g_signal == SIGINT)
 	{
 		ms->exit_status = 1;
-		ft_putstr_fd("\n", STDERR_FILENO);
-		return (1);
+		ms->heredoc_stop = true;
 	}
 	return (0);
 }
@@ -100,14 +99,14 @@ int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 		ms_error(ms, "open failed for heredoc", 1, 0);
 		return (1);
 	}
-	if (heredoc_loop(ms, lim, fd, quo))
+	heredoc_loop(ms, lim, fd, quo);
+	close(fd);
+	if (ms->heredoc_stop)
 	{
-		close(fd);
 		unlink(filename);
 		free(filename);
-		return (1);
+		return (0);
 	}
-	close(fd);
 	free(infile->name);
 	infile->name = filename;
 	return (0);
