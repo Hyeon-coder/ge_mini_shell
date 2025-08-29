@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/29 18:00:51 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 22:24:20 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,12 @@
 # define MINISHELL_H
 
 # define _XOPEN_SOURCE 700
+# define _DEFAULT_SOURCE
 
 # include "libft.h"
 # include <stdbool.h>
 # include <sys/wait.h>
+# include <sys/ioctl.h>
 # include <fcntl.h>
 # include <stdio.h>
 # include <readline/readline.h>
@@ -255,9 +257,14 @@ void		wait_for_child_process(t_ms *ms, pid_t pid);
 int			is_builtin(char *cmd);
 void		execute_builtin(t_ms *ms, t_cmd *cmd);
 int			process_infile_loop(t_cmd *cmd);
-int			finalize_heredoc(t_ms *ms, t_infile *infile, \
+int			finalize_heredoc(t_ms *ms, t_infile *infile,\
 				char *filename, int stdin_copy);
 int			open_heredoc_file(char **filename, t_ms *ms);
+void		heredoc_sigint_handler(int sig);
+void		setup_heredoc_handlers(struct termios *orig_termios,\
+				struct sigaction *sa_old);
+void		restore_handlers(struct termios *orig_termios,\
+				struct sigaction *sa_old);	
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);

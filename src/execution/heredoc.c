@@ -6,14 +6,13 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:53:24 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 18:01:55 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 22:27:48 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <sys/ioctl.h>
 
-static void	heredoc_sigint_handler(int sig)
+void	heredoc_sigint_handler(int sig)
 {
 	(void)sig;
 	g_signal = SIGINT;
@@ -43,28 +42,20 @@ static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 {
 	char				*line;
 	struct sigaction	sa_old;
-	struct sigaction	sa_new;
 	struct termios		orig_termios;
 
-	g_signal = 0;
-	tcgetattr(STDIN_FILENO, &orig_termios);
-	ft_memset(&sa_new, 0, sizeof(sa_new));
-	sa_new.sa_handler = heredoc_sigint_handler;
-	sigaction(SIGINT, &sa_new, &sa_old);
+	setup_heredoc_handlers(&orig_termios, &sa_old);
 	while (1)
 	{
 		line = readline("> ");
-		if (g_signal == SIGINT)
-			break ;
-		if (!line || ft_strcmp(line, lim) == 0)
+		if (g_signal == SIGINT || !line || ft_strcmp(line, lim) == 0)
 		{
 			free(line);
 			break ;
 		}
 		write_to_heredoc(ms, line, fd, (quo == UNQUOTED));
 	}
-	sigaction(SIGINT, &sa_old, NULL);
-	tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
+	restore_handlers(&orig_termios, &sa_old);
 	if (g_signal == SIGINT)
 	{
 		ms->exit_status = 1;
