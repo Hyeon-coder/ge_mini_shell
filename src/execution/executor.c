@@ -60,6 +60,7 @@ static void	execute_builtin(t_ms *ms, t_cmd *cmd)
 static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path)
 {
 	pid_t	pid;
+	int		status;
 
 	pid = fork();
 	if (pid == -1)
@@ -77,7 +78,9 @@ static void	run_external_cmd(t_ms *ms, t_cmd *cmd, char *path)
 		ft_putendl_fd(strerror(errno), 2);
 		exit(127);
 	}
-	waitpid(pid, NULL, 0);
+	waitpid(pid, &status, 0);
+	if (WIFEXITED(status))
+		ms->exit_status = WEXITSTATUS(status);
 	free(path);
 }
 
@@ -116,6 +119,7 @@ static void	dispatch_command(t_ms *ms, t_cmd *cmd)
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(cmd->full_cmd[0], 2);
 			ft_putendl_fd(": command not found", 2);
+			ms->exit_status = 127;
 		}
 		else
 			run_external_cmd(ms, cmd, cmd_path);
@@ -124,18 +128,29 @@ static void	dispatch_command(t_ms *ms, t_cmd *cmd)
 
 /*
 ** Executes a single command, handling redirections before execution.
+** This function is no longer static so it can be called from pipe.c
 */
-static void	execute_simple_command(t_ms *ms, t_cmd *cmd)
+void	execute_simple_command(t_ms *ms, t_cmd *cmd)
 {
 	int	original_stdin;
 	int	original_stdout;
 
 	if (!setup_redirections(cmd, &original_stdin, &original_stdout))
+	{
+		ms->exit_status = 1;
 		return ;
+	}
+	if (!cmd->full_cmd || !cmd->full_cmd[0])
+	{
+		restore_input(original_stdin);
+		restore_output(original_stdout);
+		return ;
+	}
 	dispatch_command(ms, cmd);
 	restore_input(original_stdin);
 	restore_output(original_stdout);
 }
+
 
 /*
 ** Top-level function to start the execution of commands from the AST.
@@ -146,10 +161,10 @@ void	run_executor(t_ms *ms, t_ast *ast)
 	if (!ast)
 		return ;
 	if (ast->type == NODE_PIPE)
-		execute_pipe(ms, ast);
+		execute_pipeline(ms, ast);
 	else if (ast->type == NODE_COMMAND)
 	{
-		if (ast->cmd && ast->cmd->full_cmd)
+		if (ast->cmd)
 			execute_simple_command(ms, ast->cmd);
 	}
 }

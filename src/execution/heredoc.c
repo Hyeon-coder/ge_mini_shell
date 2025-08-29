@@ -4,7 +4,7 @@
 /* heredoc.c                                          :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
 /* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
+/* +#+           */
 /* Created: 2025/08/29 03:20:00 by <your_login>      #+#    #+#             */
 /* Updated: 2025/08/29 03:45:00 by <your_login>     ###   ########.fr       */
 /* */
@@ -31,10 +31,12 @@ static char	*generate_heredoc_filename(t_ms *ms)
 static void	write_to_heredoc(t_ms *ms, char *line, int fd, int expand)
 {
 	char	*expanded_line;
+	bool	was_expanded;
 
 	if (expand)
 	{
-		expanded_line = expand_input(ms, line, NULL);
+		was_expanded = false;
+		expanded_line = expand_input(ms, line, &was_expanded);
 		ft_putendl_fd(expanded_line, fd);
 		free(expanded_line);
 	}

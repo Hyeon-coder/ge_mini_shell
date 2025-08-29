@@ -4,51 +4,76 @@
 /* pipe.c                                             :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
 /* By: <your_login> <your_login@student.42.fr>    +#+  +:+       +#+        */
-/* +#+           */
+/*+#+#+#+#+#+   +#+           */
 /* Created: 2025/08/29 05:00:00 by <your_login>      #+#    #+#             */
-/* Updated: 2025/08/29 05:00:02 by <your_login>     ###   ########.fr       */
+/* Updated: 2025/08/29 05:30:00 by <your_login>     ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	execute_pipe_child(t_ms *ms, t_ast *ast_node, int p_fds[2], int side)
+static void	child_process_routine(t_ms *ms, t_ast *node, int in_fd, int out_fd)
 {
-	if (side == 0) // Left child (writes to pipe)
+	if (in_fd != STDIN_FILENO)
 	{
-		close(p_fds[0]);
-		dup2(p_fds[1], STDOUT_FILENO);
-		close(p_fds[1]);
+		dup2(in_fd, STDIN_FILENO);
+		close(in_fd);
 	}
-	else // Right child (reads from pipe)
+	if (out_fd != STDOUT_FILENO)
 	{
-		close(p_fds[1]);
-		dup2(p_fds[0], STDIN_FILENO);
-		close(p_fds[0]);
+		dup2(out_fd, STDOUT_FILENO);
+		close(out_fd);
 	}
-	run_executor(ms, ast_node);
+	if (node->type == NODE_PIPE)
+		run_executor(ms, node);
+	else if (node->cmd && node->cmd->full_cmd)
+		execute_simple_command(ms, node->cmd);
 	exit(ms->exit_status);
 }
 
-void	execute_pipe(t_ms *ms, t_ast *ast)
+static void	wait_for_children(t_ms *ms, pid_t last_pid)
+{
+	int	status;
+	int	exit_code;
+
+	waitpid(last_pid, &status, 0);
+	if (WIFEXITED(status))
+	{
+		exit_code = WEXITSTATUS(status);
+		ms->exit_status = exit_code;
+	}
+	else if (WIFSIGNALED(status))
+	{
+		exit_code = 128 + WTERMSIG(status);
+		ms->exit_status = exit_code;
+	}
+	while (wait(NULL) > 0)
+		;
+}
+
+void	execute_pipeline(t_ms *ms, t_ast *ast)
 {
 	int		pipe_fds[2];
-	pid_t	pid_left;
-	pid_t	pid_right;
-	int		status;
+	pid_t	pid;
+	int		in_fd;
 
-	if (pipe(pipe_fds) == -1)
-		return ;
-	pid_left = fork();
-	if (pid_left == 0)
-		execute_pipe_child(ms, ast->left, pipe_fds, 0);
-	pid_right = fork();
-	if (pid_right == 0)
-		execute_pipe_child(ms, ast->right, pipe_fds, 1);
-	close(pipe_fds[0]);
-	close(pipe_fds[1]);
-	waitpid(pid_left, &status, 0);
-	waitpid(pid_right, &status, 0);
-	if (WIFEXITED(status))
-		ms->exit_status = WEXITSTATUS(status);
+	in_fd = STDIN_FILENO;
+	while (ast->type == NODE_PIPE)
+	{
+		pipe(pipe_fds);
+		pid = fork();
+		if (pid == 0)
+			child_process_routine(ms, ast->left, in_fd, pipe_fds[1]);
+		close(pipe_fds[1]);
+		if (in_fd != STDIN_FILENO)
+			close(in_fd);
+		in_fd = pipe_fds[0];
+		ast = ast->right;
+	}
+	pid = fork();
+	if (pid == 0)
+		child_process_routine(ms, ast, in_fd, STDOUT_FILENO);
+	if (in_fd != STDIN_FILENO)
+		close(in_fd);
+	wait_for_children(ms, pid);
 }

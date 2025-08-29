@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/29 03:39:14 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 04:09:16 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,7 +241,8 @@ void		error_join(t_ms *ms, char *name, char *error);
 void		ms_error(t_ms *ms, char *msg, int ex_code, int free_msg);
 void		arr_dup_fail(t_ms *ms, char **arr, int j);
 void		run_executor(t_ms *ms, t_ast *ast);
-void		execute_pipe(t_ms *ms, t_ast *ast);
+void		execute_simple_command(t_ms *ms, t_cmd *cmd);
+void		execute_pipeline(t_ms *ms, t_ast *ast);
 void		builtin_export(t_ms *ms, t_cmd *cmd);
 int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
 char		*get_command_path(t_ms *ms, char *cmd);
