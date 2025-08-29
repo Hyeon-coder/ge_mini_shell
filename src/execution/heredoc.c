@@ -5,35 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/29 14:06:12 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 14:08:08 by JuHyeon          ###   ########.fr       */
+/*   Created: 2025/08/29 14:23:22 by JuHyeon           #+#    #+#             */
+/*   Updated: 2025/08/29 14:23:24 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static void	heredoc_sigint_handler(int sig)
-{
-	(void)sig;
-	g_signal = SIGINT;
-	rl_done = 1;
-	close(STDIN_FILENO);
-}
-
-static char	*generate_heredoc_filename(t_ms *ms)
-{
-	char	*num_str;
-	char	*filename;
-
-	num_str = ft_itoa(ms->heredoc_no++);
-	if (!num_str)
-		ms_error(ms, "ft_itoa failed in heredoc", 1, 0);
-	filename = ft_strjoin(".heredoc_", num_str);
-	free(num_str);
-	if (!filename)
-		ms_error(ms, "ft_strjoin failed in heredoc", 1, 0);
-	return (filename);
-}
 
 static void	write_to_heredoc(t_ms *ms, char *line, int fd, int expand)
 {
@@ -54,21 +31,9 @@ static void	write_to_heredoc(t_ms *ms, char *line, int fd, int expand)
 
 static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 {
-	char				*line;
-	struct sigaction	sa_old;
-	struct sigaction	sa_new;
-	struct termios		original_termios;
-	struct termios		new_termios;
+	char	*line;
 
-	g_signal = 0;
-	rl_done = 0;
-	tcgetattr(STDIN_FILENO, &original_termios);
-	new_termios = original_termios;
-	new_termios.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
-	ft_memset(&sa_new, 0, sizeof(sa_new));
-	sa_new.sa_handler = heredoc_sigint_handler;
-	sigaction(SIGINT, &sa_new, &sa_old);
+	setup_heredoc_signals();
 	while (!rl_done)
 	{
 		line = readline("> ");
@@ -81,8 +46,7 @@ static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 		}
 		write_to_heredoc(ms, line, fd, (quo == UNQUOTED));
 	}
-	sigaction(SIGINT, &sa_old, NULL);
-	tcsetattr(STDIN_FILENO, TCSANOW, &original_termios);
+	restore_heredoc_signals();
 	if (g_signal == SIGINT)
 	{
 		ms->exit_status = 1;

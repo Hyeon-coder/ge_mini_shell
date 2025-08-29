@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/29 14:06:33 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 14:29:00 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,6 +251,14 @@ int			handle_output_redirection(t_cmd *cmd);
 void		restore_output(int original_stdout);
 int			handle_input_redirection(t_cmd *cmd);
 void		restore_input(int original_stdin);
+void		execute_child_process(t_ms *ms, t_cmd *cmd, char *path);
+void		wait_for_child_process(t_ms *ms, pid_t pid);
+int			process_infile_loop(t_cmd *cmd);
+char		*generate_heredoc_filename(t_ms *ms);
+void		setup_heredoc_signals(void);
+void		restore_heredoc_signals(void);
+int			is_builtin(char *cmd);
+void		execute_builtin(t_ms *ms, t_cmd *cmd);
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);
