@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/29 05:03:58 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/29 14:06:33 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MINISHELL_H
 
 # define _XOPEN_SOURCE 700
+# define _DEFAULT_SOURCE
 
 # include "libft.h"
 # include <stdbool.h>
@@ -24,6 +25,7 @@
 # include <readline/history.h>
 # include <errno.h>
 # include <signal.h>
+# include <termios.h>
 
 // Define error messages
 # define SHLV "minishell: warning: shell level (%d) too high, resetting to 1\n"
