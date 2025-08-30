@@ -57,11 +57,20 @@ static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 	struct sigaction	sa_old;
 	struct termios		orig_termios;
 
-	setup_heredoc_handlers(&orig_termios, &sa_old);
+	setup_heredoc_handlers(&orig_termios, &sa_old); // from heredoc_utils.c
 	while (1)
 	{
 		line = readline("> ");
-		if (g_signal == SIGINT || !line || ft_strcmp(line, lim) == 0)
+		if (g_signal == SIGINT)
+		{
+			get_minishell(NULL)->exit_status = 1;
+			rl_replace_line("", 0);
+			rl_on_new_line();
+			// rl_redisplay();
+			free(line);
+			break ;
+		}
+		if (!line || ft_strcmp(line, lim) == 0)
 		{
 			free(line);
 			break ;
