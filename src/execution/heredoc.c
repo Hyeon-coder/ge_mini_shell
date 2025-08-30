@@ -4,35 +4,31 @@
 /* heredoc.c                                          :+:      :+:    :+:   */
 /* +:+ +:+         +:+     */
 /* By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
-/* mpllecommeentaire*/
+/* +#+#+#+#+#+   +#+           */
 /* Created: 2025/08/29 17:53:24 by JuHyeon           #+#    #+#             */
-/* Updated: 2025/08/30 02:10:00 by JuHyeon          ###   ########.fr       */
+/* Updated: 2025/08/30/ 04:00:00 by JuHyeon          ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// An event hook function for readline.
-// It is called periodically while readline is waiting for input.
-// Returns 1 to terminate readline if a SIGINT signal has been caught.
-static int	heredoc_event_hook(void)
-{
-	if (g_signal == SIGINT)
-		return (1);
-	return (0);
-}
-
-// Signal handler for SIGINT during heredoc input.
-// This function is kept simple and only sets a global flag,
-// which is a safe operation within a signal handler.
+/*
+** This is the signal handler for SIGINT (Ctrl+C) specifically
+** during heredoc input. It sets a global flag and uses ioctl to push a
+** newline character into the input buffer. This forces the blocked
+** readline() call to return immediately, allowing the loop to terminate.
+*/
 void	heredoc_sigint_handler(int sig)
 {
 	(void)sig;
 	g_signal = SIGINT;
+	ioctl(STDIN_FILENO, TIOCSTI, "\n");
 }
 
-// Writes a single line to the heredoc's temporary file.
-// It expands variables within the line if it was not quoted.
+/*
+** Writes a single line to the heredoc's temporary file.
+** It expands variables within the line if the delimiter was not quoted.
+*/
 static void	write_to_heredoc(t_ms *ms, char *line, int fd, int expand)
 {
 	char	*expanded_line;
@@ -50,9 +46,11 @@ static void	write_to_heredoc(t_ms *ms, char *line, int fd, int expand)
 	free(line);
 }
 
-// The main loop for reading heredoc input from the user.
-// It sets up a readline event hook to immediately catch Ctrl+C interruptions
-// without requiring an extra key press.
+/*
+** The main loop for reading heredoc input from the user. It sets up
+** temporary signal and terminal settings to handle Ctrl+C interruptions
+** correctly, mimicking the behavior of bash.
+*/
 static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 {
 	char				*line;
@@ -60,7 +58,6 @@ static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 	struct termios		orig_termios;
 
 	setup_heredoc_handlers(&orig_termios, &sa_old);
-	rl_event_hook = heredoc_event_hook;
 	while (1)
 	{
 		line = readline("> ");
@@ -71,7 +68,6 @@ static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 		}
 		write_to_heredoc(ms, line, fd, (quo == UNQUOTED));
 	}
-	rl_event_hook = NULL;
 	restore_handlers(&orig_termios, &sa_old);
 	if (g_signal == SIGINT)
 	{
@@ -81,8 +77,11 @@ static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
 	return (0);
 }
 
-// Initializes the heredoc process. It creates a temporary file,
-// runs the input loop, and finalizes the redirection.
+/*
+** Initializes the heredoc process. It creates a temporary file,
+** runs the input loop, and finalizes the redirection by updating
+** the infile information for the command.
+*/
 int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 {
 	int		fd;
@@ -90,6 +89,8 @@ int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 	int		stdin_copy;
 
 	stdin_copy = dup(STDIN_FILENO);
+	if (stdin_copy == -1)
+		ms_error(ms, "dup failed", 1, 0);
 	fd = open_heredoc_file(&filename, ms);
 	heredoc_loop(ms, lim, fd, quo);
 	close(fd);
