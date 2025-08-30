@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:38:08 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/30 20:51:41 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/30 21:45:01 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,16 +24,11 @@ void	setup_heredoc_handlers(struct termios *orig_termios,
 	struct sigaction	sa_new;
 	struct termios		new_termios;
 
-	g_signal = 0;  // 시그널 플래그 초기화
-	
-	// 터미널 설정 - ^C 출력 방지
+	g_signal = 0;
 	tcgetattr(STDIN_FILENO, orig_termios);
 	new_termios = *orig_termios;
 	new_termios.c_lflag &= ~ECHOCTL;
 	tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
-	// (void)new_termios;
-	// (void)orig_termios;
-	// SIGINT 핸들러 설정
 	ft_memset(&sa_new, 0, sizeof(sa_new));
 	sa_new.sa_handler = heredoc_sigint_handler;
 	sigemptyset(&sa_new.sa_mask);

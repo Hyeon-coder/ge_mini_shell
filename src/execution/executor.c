@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:32 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/30 20:25:13 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/30 21:47:14 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static void	dispatch_command(t_ms *ms, t_cmd *cmd);
 static void	run_external_cmd(t_ms *ms, t_cmd *cmd)
 {
 	pid_t	pid;
-	char 	*path;
+	char	*path;
 
 	set_noninteractive_signals();
 	pid = fork();
@@ -34,7 +34,7 @@ static void	run_external_cmd(t_ms *ms, t_cmd *cmd)
 			ft_putendl_fd(": command not found", 2);
 			exit(127);
 		}
-		execute_child_process(ms, cmd, path); 
+		execute_child_process(ms, cmd, path);
 	}
 	wait_for_child_process(ms, pid);
 	set_interactive_signals();
@@ -89,7 +89,7 @@ void	run_executor(t_ms *ms, t_ast *ast)
 		return ;
 	if (ast->type == NODE_PIPE)
 		execute_pipeline(ms, ast);
-	else if (ast->type == NODE_COMMAND)
+	else if (ast->type == NODE_COMMAND || ast->type == NODE_MISSCMD)
 	{
 		if (ast->cmd)
 			execute_simple_command(ms, ast->cmd);

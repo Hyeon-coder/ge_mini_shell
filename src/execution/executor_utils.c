@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:41 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/30 00:50:13 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/30 21:48:06 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	execute_child_process(t_ms *ms, t_cmd *cmd, char *path)
 {
 	reset_child_signals();
 	execve(path, cmd->full_cmd, ms->envp);
-    free(path);
+	free(path);
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(cmd->full_cmd[0], 2);
 	ft_putstr_fd(": ", 2);
@@ -57,10 +57,16 @@ void	execute_child_process(t_ms *ms, t_cmd *cmd, char *path)
 void	wait_for_child_process(t_ms *ms, pid_t pid)
 {
 	int	status;
+	int	term_sig;
 
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
 		ms->exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
-		ms->exit_status = 128 + WTERMSIG(status);
+	{
+		term_sig = WTERMSIG(status);
+		ms->exit_status = 128 + term_sig;
+		if (term_sig == SIGQUIT)
+			ft_putendl_fd("^\\Quit (core dumped)", STDERR_FILENO);
+	}
 }

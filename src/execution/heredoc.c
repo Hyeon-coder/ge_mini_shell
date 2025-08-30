@@ -1,17 +1,16 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* heredoc.c                                          :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/08/29 17:53:24 by JuHyeon           #+#    #+#             */
-/* Updated: 2025/08/30/ 04:00:00 by JuHyeon          ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/30 21:45:28 by JuHyeon           #+#    #+#             */
+/*   Updated: 2025/08/30 22:14:25 by JuHyeon          ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 /*
 ** Writes a single line to the heredoc's temporary file.
@@ -51,9 +50,7 @@ static void	heredoc_child_loop(t_ms *ms, char *lim, int fd, int quo)
 {
 	char	*line;
 
-	// 자식 프로세스에서는 Ctrl+C를 받으면 그냥 기본 동작(종료)을 따르도록 합니다.
 	signal(SIGINT, SIG_DFL);
-
 	while (1)
 	{
 		line = readline("> ");
@@ -62,117 +59,53 @@ static void	heredoc_child_loop(t_ms *ms, char *lim, int fd, int quo)
 			free(line);
 			break ;
 		}
-		// write_to_heredoc은 기존 함수를 그대로 사용
 		write_to_heredoc(ms, line, fd, (quo == UNQUOTED));
 	}
-	// 자식 프로세스는 여기서 역할을 다하고 종료합니다.
-	// ms 구조체의 메모리 등을 해제하고 exit해야 할 수도 있습니다.
-	// free_ms(ms); // 프로젝트의 메모리 관리 정책에 따라 필요할 수 있습니다.
 	exit(0);
 }
 
-
-
 /*
-** The main loop for reading heredoc input from the user. It sets up
-** temporary signal and terminal settings to handle Ctrl+C interruptions
-** correctly, mimicking the behavior of bash.
+** The parent process waits for the heredoc child process and handles the result.
+** It checks if the child was terminated by a signal and updates the shell state.
 */
-// static int	heredoc_loop(t_ms *ms, char *lim, int fd, int quo)
-// {
-// 	char				*line;
-// 	struct sigaction	sa_old;
-// 	struct termios		orig_termios;
+static int	handle_heredoc_parent(t_ms *ms, pid_t pid,\
+									char *filename, t_infile *infile)
+{
+	int	status;
 
-// 	setup_heredoc_handlers(&orig_termios, &sa_old);
-// 	while (1)
-// 	{
-// 		line = readline("> ");
-		
-// 		// Ctrl+C 감지 시 즉시 처리
-// 		if (g_signal == SIGINT)
-// 		{
-// 			get_minishell(NULL)->exit_status = 1;
-// 			get_minishell(NULL)->heredoc_stop = true;
-// 			rl_replace_line("", 0);
-// 			rl_on_new_line();
-// 			rl_redisplay();  // 즉시 프롬프트 표시
-// 			if (line)
-// 				free(line);
-// 			break ;
-// 		}
-		
-// 		if (!line || ft_strcmp(line, lim) == 0)
-// 		{
-// 			if (line)
-// 				free(line);
-// 			break ;
-// 		}
-		
-// 		write_to_heredoc(ms, line, fd, (quo == UNQUOTED));
-// 	}
-	
-// 	restore_handlers(&orig_termios, &sa_old);
-	
-// 	// 시그널 받았으면 상태 설정
-// 	if (g_signal == SIGINT)
-// 	{
-// 		ms->exit_status = 1;
-// 		ms->heredoc_stop = true;
-// 		g_signal = 0;  // 시그널 플래그 리셋
-// 	}
-	
-// 	return (0);
-// }
+	waitpid(pid, &status, 0);
+	set_interactive_signals();
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+	{
+		ms->heredoc_stop = true;
+		ms->exit_status = 1;
+		write(1, "\n", 1);
+		unlink(filename);
+		free(filename);
+		return (0);
+	}
+	free(infile->name);
+	infile->name = filename;
+	return (0);
+}
 
 /*
 ** Initializes the heredoc process. It creates a temporary file,
-** runs the input loop, and finalizes the redirection by updating
-** the infile information for the command.
+** forks a child process to handle user input, and waits for its completion.
 */
 int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 {
 	int		fd;
 	char	*filename;
 	pid_t	pid;
-	int		status;
 
-	fd = open_heredoc_file(&filename, ms); // heredoc_utils.c의 기존 함수
-	
-	// 메인 셸(부모)은 자식이 일하는 동안 잠시 Ctrl+C를 무시합니다.
+	fd = open_heredoc_file(&filename, ms);
 	signal(SIGINT, SIG_IGN);
-
 	pid = fork();
 	if (pid == -1)
 		ms_error(ms, "fork failed", 1, 0);
-	
-	if (pid == 0) // 자식 프로세스: 히어독 입력을 전담
-	{
+	if (pid == 0)
 		heredoc_child_loop(ms, lim, fd, quo);
-	}
-	
-	// 부모 프로세스: 자식이 끝날 때까지 기다립니다.
-	waitpid(pid, &status, 0);
-	
-	// 자식이 끝나면 메인 셸은 다시 원래의 시그널 핸들러로 돌아옵니다.
-	set_interactive_signals(); // signals.c의 함수
-
 	close(fd);
-
-	// 자식이 정상적으로 종료되었는지, 아니면 시그널로 종료되었는지 확인합니다.
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-	{
-		// Ctrl+C로 자식이 종료된 경우
-		ms->heredoc_stop = true;
-		ms->exit_status = 1;
-		write(1, "\n", 1);
-		unlink(filename); // 임시 파일 삭제
-		free(filename);
-		return (0); // 실패(중단)했음을 알림
-	}
-
-	// 정상적으로 종료된 경우
-	free(infile->name);
-	infile->name = filename;
-	return (0);
+	return (handle_heredoc_parent(ms, pid, filename, infile));
 }
