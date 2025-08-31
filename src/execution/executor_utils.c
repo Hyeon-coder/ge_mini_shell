@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:41 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/31 16:51:28 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/01 00:30:17 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,9 @@ void	execute_child_process(t_ms *ms, t_cmd *cmd, char *path)
 	ft_putstr_fd(cmd->full_cmd[0], 2);
 	ft_putstr_fd(": ", 2);
 	ft_putendl_fd(strerror(errno), 2);
-	exit(126);
+	if (errno == EACCES)
+		exit(126);
+	exit(127);
 }
 
 void	wait_for_child_process(t_ms *ms, pid_t pid)
