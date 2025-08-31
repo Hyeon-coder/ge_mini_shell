@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:15:15 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 02:15:16 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 16:55:37 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ static void	process_export_argument(t_ms *ms, const char *arg)
 		ft_putstr_fd("minishell: export: `", 2);
 		ft_putstr_fd((char *)arg, 2);
 		ft_putendl_fd("': not a valid identifier", 2);
+		ms->exit_status = 1;
 	}
 	else if (arg[key_len] == '=')
 	{

@@ -6,13 +6,13 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 05:43:44 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 05:43:45 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 17:02:02 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	builtin_echo(t_cmd *cmd)
+void	builtin_echo(t_ms *ms, t_cmd *cmd)
 {
 	int		i;
 	bool	newline;
@@ -33,4 +33,5 @@ void	builtin_echo(t_cmd *cmd)
 	}
 	if (newline)
 		ft_putstr_fd("\n", 1);
+	ms->exit_status = 0;
 }

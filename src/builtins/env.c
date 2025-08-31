@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:09:06 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/29 14:12:03 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 17:02:49 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void	builtin_env(t_ms *ms, t_cmd *cmd)
 		ft_putstr_fd("env: ‘", 2);
 		ft_putstr_fd(cmd->full_cmd[1], 2);
 		ft_putendl_fd("’: No such file or directory", 2);
+		ms->exit_status = 127;
 		return ;
 	}
 	i = 0;
@@ -35,4 +36,5 @@ void	builtin_env(t_ms *ms, t_cmd *cmd)
 			ft_putendl_fd(ms->envp[i], 1);
 		i++;
 	}
+	ms->exit_status = 0;
 }

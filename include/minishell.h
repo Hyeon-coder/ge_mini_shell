@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/30 20:37:49 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 16:55:09 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,12 +211,12 @@ bool		check_heredoc_limit(t_ms *ms);
 char		*find_var(t_ms *ms, char **envp, char *name);
 void		set_env_var(t_ms *ms, char *key, char *value);
 void		builtin_cd(t_ms *ms, t_cmd *cmd);
-void		builtin_echo(t_cmd *cmd);
+void		builtin_echo(t_ms *ms, t_cmd *cmd);
 void		builtin_env(t_ms *ms, t_cmd *cmd);
 void		bi_exit(t_ms *ms, int ex_code, int error);
 void		builtin_exit(t_ms *ms, t_cmd *cmd);
 void		builtin_export(t_ms *ms, t_cmd *cmd);
-void		builtin_pwd(void);
+void		builtin_pwd(t_ms *ms);
 void		builtin_unset(t_ms *ms, t_cmd *cmd);
 
 ////////////////////////////////// Utils //////////////////////////////////////

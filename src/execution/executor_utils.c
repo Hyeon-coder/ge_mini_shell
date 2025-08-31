@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:41 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/30 21:48:06 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 16:51:28 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,11 @@ int	is_builtin(char *cmd)
 
 void	execute_builtin(t_ms *ms, t_cmd *cmd)
 {
+	ms->exit_status = 0;
 	if (ft_strcmp(cmd->full_cmd[0], "pwd") == 0)
-		builtin_pwd();
+		builtin_pwd(ms);
 	else if (ft_strcmp(cmd->full_cmd[0], "echo") == 0)
-		builtin_echo(cmd);
+		builtin_echo(ms, cmd);
 	else if (ft_strcmp(cmd->full_cmd[0], "cd") == 0)
 		builtin_cd(ms, cmd);
 	else if (ft_strcmp(cmd->full_cmd[0], "exit") == 0)

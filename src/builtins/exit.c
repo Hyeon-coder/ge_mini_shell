@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:12:20 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/30 21:23:08 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 16:57:28 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ void	builtin_exit(t_ms *ms, t_cmd *cmd)
 	if (cmd->full_cmd[2])
 	{
 		ft_putendl_fd("minishell: exit: too many arguments", 2);
+		ms->exit_status = 1;
 		return ;
 	}
 	exit_code = ft_atoi(cmd->full_cmd[1]);
