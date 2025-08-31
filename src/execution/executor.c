@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:32 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/30 21:47:14 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 17:53:19 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,10 @@ void	execute_simple_command(t_ms *ms, t_cmd *cmd)
 	}
 	if (!cmd->full_cmd || !cmd->full_cmd[0])
 	{
+		if (cmd->from_expand)
+			ms->exit_status = 127;
+		else
+			ms->exit_status = 0;
 		restore_input(original_stdin);
 		restore_output(original_stdout);
 		return ;
