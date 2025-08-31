@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:12:20 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/31 16:57:28 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 20:38:44 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	builtin_exit(t_ms *ms, t_cmd *cmd)
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(cmd->full_cmd[1], 2);
 		ft_putendl_fd(": numeric argument required", 2);
-		bi_exit(ms, 255, 0);
+		bi_exit(ms, 2, 0);
 	}
 	if (cmd->full_cmd[2])
 	{
