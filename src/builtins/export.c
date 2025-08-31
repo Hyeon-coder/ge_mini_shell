@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:15:15 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/31 16:55:37 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 20:03:35 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,13 @@ static void	sort_env_array(char **env_copy, int count)
 /*
 ** Prints all environment variables in the 'declare -x' format, sorted.
 */
+// 이 함수 전체를 아래 코드로 교체하세요.
+
 static void	print_exported_vars(t_ms *ms)
 {
 	char	**env_copy;
 	int		i;
+	char	*eq_sign;
 
 	env_copy = malloc(sizeof(char *) * (ms->elements + 1));
 	if (!env_copy)
@@ -61,8 +64,17 @@ static void	print_exported_vars(t_ms *ms)
 	i = 0;
 	while (env_copy[i])
 	{
+		eq_sign = ft_strchr(env_copy[i], '=');
 		ft_putstr_fd("declare -x ", 1);
-		ft_putendl_fd(env_copy[i], 1);
+		if (eq_sign)
+		{
+			write(1, env_copy[i], eq_sign - env_copy[i] + 1);
+			ft_putchar_fd('"', 1);
+			ft_putstr_fd(eq_sign + 1, 1);
+			ft_putendl_fd("\"", 1);
+		}
+		else
+			ft_putendl_fd(env_copy[i], 1);
 		i++;
 	}
 	free(env_copy);

@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:05:44 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/31 16:53:47 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 20:00:23 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,23 +73,26 @@ static void	update_pwd_variables(t_ms *ms)
 */
 void	builtin_cd(t_ms *ms, t_cmd *cmd)
 {
-	char	*path;
+    char	*path;
+    bool	is_oldpwd; // cd - 인지 확인하는 플래그
 
-	path = get_target_path(ms, cmd);
-	if (!path)
-	{
-		ms->exit_status = 1;
-		return ;
-	}
-	if (chdir(path) != 0)
-	{
-		ft_putstr_fd("minishell: cd: ", 2);
-		ft_putstr_fd(cmd->full_cmd[1], 2);
-		ft_putstr_fd(": ", 2);
-		ft_putendl_fd(strerror(errno), 2);
-		ms->exit_status = 1;
-	}
-	else
-		update_pwd_variables(ms);
-	free(path);
+    is_oldpwd = (cmd->full_cmd[1] && ft_strcmp(cmd->full_cmd[1], "-") == 0);
+    path = get_target_path(ms, cmd);
+    if (!path)
+    {
+        ms->exit_status = 1;
+        return ;
+    }
+    if (chdir(path) != 0)
+    {
+        // ... (기존 에러 처리) ...
+        ms->exit_status = 1;
+    }
+    else
+    {
+        update_pwd_variables(ms);
+        if (is_oldpwd) // cd - 였다면 경로 출력
+            builtin_pwd(ms);
+    }
+    free(path);
 }
