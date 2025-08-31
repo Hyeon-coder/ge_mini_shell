@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 13:18:00 by mpierce           #+#    #+#             */
-/*   Updated: 2025/08/31 16:41:16 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 18:57:02 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,23 +90,55 @@ void	init_ms(t_ms *ms, char **envp)
 ** Set shell level and receive the prompt.
 ** Enter the main loop to process input.
 */
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	t_ms				ms;
+
+// 	(void)argc;
+// 	(void)argv;
+// 	init_ms(&ms, envp);
+// 	get_minishell(&ms);
+// 	shlvl(&ms);
+// 	set_interactive_signals();
+// 	get_prompt(&ms);
+// 	while (true)
+// 	{
+// 		ms.heredoc_stop = false;
+// 		process_input(&ms);
+// 		get_prompt(&ms);
+// 		free_structs(&ms);
+// 	}
+// 	return (0);
+// }
+
 int	main(int argc, char **argv, char **envp)
 {
-	t_ms				ms;
+    t_ms	ms;
 
-	(void)argc;
-	(void)argv;
-	init_ms(&ms, envp);
-	get_minishell(&ms);
-	shlvl(&ms);
-	set_interactive_signals();
-	get_prompt(&ms);
-	while (true)
-	{
-		ms.heredoc_stop = false;
-		process_input(&ms);
-		get_prompt(&ms);
-		free_structs(&ms);
-	}
-	return (0);
+    (void)argc;
+    (void)argv;
+    init_ms(&ms, envp);
+    get_minishell(&ms);
+    shlvl(&ms);
+    set_interactive_signals();
+
+    // 대화형 모드일 때 (터미널에서 직접 실행)
+    if (isatty(fileno(stdin)))
+    {
+        while (true)
+        {
+            get_prompt(&ms);
+            ms.heredoc_stop = false;
+            process_input(&ms);
+            free_structs(&ms);
+        }
+    }
+    // 비대화형 모드일 때 (파일이나 파이프로 입력받을 때)
+    else
+    {
+        process_input(&ms);
+        // 모든 입력 처리 후, 최종 exit_status로 종료
+        exit(ms.exit_status);
+    }
+    return (0); // Unreachable
 }
