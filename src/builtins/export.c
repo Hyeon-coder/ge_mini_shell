@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:15:15 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/31 20:03:35 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/31 20:12:08 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ static void	print_exported_vars(t_ms *ms)
 	int		i;
 	char	*eq_sign;
 
+	(void)ms; // 컴파일 오류 방지를 위해 추가
 	env_copy = malloc(sizeof(char *) * (ms->elements + 1));
 	if (!env_copy)
 		return ;
