@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 05:43:44 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/31 17:02:02 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/01 03:53:54 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,25 @@ void	builtin_echo(t_ms *ms, t_cmd *cmd)
 {
 	int		i;
 	bool	newline;
+	int		j;
 
 	newline = true;
 	i = 1;
-	while (cmd->full_cmd[i] && ft_strcmp(cmd->full_cmd[i], "-n") == 0)
+	while (cmd->full_cmd[i])
 	{
-		newline = false;
-		i++;
+		if (ft_strncmp(cmd->full_cmd[i], "-n", 2) == 0)
+		{
+			j = 1;
+			while (cmd->full_cmd[i][j] == 'n')
+				j++;
+			if (cmd->full_cmd[i][j] == '\0')
+			{
+				newline = false;
+				i++;
+				continue;
+			}
+		}
+		break;
 	}
 	while (cmd->full_cmd[i])
 	{

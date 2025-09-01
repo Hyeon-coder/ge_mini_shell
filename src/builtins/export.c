@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:15:15 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/31 20:12:08 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/01 03:49:07 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,18 +50,21 @@ static void	print_exported_vars(t_ms *ms)
 	int		i;
 	char	*eq_sign;
 
-	(void)ms; // 컴파일 오류 방지를 위해 추가
+	// 환경 변수 배열을 복사합니다.
 	env_copy = malloc(sizeof(char *) * (ms->elements + 1));
 	if (!env_copy)
 		return ;
 	i = 0;
 	while (i < ms->elements)
 	{
-		env_copy[i] = ms->envp[i];
+		env_copy[i] = ms->envp[i]; // 포인터만 복사
 		i++;
 	}
 	env_copy[i] = NULL;
+	
+	// 복사된 배열을 정렬합니다.
 	sort_env_array(env_copy, ms->elements);
+
 	i = 0;
 	while (env_copy[i])
 	{
@@ -69,6 +72,7 @@ static void	print_exported_vars(t_ms *ms)
 		ft_putstr_fd("declare -x ", 1);
 		if (eq_sign)
 		{
+			// KEY="VALUE" 형식으로 출력
 			write(1, env_copy[i], eq_sign - env_copy[i] + 1);
 			ft_putchar_fd('"', 1);
 			ft_putstr_fd(eq_sign + 1, 1);

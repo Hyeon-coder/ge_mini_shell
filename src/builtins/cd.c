@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:05:44 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/31 20:12:25 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/01 03:52:41 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,21 +32,28 @@ static char	*expand_tilde_prefix(t_ms *ms, char *path)
 static char	*get_target_path(t_ms *ms, t_cmd *cmd)
 {
 	char	*path;
+	char	*env_path;
 
 	path = cmd->full_cmd[1];
 	if (!path || ft_strcmp(path, "~") == 0)
 	{
-		path = find_var(ms, ms->envp, "HOME");
-		if (!path)
+		env_path = find_var(ms, ms->envp, "HOME");
+		if (!env_path)
+		{
 			ft_putendl_fd("minishell: cd: HOME not set", 2);
-		return (ft_strdup(path));
+			return (NULL);
+		}
+		return (ft_strdup(env_path));
 	}
 	if (ft_strcmp(path, "-") == 0)
 	{
-		path = find_var(ms, ms->envp, "OLDPWD");
-		if (!path)
+		env_path = find_var(ms, ms->envp, "OLDPWD");
+		if (!env_path)
+		{
 			ft_putendl_fd("minishell: cd: OLDPWD not set", 2);
-		return (ft_strdup(path));
+			return (NULL);
+		}
+		return (ft_strdup(env_path));
 	}
 	if (ft_strncmp(path, "~/", 2) == 0)
 		return (expand_tilde_prefix(ms, path));
