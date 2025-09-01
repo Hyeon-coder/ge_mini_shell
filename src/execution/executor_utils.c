@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:41 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/01 00:30:17 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/01 04:19:06 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,13 @@ void	execute_builtin(t_ms *ms, t_cmd *cmd)
 void	execute_child_process(t_ms *ms, t_cmd *cmd, char *path)
 {
 	reset_child_signals();
+	if (!path)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd->full_cmd[0], 2);
+        ft_putendl_fd(": command not found", 2);
+        exit(127);
+	}
 	execve(path, cmd->full_cmd, ms->envp);
 	free(path);
 	ft_putstr_fd("minishell: ", 2);

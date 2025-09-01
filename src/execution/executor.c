@@ -6,13 +6,12 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:32 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/01 03:38:53 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/01 04:21:44 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout);
 static void	dispatch_command(t_ms *ms, t_cmd *cmd);
 
 static void	run_external_cmd(t_ms *ms, t_cmd *cmd)
@@ -23,7 +22,11 @@ static void	run_external_cmd(t_ms *ms, t_cmd *cmd)
 	set_noninteractive_signals();
 	pid = fork();
 	if (pid == -1)
+	{
+		perror("fork");
+		ms->exit_status = 1;
 		return ;
+	}
 	if (pid == 0)
 	{
 		path = get_command_path(ms, cmd->full_cmd[0]);
@@ -40,7 +43,7 @@ static void	run_external_cmd(t_ms *ms, t_cmd *cmd)
 	set_interactive_signals();
 }
 
-static bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout)
+bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout)
 {
 	*og_stdin = handle_input_redirection(cmd);
 	if (*og_stdin == -1)

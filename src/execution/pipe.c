@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:17:39 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/30 22:12:52 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/01 04:21:27 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,39 @@
 
 static void	child_process_routine(t_ms *ms, t_ast *node, int in_fd, int out_fd)
 {
-	reset_child_signals();
-	if (in_fd != STDIN_FILENO)
-	{
-		dup2(in_fd, STDIN_FILENO);
-		close(in_fd);
-	}
-	if (out_fd != STDOUT_FILENO)
-	{
-		dup2(out_fd, STDOUT_FILENO);
-		close(out_fd);
-	}
-	if (node->type == NODE_PIPE)
-		run_executor(ms, node);
-	else if (node->cmd && node->cmd->full_cmd)
-		execute_simple_command(ms, node->cmd);
-	exit(ms->exit_status);
+    reset_child_signals();
+    if (in_fd != STDIN_FILENO)
+    {
+        dup2(in_fd, STDIN_FILENO);
+        close(in_fd);
+    }
+    if (out_fd != STDOUT_FILENO)
+    {
+        dup2(out_fd, STDOUT_FILENO);
+        close(out_fd);
+    }
+    if (node->type == NODE_PIPE)
+        run_executor(ms, node);
+    else if (node->cmd)
+    {
+        // 리다이렉션을 먼저 설정합니다.
+        if (!setup_redirections(node->cmd, &ms->std_copy[0], &ms->std_copy[1]))
+            exit(1);
+        if (!node->cmd->full_cmd || !node->cmd->full_cmd[0])
+            exit(0);
+        // 빌트인/외부 명령어 실행
+        if (is_builtin(node->cmd->full_cmd[0]))
+        {
+            execute_builtin(ms, node->cmd);
+            exit(ms->exit_status);
+        }
+        else
+        {
+            // fork 없이 바로 실행합니다!
+            execute_child_process(ms, node->cmd, get_command_path(ms, node->cmd->full_cmd[0]));
+        }
+    }
+    exit(ms->exit_status);
 }
 
 static void	wait_for_children(t_ms *ms, pid_t last_pid)
