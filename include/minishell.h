@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/01 04:21:59 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/02 01:31:17 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,7 +265,9 @@ void		setup_heredoc_handlers(struct termios *orig_termios,\
 				struct sigaction *sa_old);
 void		restore_handlers(struct termios *orig_termios,\
 				struct sigaction *sa_old);
-bool	setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout);
+bool		setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout);
+char		**duplicate_and_sort_env(t_ms *ms);
+void		print_formatted_variable(char *var);
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);

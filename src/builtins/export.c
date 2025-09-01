@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:15:15 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/01 05:01:46 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/02 01:32:11 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,53 +42,21 @@ static void	sort_env_array(char **env_copy, int count)
 /*
 ** Prints all environment variables in the 'declare -x' format, sorted.
 */
-// 이 함수 전체를 아래 코드로 교체하세요.
-
 static void	print_exported_vars(t_ms *ms)
 {
-    char	**env_copy;
-    int		i;
-    char	*eq_sign;
+	char	**env_copy;
+	int		i;
 
-    // 1. 메모리 할당
-    env_copy = malloc(sizeof(char *) * (ms->elements + 1));
-    if (!env_copy)
-        return ;
-    i = 0;
-    // 2. 원본(ms->envp)의 내용을 하나씩 복제 (깊은 복사)
-    while (i < ms->elements)
-    {
-        env_copy[i] = ft_strdup(ms->envp[i]);
-        if (!env_copy[i])
-        {
-            ft_free_array(env_copy); // 중간에 실패하면 할당된 부분까지 모두 해제
-            return ;
-        }
-        i++;
-    }
-    env_copy[i] = NULL;
-
-    // 3. 복사본을 정렬
-    sort_env_array(env_copy, ms->elements);
-
-    i = 0;
-    while (env_copy[i])
-    {
-        eq_sign = ft_strchr(env_copy[i], '=');
-        ft_putstr_fd("declare -x ", 1);
-        if (eq_sign)
-        {
-            write(1, env_copy[i], eq_sign - env_copy[i] + 1);
-            ft_putchar_fd('"', 1);
-            ft_putstr_fd(eq_sign + 1, 1);
-            ft_putendl_fd("\"", 1);
-        }
-        else
-            ft_putendl_fd(env_copy[i], 1);
-        i++;
-    }
-    // 4. 복사본 메모리 해제
-    ft_free_array(env_copy);
+	env_copy = duplicate_and_sort_env(ms);
+	if (!env_copy)
+		return ;
+	i = 0;
+	while (env_copy[i])
+	{
+		print_formatted_variable(env_copy[i]);
+		i++;
+	}
+	ft_free_array(env_copy);
 }
 
 /*

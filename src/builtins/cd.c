@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:05:44 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/01 05:02:14 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/02 01:36:47 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,36 +25,35 @@ static char	*expand_tilde_prefix(t_ms *ms, char *path)
 	return (ft_strjoin(home, path + 1));
 }
 
-/*
-** Determines the target path for the 'cd' command based on its arguments.
-** Handles cases for 'cd', 'cd ~', 'cd -', and 'cd ~/path'.
-*/
+/**
+ * Finds a path from an environment variable, handling errors.
+ */
+static char	*get_path_from_env(t_ms *ms, const char *var, const char *err_msg)
+{
+	char	*env_path;
+
+	env_path = find_var(ms, ms->envp, var);
+	if (!env_path)
+	{
+		ft_putendl_fd(err_msg, 2);
+		return (NULL);
+	}
+	return (ft_strdup(env_path));
+}
+
+/**
+ * Determines the target path for the 'cd' command.
+ */
 static char	*get_target_path(t_ms *ms, t_cmd *cmd)
 {
 	char	*path;
-	char	*env_path;
 
 	path = cmd->full_cmd[1];
 	if (!path || ft_strcmp(path, "~") == 0)
-	{
-		env_path = find_var(ms, ms->envp, "HOME");
-		if (!env_path)
-		{
-			ft_putendl_fd("minishell: cd: HOME not set", 2);
-			return (NULL);
-		}
-		return (ft_strdup(env_path));
-	}
+		return (get_path_from_env(ms, "HOME", "minishell: cd: HOME not set"));
 	if (ft_strcmp(path, "-") == 0)
-	{
-		env_path = find_var(ms, ms->envp, "OLDPWD");
-		if (!env_path)
-		{
-			ft_putendl_fd("minishell: cd: OLDPWD not set", 2);
-			return (NULL);
-		}
-		return (ft_strdup(env_path));
-	}
+		return (get_path_from_env(ms, "OLDPWD",
+				"minishell: cd: OLDPWD not set"));
 	if (ft_strncmp(path, "~/", 2) == 0)
 		return (expand_tilde_prefix(ms, path));
 	return (ft_strdup(path));
@@ -101,7 +100,7 @@ void	builtin_cd(t_ms *ms, t_cmd *cmd)
 	else
 	{
 		update_pwd_variables(ms);
-		if (is_oldpwd) // cd - 였다면 경로 출력
+		if (is_oldpwd)
 			builtin_pwd(ms);
 	}
 	free(path);
