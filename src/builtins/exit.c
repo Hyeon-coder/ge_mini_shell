@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:12:20 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/31 20:38:44 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/01 01:20:00 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 void	bi_exit(t_ms *ms, int ex_code, int error)
 {
 	(void)error;
-	if (ms)
+	if (ms && isatty(fileno(stdout)))
 		ft_putendl_fd("exit", 2);
 	exit(ex_code);
 }
