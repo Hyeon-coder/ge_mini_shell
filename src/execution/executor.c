@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:32 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/31 17:53:19 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/01 03:38:53 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,5 +97,7 @@ void	run_executor(t_ms *ms, t_ast *ast)
 	{
 		if (ast->cmd)
 			execute_simple_command(ms, ast->cmd);
+		if (ast->type == NODE_MISSCMD && ms->exit_status == 0)
+			ms->exit_status = 1;
 	}
 }
