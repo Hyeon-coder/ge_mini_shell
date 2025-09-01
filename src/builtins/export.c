@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:15:15 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/01 03:49:07 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/01 04:46:11 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,43 +46,49 @@ static void	sort_env_array(char **env_copy, int count)
 
 static void	print_exported_vars(t_ms *ms)
 {
-	char	**env_copy;
-	int		i;
-	char	*eq_sign;
+    char	**env_copy;
+    int		i;
+    char	*eq_sign;
 
-	// 환경 변수 배열을 복사합니다.
-	env_copy = malloc(sizeof(char *) * (ms->elements + 1));
-	if (!env_copy)
-		return ;
-	i = 0;
-	while (i < ms->elements)
-	{
-		env_copy[i] = ms->envp[i]; // 포인터만 복사
-		i++;
-	}
-	env_copy[i] = NULL;
-	
-	// 복사된 배열을 정렬합니다.
-	sort_env_array(env_copy, ms->elements);
+    // 1. 메모리 할당
+    env_copy = malloc(sizeof(char *) * (ms->elements + 1));
+    if (!env_copy)
+        return ;
+    i = 0;
+    // 2. 원본(ms->envp)의 내용을 하나씩 복제 (깊은 복사)
+    while (i < ms->elements)
+    {
+        env_copy[i] = ft_strdup(ms->envp[i]);
+        if (!env_copy[i])
+        {
+            ft_free_array(env_copy); // 중간에 실패하면 할당된 부분까지 모두 해제
+            return ;
+        }
+        i++;
+    }
+    env_copy[i] = NULL;
 
-	i = 0;
-	while (env_copy[i])
-	{
-		eq_sign = ft_strchr(env_copy[i], '=');
-		ft_putstr_fd("declare -x ", 1);
-		if (eq_sign)
-		{
-			// KEY="VALUE" 형식으로 출력
-			write(1, env_copy[i], eq_sign - env_copy[i] + 1);
-			ft_putchar_fd('"', 1);
-			ft_putstr_fd(eq_sign + 1, 1);
-			ft_putendl_fd("\"", 1);
-		}
-		else
-			ft_putendl_fd(env_copy[i], 1);
-		i++;
-	}
-	free(env_copy);
+    // 3. 복사본을 정렬
+    sort_env_array(env_copy, ms->elements);
+
+    i = 0;
+    while (env_copy[i])
+    {
+        eq_sign = ft_strchr(env_copy[i], '=');
+        ft_putstr_fd("declare -x ", 1);
+        if (eq_sign)
+        {
+            write(1, env_copy[i], eq_sign - env_copy[i] + 1);
+            ft_putchar_fd('"', 1);
+            ft_putstr_fd(eq_sign + 1, 1);
+            ft_putendl_fd("\"", 1);
+        }
+        else
+            ft_putendl_fd(env_copy[i], 1);
+        i++;
+    }
+    // 4. 복사본 메모리 해제
+    ft_free_array(env_copy);
 }
 
 /*

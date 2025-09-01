@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:32 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/01 04:21:44 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/01 04:47:17 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,40 +67,37 @@ static void	dispatch_command(t_ms *ms, t_cmd *cmd)
 
 void	execute_simple_command(t_ms *ms, t_cmd *cmd)
 {
-	int	original_stdin;
-	int	original_stdout;
+    int	original_stdin;
+    int	original_stdout;
 
-	if (!setup_redirections(cmd, &original_stdin, &original_stdout))
-	{
-		ms->exit_status = 1;
-		return ;
-	}
-	if (!cmd->full_cmd || !cmd->full_cmd[0])
-	{
-		if (cmd->from_expand)
-			ms->exit_status = 127;
-		else
-			ms->exit_status = 0;
-		restore_input(original_stdin);
-		restore_output(original_stdout);
-		return ;
-	}
-	dispatch_command(ms, cmd);
-	restore_input(original_stdin);
-	restore_output(original_stdout);
+    if (!setup_redirections(cmd, &original_stdin, &original_stdout))
+    {
+        ms->exit_status = 1;
+        return ;
+    }
+    // 실행할 명령어가 없는 경우, 리다이렉션이 성공했으므로 종료 코드는 0
+    if (!cmd->full_cmd || !cmd->full_cmd[0])
+    {
+        ms->exit_status = 0; // bash와 동일하게 0으로 설정
+        restore_input(original_stdin);
+        restore_output(original_stdout);
+        return ;
+    }
+    dispatch_command(ms, cmd);
+    restore_input(original_stdin);
+    restore_output(original_stdout);
 }
 
 void	run_executor(t_ms *ms, t_ast *ast)
 {
-	if (!ast || ms->heredoc_stop)
-		return ;
-	if (ast->type == NODE_PIPE)
-		execute_pipeline(ms, ast);
-	else if (ast->type == NODE_COMMAND || ast->type == NODE_MISSCMD)
-	{
-		if (ast->cmd)
-			execute_simple_command(ms, ast->cmd);
-		if (ast->type == NODE_MISSCMD && ms->exit_status == 0)
-			ms->exit_status = 1;
-	}
+    if (!ast || ms->heredoc_stop)
+        return ;
+    if (ast->type == NODE_PIPE)
+        execute_pipeline(ms, ast);
+    else if (ast->type == NODE_COMMAND || ast->type == NODE_MISSCMD)
+    {
+        if (ast->cmd)
+            execute_simple_command(ms, ast->cmd);
+        // 아래 라인 삭제: if (ast->type == NODE_MISSCMD && ms->exit_status == 0) ms->exit_status = 1;
+    }
 }
