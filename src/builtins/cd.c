@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:05:44 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/02 01:36:47 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/02 15:23:25 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static char	*expand_tilde_prefix(t_ms *ms, char *path)
 /**
  * Finds a path from an environment variable, handling errors.
  */
-static char	*get_path_from_env(t_ms *ms, const char *var, const char *err_msg)
+static char	*get_path_from_env(t_ms *ms, char *var, char *err_msg)
 {
 	char	*env_path;
 

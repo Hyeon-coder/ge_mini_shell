@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/02 01:31:17 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/02 15:21:04 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,6 +218,7 @@ void		builtin_exit(t_ms *ms, t_cmd *cmd);
 void		builtin_export(t_ms *ms, t_cmd *cmd);
 void		builtin_pwd(t_ms *ms);
 void		builtin_unset(t_ms *ms, t_cmd *cmd);
+void		sort_env_array(char **env_copy, int count);
 
 ////////////////////////////////// Utils //////////////////////////////////////
 void		*x_malloc(t_ms *ms, size_t size);

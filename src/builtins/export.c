@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:15:15 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/02 01:32:11 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/02 16:28:22 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /*
 ** Sorts a duplicated array of environment variables alphabetically.
 */
-static void	sort_env_array(char **env_copy, int count)
+void	sort_env_array(char **env_copy, int count)
 {
 	int		i;
 	int		j;
@@ -63,7 +63,7 @@ static void	print_exported_vars(t_ms *ms)
 ** Checks if the key for an environment variable is a valid identifier.
 ** Must start with a letter or '_', followed by letters, digits, or '_'.
 */
-static bool	is_valid_identifier(const char *key)
+static bool	is_valid_identifier(char *key)
 {
 	int	i;
 
@@ -83,7 +83,7 @@ static bool	is_valid_identifier(const char *key)
 /*
 ** Parses a single argument to 'export', validates it, and sets the variable.
 */
-static void	process_export_argument(t_ms *ms, const char *arg)
+static void	process_export_argument(t_ms *ms, char *arg)
 {
 	char	*key;
 	char	*value;
