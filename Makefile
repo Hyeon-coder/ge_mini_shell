@@ -50,10 +50,11 @@ SRC = \
 	$(SRC_DIR)$(EXEC_DIR)executor.c $(SRC_DIR)$(EXEC_DIR)error.c $(SRC_DIR)$(EXEC_DIR)heredoc.c \
 	$(SRC_DIR)$(EXEC_DIR)path.c $(SRC_DIR)$(EXEC_DIR)redirection.c $(SRC_DIR)$(EXEC_DIR)pipe.c \
 	$(SRC_DIR)$(EXEC_DIR)executor_utils.c $(SRC_DIR)$(EXEC_DIR)redirection_utils.c \
-	$(SRC_DIR)$(EXEC_DIR)heredoc_utils.c $(SRC_DIR)$(BLT_DIR)export_utils.c \
+	$(SRC_DIR)$(EXEC_DIR)heredoc_utils.c  \
 	$(SRC_DIR)$(BLT_DIR)env_utils.c $(SRC_DIR)$(BLT_DIR)cd.c $(SRC_DIR)$(BLT_DIR)echo.c \
 	$(SRC_DIR)$(BLT_DIR)env.c $(SRC_DIR)$(BLT_DIR)exit.c $(SRC_DIR)$(BLT_DIR)export.c \
-	$(SRC_DIR)$(BLT_DIR)pwd.c $(SRC_DIR)$(BLT_DIR)unset.c
+	$(SRC_DIR)$(BLT_DIR)pwd.c $(SRC_DIR)$(BLT_DIR)unset.c $(SRC_DIR)$(BLT_DIR)export_utils.c \
+	$(SRC_DIR)$(BLT_DIR)cd_utils.c
 	
 	
 OBJ = $(SRC:$(SRC_DIR)%=$(OBJ_DIR)/%)

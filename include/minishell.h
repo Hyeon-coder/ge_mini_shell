@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/03 15:05:10 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/03 16:38:52 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,6 +220,9 @@ void		builtin_export(t_ms *ms, t_cmd *cmd);
 void		builtin_pwd(t_ms *ms);
 void		builtin_unset(t_ms *ms, t_cmd *cmd);
 void		sort_env_array(char **env_copy, int count);
+char		*get_target_path(t_ms *ms, t_cmd *cmd);
+void		update_pwd_variables(t_ms *ms);
+
 
 ////////////////////////////////// Utils //////////////////////////////////////
 void		*x_malloc(t_ms *ms, size_t size);
