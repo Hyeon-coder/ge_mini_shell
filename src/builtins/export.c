@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 02:15:15 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/02 16:28:22 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/03 14:51:00 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,29 +83,56 @@ static bool	is_valid_identifier(char *key)
 /*
 ** Parses a single argument to 'export', validates it, and sets the variable.
 */
-static void	process_export_argument(t_ms *ms, char *arg)
-{
-	char	*key;
-	char	*value;
-	int		key_len;
+// static void	process_export_argument(t_ms *ms, char *arg)
+// {
+// 	char	*key;
+// 	char	*value;
+// 	int		key_len;
 
-	key_len = 0;
-	while (arg[key_len] && arg[key_len] != '=')
-		key_len++;
-	key = ft_substr(arg, 0, key_len);
-	if (!is_valid_identifier(key))
-	{
-		ft_putstr_fd("minishell: export: `", 2);
-		ft_putstr_fd((char *)arg, 2);
-		ft_putendl_fd("': not a valid identifier", 2);
-		ms->exit_status = 1;
-	}
-	else if (arg[key_len] == '=')
-	{
-		value = (char *)arg + key_len + 1;
-		set_env_var(ms, key, value);
-	}
-	free(key);
+// 	key_len = 0;
+// 	while (arg[key_len] && arg[key_len] != '=')
+// 		key_len++;
+// 	key = ft_substr(arg, 0, key_len);
+// 	if (!is_valid_identifier(key))
+// 	{
+// 		ft_putstr_fd("minishell: export: `", 2);
+// 		ft_putstr_fd((char *)arg, 2);
+// 		ft_putendl_fd("': not a valid identifier", 2);
+// 		ms->exit_status = 1;
+// 	}
+// 	else if (arg[key_len] == '=')
+// 	{
+// 		value = (char *)arg + key_len + 1;
+// 		set_env_var(ms, key, value);
+// 	}
+// 	free(key);
+// }
+
+static void process_export_argument(t_ms *ms, char *arg)
+{
+    char *key;
+    char *value;
+    int key_len;
+
+    key_len = 0;
+    while (arg[key_len] && arg[key_len] != '=')
+        key_len++;
+    key = ft_substr(arg, 0, key_len);
+    if (!is_valid_identifier(key))
+    {
+        ft_putstr_fd("minishell: export: `", 2);
+        ft_putstr_fd((char *)arg, 2);
+        ft_putendl_fd("': not a valid identifier", 2);
+        ms->exit_status = 1;
+    }
+    else if (arg[key_len] == '=')
+    {
+        value = (char *)arg + key_len + 1;
+        set_env_var(ms, key, value);
+    }
+    else
+        set_env_var(ms, key, NULL);
+    free(key);
 }
 
 /*
