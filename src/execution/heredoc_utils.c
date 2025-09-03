@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:38:08 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/30 21:45:01 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/03 17:27:41 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static char	*generate_heredoc_filename(t_ms *ms)
 	char	*num_str;
 	char	*filename;
 
-	num_str = ft_itoa(ms->heredoc_no++);
+	num_str = ft_itoa(ms->heredoc_no);
 	if (!num_str)
 		ms_error(ms, "ft_itoa failed in heredoc", 1, 0);
 	filename = ft_strjoin(".heredoc_", num_str);

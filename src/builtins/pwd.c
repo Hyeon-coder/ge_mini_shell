@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:11:14 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/03 14:45:19 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/03 17:36:41 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 ** Executes the 'pwd' builtin command.
 ** Prints the current working directory.
 */
-void builtin_pwd(t_ms *ms)
+void	builtin_pwd(t_ms *ms)
 {
 	char	*cwd;
 
@@ -32,7 +32,7 @@ void builtin_pwd(t_ms *ms)
 			ft_putendl_fd(strerror(errno), 2);
 			ms->exit_status = 1;
 		}
-		return;
+		return ;
 	}
 	ft_putendl_fd(cwd, 1);
 	free(cwd);

@@ -1,23 +1,19 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* cd.c                                               :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/08/29 02:05:44 by JuHyeon           #+#    #+#             */
-/* Updated: 2025/09/03 17:00:00 by JuHyeon          ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/03 17:36:51 by JuHyeon           #+#    #+#             */
+/*   Updated: 2025/09/03 17:38:05 by JuHyeon          ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// 함수 프로토타입 선언 (cd_utils.c 에 있는 함수들)
-char	*get_target_path(t_ms *ms, t_cmd *cmd);
-void	update_pwd_variables(t_ms *ms);
-
 /*
-** chdir() 호출 실패 시 에러 메시지를 출력하는 함수
+** Fail to call chdir()
 */
 static void	handle_cd_error(char *path)
 {

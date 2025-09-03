@@ -70,7 +70,6 @@ $(NAME): $(OBJ)
 # Compile the object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS_DEP)
 	@mkdir -p $(dir $@)
-	@echo "Compiling $<..."
 	@$(CC) $(CFLAGS) $(HEADERS) -c $< -o $@
 
 # Compile the Libft library

@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:00:11 by mpierce           #+#    #+#             */
-/*   Updated: 2025/09/03 14:46:23 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/03 17:30:49 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,47 +73,24 @@ char	*compare_path(t_ms *ms, char *home, char *cwd)
 ** If getcwd() fails then backup of PWD is used
 ** Sets alloc bool to indicate if pwd is allocated
 */
-// char	*get_pwd(t_ms *ms, bool *alloc)
-// {
-// 	char	*pwd;
-
-// 	pwd = find_var(ms, ms->envp, "PWD");
-// 	if (!pwd)
-// 	{
-// 		pwd = getcwd(NULL, 0);
-// 		if (!pwd)
-// 		{
-// 			if (errno == ENOENT)
-// 			{
-// 				*alloc = false;
-// 				return (".");
-// 			}
-// 			else
-// 				ms_error(ms, "getcwd failure", 1, 0);
-// 		}
-// 		*alloc = true;
-// 	}
-// 	return (pwd);
-// }
-
-char *get_pwd(t_ms *ms, bool *alloc)
+char	*get_pwd(t_ms *ms, bool *alloc)
 {
-    char *pwd;
+	char	*pwd;
 
-    pwd = getcwd(NULL, 0);
-    if (!pwd)
-    {
-        *alloc = false; // 복제본이 아니므로 false
-        pwd = find_var(ms, ms->envp, "PWD");
-        if (pwd)
-            return (pwd);
-        if (errno == ENOENT)
-            return (".");
-        else
-            ms_error(ms, "getcwd failure", 1, 0);
-    }
-    *alloc = true;
-    return (pwd);
+	pwd = getcwd(NULL, 0);
+	if (!pwd)
+	{
+		*alloc = false;
+		pwd = find_var(ms, ms->envp, "PWD");
+		if (pwd)
+			return (pwd);
+		if (errno == ENOENT)
+			return (".");
+		else
+			ms_error(ms, "getcwd failure", 1, 0);
+	}
+	*alloc = true;
+	return (pwd);
 }
 
 /*

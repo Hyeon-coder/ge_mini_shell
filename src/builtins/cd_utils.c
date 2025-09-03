@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* cd_utils.c                                         :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/09/03 17:00:00 by JuHyeon           #+#    #+#             */
-/* Updated: 2025/09/03 17:00:00 by JuHyeon          ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd_utils.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/03 21:13:45 by JuHyeon           #+#    #+#             */
+/*   Updated: 2025/09/03 21:13:47 by JuHyeon          ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
@@ -56,8 +56,9 @@ void	update_pwd_variables(t_ms *ms)
 		if (errno == ENOENT)
 		{
 			append_dotdot_to_pwd(ms);
-			ft_putendl_fd("cd: error retrieving current directory: getcwd: " \
-				"cannot access parent directories: No such file or directory", 2);
+			ft_putstr_fd("cd: error retrieving current directory: getcwd: ", 2);
+			ft_putstr_fd("cannot access parent directories: ", 2);
+			ft_putendl_fd("No such file or directory", 2);
 		}
 	}
 	else
@@ -76,8 +77,8 @@ char	*get_target_path(t_ms *ms, t_cmd *cmd)
 	if (!path || ft_strcmp(path, "~") == 0)
 		return (get_path_from_env(ms, "HOME", "minishell: cd: HOME not set"));
 	if (ft_strcmp(path, "-") == 0)
-		return (get_path_from_env(ms, "OLDPWD", \
-			"minishell: cd: OLDPWD not set"));
+		return (get_path_from_env(ms, "OLDPWD",
+				"minishell: cd: OLDPWD not set"));
 	if (ft_strncmp(path, "~/", 2) == 0)
 	{
 		home = find_var(ms, ms->envp, "HOME");
