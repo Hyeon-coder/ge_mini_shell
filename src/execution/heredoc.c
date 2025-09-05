@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 21:45:28 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/08/30 22:14:25 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/05 16:22:01 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,12 @@ static void	heredoc_child_loop(t_ms *ms, char *lim, int fd, int quo)
 		}
 		write_to_heredoc(ms, line, fd, (quo == UNQUOTED));
 	}
+	if (ms->prompt)
+		free(ms->prompt);
+	if (ms)
+		free_ms(ms);
+	if (fd)
+		close(fd);
 	exit(0);
 }
 
@@ -81,11 +87,13 @@ static int	handle_heredoc_parent(t_ms *ms, pid_t pid,\
 		ms->exit_status = 1;
 		write(1, "\n", 1);
 		unlink(filename);
-		free(filename);
+		if (filename)
+			free(filename);
 		return (0);
 	}
-	free(infile->name);
 	infile->name = filename;
+	// if (filename)
+	// 	free(filename);
 	return (0);
 }
 

@@ -15,7 +15,7 @@ NAME = minishell
 
 # Comiler and Flags
 CC 		= cc
-CFLAGS 	= -Wall -Werror -Wextra
+CFLAGS 	= -Wall -Werror -Wextra -g
 
 # Directories
 SRC_DIR 		= ./src

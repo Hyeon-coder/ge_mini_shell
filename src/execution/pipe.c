@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:17:39 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/02 01:26:35 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/05 15:12:11 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,10 @@ static void	execute_node_command(t_ms *ms, t_ast *node)
 		if (is_builtin(node->cmd->full_cmd[0]))
 		{
 			execute_builtin(ms, node->cmd);
+			if (ms->prompt)
+				free(ms->prompt);
+			if (ms)
+				free_ms(ms);
 			exit(ms->exit_status);
 		}
 		else

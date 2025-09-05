@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clu <clu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 12:17:52 by mpierce           #+#    #+#             */
-/*   Updated: 2025/04/22 17:41:31 by clu              ###   ########.fr       */
+/*   Updated: 2025/09/05 16:33:09 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,15 @@ void	ft_free_infile(t_infile **array)
 	{
 		if (array[i])
 		{
-			free(array[i]->name);
-			free(array[i]);
+			if (array[i]->name)
+				free(array[i]->name);
+			if (array[i])
+				free(array[i]);
 		}
 		i++;
 	}
-	free(array);
+	if (array)
+		free(array);
 }
 
 /*
@@ -36,6 +39,8 @@ void	ft_free_infile(t_infile **array)
 */
 void	free_cmd_help(t_cmd *cmd)
 {
+	if (!cmd)
+		return ;
 	if (cmd->full_cmd)
 	{
 		ft_free_array(cmd->full_cmd);

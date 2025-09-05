@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirects.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clu <clu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 14:12:22 by clu               #+#    #+#             */
-/*   Updated: 2025/05/19 00:29:24 by clu              ###   ########.fr       */
+/*   Updated: 2025/09/05 15:56:38 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,11 @@ bool	parse_redirect(t_ms *ms, t_token **tokens, t_cmd *cmd)
 	else if (current->type == TOKEN_REDIR_IN || current->type == TOKEN_HEREDOC)
 	{
 		if (handle_in_redirect(ms, current, cmd) == false)
+		{
+			// if (cmd->infile)
+			// 	free(cmd->infile);
 			return (false);
+		}
 	}
 	else
 		error(NULL, "Invalid redirection type");
@@ -77,8 +81,10 @@ t_infile	*new_infile(char *name, int is_heredoc)
 		error(NULL, "malloc failed in new_infile");
 	}
 	infile->heredoc = is_heredoc;
+	if (infile->name)
+		free(infile->name);
 	return (infile);
-}
+} 
 
 /*
 ** Add the infile to the infile struct.

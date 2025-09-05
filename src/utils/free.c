@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clu <clu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 17:50:16 by clu               #+#    #+#             */
-/*   Updated: 2025/05/05 10:24:09 by clu              ###   ########.fr       */
+/*   Updated: 2025/09/05 15:12:55 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,15 @@ void	free_ms(t_ms *ms)
 		i = 0;
 		while (ms->envp[i])
 		{
-			free(ms->envp[i]);
+			if (ms->envp[i])
+				free(ms->envp[i]);
 			i++;
 		}
-		free(ms->envp);
+		if (ms->envp)			
+			free(ms->envp);
 	}
-	free_structs(ms);
-	free(ms);
+	if (ms)
+		free_structs(ms);
 }
 
 void	free_structs(t_ms *ms)

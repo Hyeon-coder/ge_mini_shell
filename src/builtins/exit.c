@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:12:20 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/01 01:20:00 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/05 15:09:08 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,12 @@ void	bi_exit(t_ms *ms, int ex_code, int error)
 	(void)error;
 	if (ms && isatty(fileno(stdout)))
 		ft_putendl_fd("exit", 2);
+
+	if (ms->prompt)
+		free(ms->prompt);
+	if (ms)
+		free_ms(ms);
+	// free_structs(ms);
 	exit(ex_code);
 }
 

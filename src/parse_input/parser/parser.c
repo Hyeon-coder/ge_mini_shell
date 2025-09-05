@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clu <clu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:57:40 by clu               #+#    #+#             */
-/*   Updated: 2025/05/18 01:42:54 by clu              ###   ########.fr       */
+/*   Updated: 2025/09/05 16:30:01 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,11 @@ t_ast	*parse_cmd(t_token **tokens, t_ms *ms)
 	}
 	if (!node)
 	{
+		free(ms->cmd->infile);
 		free_cmd(cmd);
 		node = NULL;
 	}
+	
 	return (node);
 }
 
@@ -99,6 +101,8 @@ bool	process_cmd_name(t_token **current, t_cmd *cmd, int *arg, t_ms *ms)
 	if (*current && (*current)->type == TOKEN_WORD)
 	{
 		prev_token = *current;
+		if (cmd->full_cmd)
+			free_cmd(cmd);
 		cmd->full_cmd = malloc(2 * sizeof(char *));
 		if (!cmd->full_cmd)
 			error(NULL, "malloc failed in parse_cmd");
@@ -114,6 +118,7 @@ bool	process_cmd_name(t_token **current, t_cmd *cmd, int *arg, t_ms *ms)
 		return (false);
 	return (true);
 }
+
 
 /*
 ** For word tokens, add them to the command's full_cmd array.
