@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:57:40 by clu               #+#    #+#             */
-/*   Updated: 2025/09/05 17:08:18 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/06 10:59:46 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ t_ast	*parse_cmd(t_token **tokens, t_ms *ms)
 	}
 	if (!node)
 	{
-		// free(ms->cmd->infile);
+		free(ms->cmd->infile);
 		free_cmd(cmd);
 		node = NULL;
 	}

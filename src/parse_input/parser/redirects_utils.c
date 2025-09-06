@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 16:07:38 by mpierce           #+#    #+#             */
-/*   Updated: 2025/09/05 15:41:02 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/06 10:59:43 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ bool	setup_heredoc(t_ms *ms, t_token *token, t_infile **infile)
 		if (*infile) 
         {
             if ((*infile)->name) 
-                free((*infile)->name);  // Free the name field only if it was allocated
-            free(*infile);  // Free the infile structure
-            *infile = NULL;  // Avoid double free by setting it to NULL
+                free((*infile)->name);
+            free(*infile);
+            *infile = NULL;
         }
 	}
 	return (true);
