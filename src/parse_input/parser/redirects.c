@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 14:12:22 by clu               #+#    #+#             */
-/*   Updated: 2025/09/05 16:53:57 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/06 10:47:19 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ t_infile	*new_infile(char *name, int is_heredoc)
 	infile->name = ft_strdup(name);
 	if (!infile->name)
 	{
-		free(infile->name);
+		// free(infile->name);
 		free(infile);
 		error(NULL, "malloc failed in new_infile");
 	}

@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 21:45:28 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/05 16:22:01 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/06 10:48:30 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,9 @@ static int	handle_heredoc_parent(t_ms *ms, pid_t pid,\
 			free(filename);
 		return (0);
 	}
+	if (infile->name)
+		free(infile->name);
 	infile->name = filename;
-	// if (filename)
-	// 	free(filename);
 	return (0);
 }
 
