@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirects_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 16:07:38 by mpierce           #+#    #+#             */
-/*   Updated: 2025/09/06 10:59:43 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/09 22:02:19 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ bool	setup_heredoc(t_ms *ms, t_token *token, t_infile **infile)
             free(*infile);
             *infile = NULL;
         }
+		return (false);	// TMP
 	}
 	return (true);
 }
