@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 21:45:28 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/09 23:25:59 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 01:10:33 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ static void	cleanup_and_exit_child(t_ms *ms, int fd)
 		free(ms->prompt);
 		ms->prompt = NULL;
 	}
+	complete_child_cleanup(ms);
 	exit(0);
 }
 

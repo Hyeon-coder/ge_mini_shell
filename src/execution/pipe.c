@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:17:39 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/05 15:12:11 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/10 01:08:16 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,8 @@ static void	execute_node_command(t_ms *ms, t_ast *node)
 		if (is_builtin(node->cmd->full_cmd[0]))
 		{
 			execute_builtin(ms, node->cmd);
-			if (ms->prompt)
-				free(ms->prompt);
-			if (ms)
-				free_ms(ms);
+			// ⭐ builtin 실행 후 완전한 메모리 정리
+			complete_child_cleanup(ms);
 			exit(ms->exit_status);
 		}
 		else
@@ -51,6 +49,8 @@ static void	child_process_routine(t_ms *ms, t_ast *node, int in_fd, int out_fd)
 		close(out_fd);
 	}
 	execute_node_command(ms, node);
+	// ⭐ 만약 여기까지 도달하면 완전 정리 후 종료
+	complete_child_cleanup(ms);
 	exit(ms->exit_status);
 }
 

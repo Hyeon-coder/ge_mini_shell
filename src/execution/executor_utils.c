@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:41 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/02 01:24:07 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 01:05:04 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,23 +45,31 @@ void	execute_builtin(t_ms *ms, t_cmd *cmd)
 
 void	execute_child_process(t_ms *ms, t_cmd *cmd, char *path)
 {
+	int	exit_code;
+
 	reset_child_signals();
 	if (!path)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd->full_cmd[0], 2);
 		ft_putendl_fd(": command not found", 2);
+		// ⭐ 명령어를 찾지 못했을 때 완전 정리
+		complete_child_cleanup(ms);
 		exit(127);
 	}
 	execve(path, cmd->full_cmd, ms->envp);
+	
+	// ⭐ execve 실패 시에만 여기 도달
+	exit_code = (errno == EACCES) ? 126 : 127;
 	free(path);
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(cmd->full_cmd[0], 2);
 	ft_putstr_fd(": ", 2);
 	ft_putendl_fd(strerror(errno), 2);
-	if (errno == EACCES)
-		exit(126);
-	exit(127);
+	
+	// ⭐ execve 실패 시 완전 정리
+	complete_child_cleanup(ms);
+	exit(exit_code);
 }
 
 void	wait_for_child_process(t_ms *ms, pid_t pid)

@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/10 00:08:19 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 01:08:50 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,6 +269,8 @@ void		heredoc_sigint_handler(int sig);
 bool		setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout);
 char		**duplicate_and_sort_env(t_ms *ms);
 void		print_formatted_variable(char *var);
+void		complete_child_cleanup(t_ms *ms);
+void		free_execution_memory(t_ms *ms);
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);

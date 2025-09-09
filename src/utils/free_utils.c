@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 12:17:52 by mpierce           #+#    #+#             */
-/*   Updated: 2025/09/10 00:19:08 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 01:03:32 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 /*
 ** Free single infile structure completely
+** Ensures all nested allocations are freed
 */
 static void	free_single_infile(t_infile *infile)
 {
@@ -29,6 +30,7 @@ static void	free_single_infile(t_infile *infile)
 
 /*
 ** Completely free infile structures including all nested allocations
+** Handles NULL arrays safely
 */
 void	ft_free_infile(t_infile **array)
 {
@@ -47,12 +49,10 @@ void	ft_free_infile(t_infile **array)
 }
 
 /*
-** Free cmd arrays and reset pointers
+** Free all cmd arrays and reset pointers to prevent double free
 */
-void	free_cmd_help(t_cmd *cmd)
+static void	free_cmd_arrays(t_cmd *cmd)
 {
-	if (!cmd)
-		return ;
 	if (cmd->full_cmd)
 	{
 		ft_free_array(cmd->full_cmd);
@@ -76,12 +76,37 @@ void	free_cmd_help(t_cmd *cmd)
 }
 
 /*
-** Completely free cmd structure
+** Completely free cmd structure with thorough cleanup
 */
 void	free_cmd(t_cmd *cmd)
 {
 	if (!cmd)
 		return ;
-	free_cmd_help(cmd);
+	free_cmd_arrays(cmd);
 	free(cmd);
+}
+
+/*
+** Complete cleanup for child process
+** Frees all execution-related memory
+*/
+void	free_execution_memory(t_ms *ms)
+{
+	if (!ms)
+		return ;
+	if (ms->cmd_path)
+	{
+		free(ms->cmd_path);
+		ms->cmd_path = NULL;
+	}
+	if (ms->heredoc_name)
+	{
+		free(ms->heredoc_name);
+		ms->heredoc_name = NULL;
+	}
+	if (ms->pids)
+	{
+		free(ms->pids);
+		ms->pids = NULL;
+	}
 }

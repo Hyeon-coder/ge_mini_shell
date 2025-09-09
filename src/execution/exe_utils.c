@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 21:51:21 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/10 00:16:20 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 01:03:53 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 /*
 ** Closes any open file descriptors and pipes
+** Thorough cleanup of all file descriptors
 */
 void	close_fd(t_ms *ms)
 {
@@ -36,6 +37,18 @@ void	close_fd(t_ms *ms)
 	
 	// ⭐ 모든 파이프 정리
 	close_pipes(ms);
+	
+	// ⭐ 표준 입출력 복사본 정리
+	if (ms->std_copy[0] != -1)
+	{
+		close(ms->std_copy[0]);
+		ms->std_copy[0] = -1;
+	}
+	if (ms->std_copy[1] != -1)
+	{
+		close(ms->std_copy[1]);
+		ms->std_copy[1] = -1;
+	}
 }
 
 /*
@@ -70,7 +83,7 @@ void	close_pipes(t_ms *ms)
 
 /*
 ** Complete cleanup of environment variables
-** main에서 복사된 환경변수들을 execution에서 완전 해제
+** Thorough deallocation of all environment memory
 */
 void	free_envp(t_ms *ms)
 {
@@ -97,4 +110,36 @@ void	free_envp(t_ms *ms)
 	
 	// ⭐ 요소 개수 초기화
 	ms->elements = 0;
+}
+
+/*
+** Complete child process cleanup
+** All memory and resources freed before exit
+*/
+void	complete_child_cleanup(t_ms *ms)
+{
+	if (!ms)
+		return ;
+	
+	// ⭐ 파일 디스크립터 완전 정리
+	close_fd(ms);
+	
+	// ⭐ execution 메모리 정리
+	free_execution_memory(ms);
+	
+	// ⭐ parsing 구조체 정리
+	free_structs(ms);
+	
+	// ⭐ 환경변수 정리
+	free_envp(ms);
+	
+	// ⭐ prompt 정리
+	if (ms->prompt)
+	{
+		free(ms->prompt);
+		ms->prompt = NULL;
+	}
+	
+	// ⭐ readline history 정리
+	rl_clear_history();
 }
