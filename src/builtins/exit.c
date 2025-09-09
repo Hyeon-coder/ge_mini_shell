@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:12:20 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/06 10:55:17 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/09 21:51:55 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,36 @@
 /*
 ** Prints "exit" to stderr and terminates the shell after freeing memory.
 */
+// void	bi_exit(t_ms *ms, int ex_code, int error)
+// {
+// 	(void)error;
+// 	if (ms && isatty(fileno(stdout)))
+// 		ft_putendl_fd("exit", 2);
+
+// 	if (ms->prompt)
+// 		free(ms->prompt);
+// 	if (ms)
+// 		free_structs(ms);
+// 	// free_ms(ms);
+// 	exit(ex_code);
+// }
+
+
+
 void	bi_exit(t_ms *ms, int ex_code, int error)
 {
-	(void)error;
-	if (ms && isatty(fileno(stdout)))
-		ft_putendl_fd("exit", 2);
-
-	if (ms->prompt)
-		free(ms->prompt);
 	if (ms)
-		free_ms(ms);
-	// free_structs(ms);
+	{
+		if (ms->prompt)
+			free(ms->prompt);
+		close_fd(ms);
+		free_envp(ms);
+		if (ms->pids)
+			free(ms->pids);
+		if (!error)
+			write(2, "exit\n", 5);
+		free_structs(ms); // 스택에 할당된 ms를 free하지 않고, 멤버만 해제
+	}
 	exit(ex_code);
 }
 
