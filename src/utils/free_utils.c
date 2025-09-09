@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 12:17:52 by mpierce           #+#    #+#             */
-/*   Updated: 2025/09/10 01:03:32 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 01:27:40 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,7 @@ void	free_cmd(t_cmd *cmd)
 }
 
 /*
-** Complete cleanup for child process
-** Frees all execution-related memory
+** Complete cleanup for child process - frees execution-related memory
 */
 void	free_execution_memory(t_ms *ms)
 {

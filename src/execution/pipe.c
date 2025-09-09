@@ -6,26 +6,35 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:17:39 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/10 01:08:16 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 01:27:00 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/*
+** Execute node command with complete memory management
+*/
 static void	execute_node_command(t_ms *ms, t_ast *node)
 {
 	if (node->type == NODE_PIPE)
 		run_executor(ms, node);
 	else if (node->cmd)
 	{
-		if (!setup_redirections(node->cmd, &ms->std_copy[0], &ms->std_copy[1]))
+		if (!setup_redirections(node->cmd, &ms->std_copy[0], 
+							   &ms->std_copy[1]))
+		{
+			complete_child_cleanup(ms);
 			exit(1);
+		}
 		if (!node->cmd->full_cmd || !node->cmd->full_cmd[0])
+		{
+			complete_child_cleanup(ms);
 			exit(0);
+		}
 		if (is_builtin(node->cmd->full_cmd[0]))
 		{
 			execute_builtin(ms, node->cmd);
-			// ⭐ builtin 실행 후 완전한 메모리 정리
 			complete_child_cleanup(ms);
 			exit(ms->exit_status);
 		}
@@ -35,6 +44,9 @@ static void	execute_node_command(t_ms *ms, t_ast *node)
 	}
 }
 
+/*
+** Enhanced child process routine for pipes with memory management
+*/
 static void	child_process_routine(t_ms *ms, t_ast *node, int in_fd, int out_fd)
 {
 	reset_child_signals();
@@ -49,11 +61,13 @@ static void	child_process_routine(t_ms *ms, t_ast *node, int in_fd, int out_fd)
 		close(out_fd);
 	}
 	execute_node_command(ms, node);
-	// ⭐ 만약 여기까지 도달하면 완전 정리 후 종료
 	complete_child_cleanup(ms);
 	exit(ms->exit_status);
 }
 
+/*
+** Wait for children processes and handle exit status
+*/
 static void	wait_for_children(t_ms *ms, pid_t last_pid)
 {
 	int	status;
@@ -81,8 +95,7 @@ static void	wait_for_children(t_ms *ms, pid_t last_pid)
 }
 
 /*
-** Creates and connects the child processes for the intermediate
-** commands in the pipeline.
+** Create and connect child processes for intermediate commands in pipeline
 */
 static void	create_pipe_processes(t_ms *ms, t_ast **ast, int *in_fd)
 {
@@ -110,8 +123,8 @@ static void	create_pipe_processes(t_ms *ms, t_ast **ast, int *in_fd)
 }
 
 /*
-** Executes a command pipeline. It creates intermediate processes for
-** piped commands and a final process for the last command in the pipeline.
+** Execute command pipeline with complete memory management
+** Creates intermediate processes for piped commands and final process
 */
 void	execute_pipeline(t_ms *ms, t_ast *ast)
 {

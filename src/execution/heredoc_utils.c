@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:38:08 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/09 23:26:29 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 01:37:16 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ int	open_heredoc_file(char **filename, t_ms *ms)
 	if (fd == -1)
 	{
 		free(*filename);
+		free(filename);
 		ms_error(ms, "open failed for heredoc", 1, 0);
 	}
 	return (fd);

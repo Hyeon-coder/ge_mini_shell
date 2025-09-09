@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 21:51:21 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/10 01:03:53 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 01:29:56 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,25 +20,17 @@ void	close_fd(t_ms *ms)
 {
 	if (!ms)
 		return ;
-	
-	// ⭐ 입력 파일 디스크립터 정리
 	if (ms->fd_in != -1)
 	{
 		close(ms->fd_in);
 		ms->fd_in = -1;
 	}
-	
-	// ⭐ 출력 파일 디스크립터 정리
 	if (ms->fd_out != -1)
 	{
 		close(ms->fd_out);
 		ms->fd_out = -1;
 	}
-	
-	// ⭐ 모든 파이프 정리
 	close_pipes(ms);
-	
-	// ⭐ 표준 입출력 복사본 정리
 	if (ms->std_copy[0] != -1)
 	{
 		close(ms->std_copy[0]);
@@ -58,22 +50,16 @@ void	close_pipes(t_ms *ms)
 {
 	if (!ms)
 		return ;
-	
-	// ⭐ 현재 파이프 읽기 끝 정리
 	if (ms->ms_fd[0] != -1)
 	{
 		close(ms->ms_fd[0]);
 		ms->ms_fd[0] = -1;
 	}
-	
-	// ⭐ 현재 파이프 쓰기 끝 정리
 	if (ms->ms_fd[1] != -1)
 	{
 		close(ms->ms_fd[1]);
 		ms->ms_fd[1] = -1;
 	}
-	
-	// ⭐ 이전 파이프 디스크립터 정리
 	if (ms->prev_fd != -1)
 	{
 		close(ms->prev_fd);
@@ -91,8 +77,6 @@ void	free_envp(t_ms *ms)
 
 	if (!ms || !ms->envp)
 		return ;
-	
-	// ⭐ 각 환경변수 문자열 정리 (main에서 ft_strdup으로 생성됨)
 	i = 0;
 	while (ms->envp[i])
 	{
@@ -103,13 +87,37 @@ void	free_envp(t_ms *ms)
 		}
 		i++;
 	}
-	
-	// ⭐ 환경변수 배열 자체 정리 (main에서 malloc으로 생성됨)
 	free(ms->envp);
 	ms->envp = NULL;
-	
-	// ⭐ 요소 개수 초기화
 	ms->elements = 0;
+}
+
+/*
+** Force cleanup all parsing structures to prevent memory leaks
+*/
+static void	force_cleanup_parsing(t_ms *ms)
+{
+	if (ms->ast)
+	{
+		free_ast(ms->ast);
+		ms->ast = NULL;
+		ms->cmd = NULL;
+	}
+	if (ms->token)
+	{
+		free_tokens(ms->token);
+		ms->token = NULL;
+	}
+	if (ms->word)
+	{
+		free_word(ms->word);
+		ms->word = NULL;
+	}
+	if (ms->cmd)
+	{
+		free_cmd(ms->cmd);
+		ms->cmd = NULL;
+	}
 }
 
 /*
@@ -120,26 +128,15 @@ void	complete_child_cleanup(t_ms *ms)
 {
 	if (!ms)
 		return ;
-	
-	// ⭐ 파일 디스크립터 완전 정리
 	close_fd(ms);
-	
-	// ⭐ execution 메모리 정리
 	free_execution_memory(ms);
-	
-	// ⭐ parsing 구조체 정리
-	free_structs(ms);
-	
-	// ⭐ 환경변수 정리
+	force_cleanup_parsing(ms);
 	free_envp(ms);
-	
-	// ⭐ prompt 정리
 	if (ms->prompt)
 	{
 		free(ms->prompt);
 		ms->prompt = NULL;
 	}
-	
-	// ⭐ readline history 정리
+	clean_all_heredocs(ms);
 	rl_clear_history();
 }

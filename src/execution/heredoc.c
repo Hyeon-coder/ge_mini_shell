@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 21:45:28 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/10 01:10:33 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 01:22:19 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,6 @@ static void	cleanup_and_exit_child(t_ms *ms, int fd)
 {
 	if (fd > 0)
 		close(fd);
-	rl_clear_history();
-	free_structs(ms);
-	free_envp(ms);
-	if (ms->prompt)
-	{
-		free(ms->prompt);
-		ms->prompt = NULL;
-	}
 	complete_child_cleanup(ms);
 	exit(0);
 }

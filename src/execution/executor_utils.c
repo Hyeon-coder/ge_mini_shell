@@ -6,12 +6,15 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 17:36:41 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/10 01:05:04 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 01:27:18 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/*
+** Check if command is a builtin function
+*/
 int	is_builtin(char *cmd)
 {
 	if (!cmd)
@@ -24,6 +27,9 @@ int	is_builtin(char *cmd)
 	return (0);
 }
 
+/*
+** Execute builtin command with proper handling
+*/
 void	execute_builtin(t_ms *ms, t_cmd *cmd)
 {
 	ms->exit_status = 0;
@@ -43,35 +49,51 @@ void	execute_builtin(t_ms *ms, t_cmd *cmd)
 		builtin_unset(ms, cmd);
 }
 
-void	execute_child_process(t_ms *ms, t_cmd *cmd, char *path)
+/*
+** Handle command not found error with complete cleanup
+*/
+static void	handle_command_not_found(t_ms *ms, t_cmd *cmd)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(cmd->full_cmd[0], 2);
+	ft_putendl_fd(": command not found", 2);
+	complete_child_cleanup(ms);
+	exit(127);
+}
+
+/*
+** Handle execve failure with complete cleanup
+*/
+static void	handle_execve_failure(t_ms *ms, t_cmd *cmd, char *path)
 {
 	int	exit_code;
 
-	reset_child_signals();
-	if (!path)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd->full_cmd[0], 2);
-		ft_putendl_fd(": command not found", 2);
-		// ⭐ 명령어를 찾지 못했을 때 완전 정리
-		complete_child_cleanup(ms);
-		exit(127);
-	}
-	execve(path, cmd->full_cmd, ms->envp);
-	
-	// ⭐ execve 실패 시에만 여기 도달
 	exit_code = (errno == EACCES) ? 126 : 127;
 	free(path);
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(cmd->full_cmd[0], 2);
 	ft_putstr_fd(": ", 2);
 	ft_putendl_fd(strerror(errno), 2);
-	
-	// ⭐ execve 실패 시 완전 정리
 	complete_child_cleanup(ms);
 	exit(exit_code);
 }
 
+/*
+** Execute child process with complete memory management
+** Handles execve execution with proper cleanup on failure
+*/
+void	execute_child_process(t_ms *ms, t_cmd *cmd, char *path)
+{
+	reset_child_signals();
+	if (!path)
+		handle_command_not_found(ms, cmd);
+	execve(path, cmd->full_cmd, ms->envp);
+	handle_execve_failure(ms, cmd, path);
+}
+
+/*
+** Wait for child process and handle exit status
+*/
 void	wait_for_child_process(t_ms *ms, pid_t pid)
 {
 	int	status;
