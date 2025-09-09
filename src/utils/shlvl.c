@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:15:11 by mpierce           #+#    #+#             */
-/*   Updated: 2025/09/09 22:23:37 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/09 22:30:43 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	shlvl(t_ms *ms)
 {
 	char	*lvlstr;
 	int		lvlint;
-	// char	*temp;
+	char	*temp;
 
 	lvlstr = find_var(ms, ms->envp, "SHLVL");
 	if (!lvlstr)
@@ -59,7 +59,7 @@ void	shlvl(t_ms *ms)
 		return ;
 	}
 	lvlint = ft_atoi(lvlstr);
-	// lvlstr = NULL;
+	lvlstr = NULL;
 	if (++lvlint > 1000)
 	{
 		printf(SHLV, lvlint);
@@ -70,9 +70,7 @@ void	shlvl(t_ms *ms)
 	lvlstr = ft_itoa(lvlint);
 	if (!lvlstr)
 		ms_error(ms, "ft_itoa failire", 1, 0);
-	// temp = shlvl_join(ms, "SHLVL=", lvlstr);
-	// set_env_var(ms, "SHLVL", temp + 6);
-	set_env_var(ms, "SHLVL", lvlstr);
-	// shlvl_free(temp, lvlstr);
-	free(lvlstr);
+	temp = shlvl_join(ms, "SHLVL=", lvlstr);
+	set_env_var(ms, "SHLVL", temp + 6);
+	shlvl_free(temp, lvlstr);
 }
