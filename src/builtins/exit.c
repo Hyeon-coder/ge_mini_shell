@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:12:20 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/09 22:56:56 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/09 23:16:32 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 */
 void	bi_exit(t_ms *ms, int ex_code, int error)
 {
+	rl_clear_history();
 	if (ms)
 	{
 		if (ms->prompt)
@@ -33,9 +34,8 @@ void	bi_exit(t_ms *ms, int ex_code, int error)
 		}
 		if (!error)
 			write(2, "exit\n", 5);
-		free_structs(ms); // 스택에 할당된 ms를 free하지 않고, 멤버만 해제
+		free_structs(ms);
 	}
-	rl_clear_history(); // readline history 정리
 	exit(ex_code);
 }
 

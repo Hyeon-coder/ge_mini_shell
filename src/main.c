@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 13:18:00 by mpierce           #+#    #+#             */
-/*   Updated: 2025/09/09 22:58:39 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/09 23:15:57 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,9 +108,5 @@ int	main(int argc, char **argv, char **envp)
 		get_prompt(&ms);
 		free_structs(&ms);
 	}
-	if (ms.prompt)
-		free(ms.prompt);
-	free_envp(&ms);
-	rl_clear_history();
 	return (0);
 }

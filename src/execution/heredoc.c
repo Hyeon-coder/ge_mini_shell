@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 21:45:28 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/09 22:58:55 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/09 23:25:59 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,7 @@ static void	write_to_heredoc(t_ms *ms, char *line, int fd, int expand)
 /*
 ** This is the signal handler for SIGINT (Ctrl+C) specifically
 ** during heredoc input. It sets a global flag and uses ioctl to push a
-** newline character into the input buffer. This forces the blocked
-** readline() call to return immediately, allowing the loop to terminate.
+** newline character into the input buffer.
 */
 void	heredoc_sigint_handler(int sig)
 {
@@ -46,6 +45,27 @@ void	heredoc_sigint_handler(int sig)
 	ioctl(STDIN_FILENO, TIOCSTI, "\n");
 }
 
+/*
+** Clean up memory and exit child process
+*/
+static void	cleanup_and_exit_child(t_ms *ms, int fd)
+{
+	if (fd > 0)
+		close(fd);
+	rl_clear_history();
+	free_structs(ms);
+	free_envp(ms);
+	if (ms->prompt)
+	{
+		free(ms->prompt);
+		ms->prompt = NULL;
+	}
+	exit(0);
+}
+
+/*
+** Child process loop for heredoc input
+*/
 static void	heredoc_child_loop(t_ms *ms, char *lim, int fd, int quo)
 {
 	char	*line;
@@ -62,23 +82,15 @@ static void	heredoc_child_loop(t_ms *ms, char *lim, int fd, int quo)
 		}
 		write_to_heredoc(ms, line, fd, (quo == UNQUOTED));
 	}
-	
-	// Child process에서 최소한의 정리만 수행
-	if (fd > 0)
-		close(fd);
-	
-	// readline 관련 정리
-	rl_clear_history();
-	
-	exit(0);
+	cleanup_and_exit_child(ms, fd);
 }
 
 /*
-** The parent process waits for the heredoc child process and handles the result.
-** It checks if the child was terminated by a signal and updates the shell state.
+** The parent process waits for the heredoc child process
+** and handles the result.
 */
-static int	handle_heredoc_parent(t_ms *ms, pid_t pid,\
-									char *filename, t_infile *infile)
+static int	handle_heredoc_parent(t_ms *ms, pid_t pid, char *filename,
+									t_infile *infile)
 {
 	int	status;
 
@@ -102,7 +114,7 @@ static int	handle_heredoc_parent(t_ms *ms, pid_t pid,\
 
 /*
 ** Initializes the heredoc process. It creates a temporary file,
-** forks a child process to handle user input, and waits for its completion.
+** forks a child process to handle user input, and waits for completion.
 */
 int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 {

@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/09 21:50:31 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 00:08:19 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,6 +230,7 @@ void		*x_malloc(t_ms *ms, size_t size);
 char		*x_strdup(t_ms *ms, const char *s);
 char		*x_substr(t_ms *ms, const char *s, unsigned int start, size_t len);
 char		*x_strjoin_free(t_ms *ms, char *s1, char *s2);
+void 		ft_free_infile(t_infile **array);
 void		free_envp(t_ms *ms);
 void		free_ms(t_ms *ms);
 void		free_segments(t_segment *seg);
@@ -263,14 +264,8 @@ void		wait_for_child_process(t_ms *ms, pid_t pid);
 int			is_builtin(char *cmd);
 void		execute_builtin(t_ms *ms, t_cmd *cmd);
 int			process_infile_loop(t_cmd *cmd);
-int			finalize_heredoc(t_ms *ms, t_infile *infile,\
-				char *filename, int stdin_copy);
 int			open_heredoc_file(char **filename, t_ms *ms);
 void		heredoc_sigint_handler(int sig);
-void		setup_heredoc_handlers(struct termios *orig_termios,\
-				struct sigaction *sa_old);
-void		restore_handlers(struct termios *orig_termios,\
-				struct sigaction *sa_old);
 bool		setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout);
 char		**duplicate_and_sort_env(t_ms *ms);
 void		print_formatted_variable(char *var);
