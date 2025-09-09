@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirects.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 14:12:22 by clu               #+#    #+#             */
-/*   Updated: 2025/09/06 10:59:31 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/09 20:48:12 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,8 @@ t_infile	*new_infile(char *name, int is_heredoc)
 		error(NULL, "malloc failed in new_infile");
 	}
 	infile->heredoc = is_heredoc;
-	if (infile->name)
-		free(infile->name);
+	// if (infile->name)
+	// 	free(infile->name);
 	return (infile);
 } 
 

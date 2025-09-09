@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 17:50:16 by clu               #+#    #+#             */
-/*   Updated: 2025/09/05 15:12:55 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/09 20:50:37 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void	free_ms(t_ms *ms)
 	}
 	if (ms)
 		free_structs(ms);
+	free(ms);
 }
 
 void	free_structs(t_ms *ms)
