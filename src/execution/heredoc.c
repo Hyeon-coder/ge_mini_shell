@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 21:45:28 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/10 16:50:09 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 19:26:12 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,11 @@ static int	handle_heredoc_parent(t_ms *ms, pid_t pid, char *filename,
 		unlink(filename);
 		if (filename)
 			free(filename);
+		if (infile)				// tmp
+		{
+			free(infile->name);
+			free(infile);
+		}						// tmp
 		return (0);
 	}
 	if (infile->name)
@@ -116,6 +121,8 @@ int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 	pid_t	pid;
 
 	fd = open_heredoc_file(&filename, ms);
+	if (fd < 0)				// tmp
+		return (-1);		// tmp
 	signal(SIGINT, SIG_IGN);
 	pid = fork();
 	if (pid == -1)
