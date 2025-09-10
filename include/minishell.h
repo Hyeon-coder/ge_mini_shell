@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/10 01:21:07 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 18:13:24 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,5 +285,7 @@ t_ms		*get_minishell(t_ms *ms);
 void		set_interactive_signals(void);
 void		set_noninteractive_signals(void);
 void		reset_child_signals(void);
+
+void	print_ms_struct(t_ms *ms);
 
 #endif
