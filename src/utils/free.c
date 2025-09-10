@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 17:50:16 by clu               #+#    #+#             */
-/*   Updated: 2025/09/10 18:13:46 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 22:54:06 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	free_structs(t_ms *ms)
 	}
 	clean_all_heredocs(ms);
 	ms->heredoc_no = 0;
-	print_ms_struct(ms);
+	// print_ms_struct(ms);		// tmp
 }
 
 void	free_segments(t_segment *segments)

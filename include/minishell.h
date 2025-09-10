@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/10 18:13:24 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/10 22:58:25 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,6 +286,10 @@ void		set_interactive_signals(void);
 void		set_noninteractive_signals(void);
 void		reset_child_signals(void);
 
-void	print_ms_struct(t_ms *ms);
+extern long long g_total_allocated_bytes;	// tmp
+void		print_ms_struct(t_ms *ms);
+void		*track_malloc(size_t size);
+void		track_free(void *ptr, size_t size);
+void		print_mem_usage(const char *label);
 
 #endif

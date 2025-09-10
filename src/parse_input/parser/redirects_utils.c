@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 16:07:38 by mpierce           #+#    #+#             */
-/*   Updated: 2025/09/10 19:20:43 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/11 00:36:31 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ bool	setup_heredoc(t_ms *ms, t_token *token, t_infile **infile)
             free(*infile);
             *infile = NULL;
         }
+		return (false);
 	}
 	return (true);
 }

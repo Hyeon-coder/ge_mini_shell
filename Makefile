@@ -54,7 +54,7 @@ SRC = \
 	$(SRC_DIR)$(BLT_DIR)env_utils.c $(SRC_DIR)$(BLT_DIR)cd.c $(SRC_DIR)$(BLT_DIR)echo.c \
 	$(SRC_DIR)$(BLT_DIR)env.c $(SRC_DIR)$(BLT_DIR)exit.c $(SRC_DIR)$(BLT_DIR)export.c \
 	$(SRC_DIR)$(BLT_DIR)pwd.c $(SRC_DIR)$(BLT_DIR)unset.c $(SRC_DIR)$(BLT_DIR)export_utils.c \
-	$(SRC_DIR)$(BLT_DIR)cd_utils.c
+	$(SRC_DIR)$(BLT_DIR)cd_utils.c $(SRC_DIR)$(UTL_DIR)mem_tracker.c
 	
 	
 OBJ = $(SRC:$(SRC_DIR)%=$(OBJ_DIR)/%)
