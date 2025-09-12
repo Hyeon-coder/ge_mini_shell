@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 13:18:00 by mpierce           #+#    #+#             */
-/*   Updated: 2025/09/10 23:04:41 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/13 01:14:46 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,11 +105,9 @@ int	main(int argc, char **argv, char **envp)
 	{
 		ms.heredoc_stop = false;
 		process_input(&ms);
+		run_executor(&ms);
 		get_prompt(&ms);
 		free_structs(&ms);
-		// free(ms.token->value);
-		// printf("[DEBUG]");
-		// print_ms_struct(&ms);	// tmp
 	}
 	return (0);
 }

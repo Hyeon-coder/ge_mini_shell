@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/10 22:58:25 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/13 01:02:10 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,36 +248,43 @@ void		update_env(t_ms *ms);
 void		error_join(t_ms *ms, char *name, char *error);
 
 ////////////////////////////////// Executor ///////////////////////////////////
-void		ms_error(t_ms *ms, char *msg, int ex_code, int free_msg);
-void		arr_dup_fail(t_ms *ms, char **arr, int j);
-void		run_executor(t_ms *ms, t_ast *ast);
-void		execute_pipeline(t_ms *ms, t_ast *ast);
-void		execute_simple_command(t_ms *ms, t_cmd *cmd);
-int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
-char		*get_command_path(t_ms *ms, char *cmd);
-int			handle_output_redirection(t_cmd *cmd);
-void		restore_output(int original_stdout);
-int			handle_input_redirection(t_cmd *cmd);
-void		restore_input(int original_stdin);
-void		execute_child_process(t_ms *ms, t_cmd *cmd, char *path);
-void		wait_for_child_process(t_ms *ms, pid_t pid);
-int			is_builtin(char *cmd);
-void		execute_builtin(t_ms *ms, t_cmd *cmd);
-int			process_infile_loop(t_cmd *cmd);
-int			open_heredoc_file(char **filename, t_ms *ms);
-void		heredoc_sigint_handler(int sig);
-bool		setup_redirections(t_cmd *cmd, int *og_stdin, int *og_stdout);
-char		**duplicate_and_sort_env(t_ms *ms);
-void		print_formatted_variable(char *var);
-void		free_executi(t_ms *ms);
+/* --- Execution Entry Point --- */
+void		run_executor(t_ms *ms);
 
-void		complete_child_cleanup(t_ms *ms);
-void		free_execution_memory(t_ms *ms);
-void		free_envp_complete(t_ms *ms);
-void		ft_free_infile_complete(t_infile **array);
-void		free_cmd_complete(t_cmd *cmd);
-int			start_heredoc_safe(t_ms *ms, char *lim, t_infile *infile, int quo);
-void		execute_child_process_safe(t_ms *ms, t_cmd *cmd, char *path);
+/* --- AST Traversal & Command Dispatch --- */
+void		parse_cmds(t_ms *ms, t_ast *ast);
+void		start_cmds(t_ms *ms, t_ast *ast);
+void		run_cmd(t_ms *ms, t_cmd *cmd);
+void		run_one(t_ms *ms, t_cmd *cmd);
+void		run_no_cmd(t_ms *ms, t_ast *ast);
+int			check_for_bi(t_cmd *cmd);
+
+/* --- Pipeline Handling --- */
+void		run_pipes(t_ms *ms, t_ast *ast);
+void		exec_first_pipe(t_ms *ms, t_ast *ast);
+void		exec_mid_pipe(t_ms *ms, t_ast *ast);
+void		exec_last_pipe(t_ms *ms, t_ast *ast);
+void		next_pipe(t_ms *ms, int last);
+
+/* --- File & Redirection Handling --- */
+int			handle_files(t_ms *ms, t_cmd *cmd);
+int			handle_infiles(t_ms *ms, t_infile **infile);
+int			handle_outfiles(t_ms *ms, char **outfile, int *append);
+void		reset_std(t_ms *ms);
+
+/* --- Here-document Handling --- */
+int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
+char		*heredoc_name(t_ms *ms, int i);
+void		heredoc_help(t_ms *ms, char *line, int fd, int quo);
+int			handle_heredoc(t_ms *ms, const char *heredoc, char *name, int quo);
+
+/* --- Process & Resource Management --- */
+void		init_executor(t_ms *ms);
+void		run_execve(t_ms *ms, t_cmd *cmd);
+char		*get_path(t_ms *ms, t_cmd *cmd, char **envp, int i);
+void		wait_help(t_ms *ms);
+void		close_fd(t_ms *ms);
+void		close_pipes(t_ms *ms);
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);
