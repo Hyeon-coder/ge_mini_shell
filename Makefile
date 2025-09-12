@@ -38,7 +38,8 @@ HEADERS_DEP = include/minishell.h
 
 # Source files and object files
 SRC = \
-	$(SRC_DIR)$(EXP_DIR)expand.c $(SRC_DIR)$(EXP_DIR)expand_utils.c $(SRC_DIR)$(LEX_DIR)operators.c \
+	$(SRC_DIR)$(EXP_DIR)expand.c $(SRC_DIR)$(EXP_DIR)expand_utils.c \
+	$(SRC_DIR)$(LEX_DIR)operators.c \
 	$(SRC_DIR)$(LEX_DIR)quotes.c $(SRC_DIR)$(LEX_DIR)lexer.c $(SRC_DIR)$(LEX_DIR)tokens.c \
 	$(SRC_DIR)$(LEX_DIR)words.c $(SRC_DIR)$(PAR_DIR)ast.c $(SRC_DIR)$(PAR_DIR)parser.c \
 	$(SRC_DIR)$(PARSE_DIR)process_input_utils.c $(SRC_DIR)$(PARSE_DIR)process_input.c \
@@ -47,16 +48,16 @@ SRC = \
 	$(SRC_DIR)$(UTL_DIR)signals.c $(SRC_DIR)main.c $(SRC_DIR)$(PAR_DIR)redirects.c \
 	$(SRC_DIR)$(PAR_DIR)validate.c $(SRC_DIR)$(EXP_DIR)retoken.c $(SRC_DIR)$(PAR_DIR)redirects_utils.c \
 	$(SRC_DIR)$(PAR_DIR)parser_utils.c \
-	$(SRC_DIR)$(EXEC_DIR)executor.c $(SRC_DIR)$(EXEC_DIR)error.c $(SRC_DIR)$(EXEC_DIR)heredoc.c \
-	$(SRC_DIR)$(EXEC_DIR)path.c $(SRC_DIR)$(EXEC_DIR)redirection.c $(SRC_DIR)$(EXEC_DIR)pipe.c \
-	$(SRC_DIR)$(EXEC_DIR)executor_utils.c $(SRC_DIR)$(EXEC_DIR)redirection_utils.c \
-	$(SRC_DIR)$(EXEC_DIR)heredoc_utils.c  $(SRC_DIR)$(EXEC_DIR)exe_utils.c \
+	$(SRC_DIR)$(EXEC_DIR)exec_master.c $(SRC_DIR)$(EXEC_DIR)exec_cmds.c \
+	$(SRC_DIR)$(EXEC_DIR)exec_pipeline.c $(SRC_DIR)$(EXEC_DIR)execve_utils.c \
+	$(SRC_DIR)$(EXEC_DIR)file_handler.c $(SRC_DIR)$(EXEC_DIR)error.c \
+	$(SRC_DIR)$(EXEC_DIR)exec_utils.c $(SRC_DIR)$(EXEC_DIR)only_redir.c \
 	$(SRC_DIR)$(BLT_DIR)env_utils.c $(SRC_DIR)$(BLT_DIR)cd.c $(SRC_DIR)$(BLT_DIR)echo.c \
 	$(SRC_DIR)$(BLT_DIR)env.c $(SRC_DIR)$(BLT_DIR)exit.c $(SRC_DIR)$(BLT_DIR)export.c \
 	$(SRC_DIR)$(BLT_DIR)pwd.c $(SRC_DIR)$(BLT_DIR)unset.c $(SRC_DIR)$(BLT_DIR)export_utils.c \
-	$(SRC_DIR)$(BLT_DIR)cd_utils.c $(SRC_DIR)$(UTL_DIR)mem_tracker.c
-	
-	
+	$(SRC_DIR)$(BLT_DIR)cd_utils.c
+
+
 OBJ = $(SRC:$(SRC_DIR)%=$(OBJ_DIR)/%)
 OBJ := $(OBJ:.c=.o)
 

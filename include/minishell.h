@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/13 01:02:10 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/13 01:32:45 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,11 +219,11 @@ void		builtin_exit(t_ms *ms, t_cmd *cmd);
 void		builtin_export(t_ms *ms, t_cmd *cmd);
 void		builtin_pwd(t_ms *ms);
 void		builtin_unset(t_ms *ms, t_cmd *cmd);
+char		**duplicate_and_sort_env(t_ms *ms);
+void		print_formatted_variable(char *var);
 void		sort_env_array(char **env_copy, int count);
 char		*get_target_path(t_ms *ms, t_cmd *cmd);
 void		update_pwd_variables(t_ms *ms);
-void		close_pipes(t_ms *ms);
-void		close_fd(t_ms *ms);
 
 ////////////////////////////////// Utils //////////////////////////////////////
 void		*x_malloc(t_ms *ms, size_t size);
@@ -248,6 +248,10 @@ void		update_env(t_ms *ms);
 void		error_join(t_ms *ms, char *name, char *error);
 
 ////////////////////////////////// Executor ///////////////////////////////////
+/* --- Central Error Handling --- */
+void		ms_error(t_ms *ms, char *msg, int ex_code, int free_msg);
+void		arr_dup_fail(t_ms *ms, char **arr, int j);
+
 /* --- Execution Entry Point --- */
 void		run_executor(t_ms *ms);
 
@@ -275,16 +279,16 @@ void		reset_std(t_ms *ms);
 /* --- Here-document Handling --- */
 int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
 char		*heredoc_name(t_ms *ms, int i);
-void		heredoc_help(t_ms *ms, char *line, int fd, int quo);
 int			handle_heredoc(t_ms *ms, const char *heredoc, char *name, int quo);
 
 /* --- Process & Resource Management --- */
 void		init_executor(t_ms *ms);
 void		run_execve(t_ms *ms, t_cmd *cmd);
-char		*get_path(t_ms *ms, t_cmd *cmd, char **envp, int i);
+char		*get_path(t_ms *ms, char *cmd);
 void		wait_help(t_ms *ms);
 void		close_fd(t_ms *ms);
 void		close_pipes(t_ms *ms);
+void		error_join(t_ms *ms, char *name, char *error);
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);

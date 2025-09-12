@@ -6,11 +6,25 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 00:45:06 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/03 17:35:53 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/13 01:33:54 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	free_envp(t_ms *ms)
+{
+	int	i;
+
+	i = -1;
+	if (ms->envp)
+	{
+		while (ms->envp[++i])
+			free(ms->envp[i]);
+		free(ms->envp);
+		ms->envp = NULL;
+	}
+}
 
 /*
 ** Finds a variable in the environment list (envp).

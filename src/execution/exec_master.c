@@ -78,6 +78,21 @@ void	wait_help(t_ms *ms)
 	}
 }
 
+int	handle_files(t_ms *ms, t_cmd *cmd)
+{
+	if (cmd->infile && g_signal != SIGINT)
+	{
+		if (handle_infiles(ms, cmd->infile) < 0)
+			return (1);
+	}
+	if (cmd->outfile && g_signal != SIGINT)
+	{
+		if (handle_outfiles(ms, cmd->outfile, cmd->append) < 0)
+			return (1);
+	}
+	return (0);
+}
+
 /**
  * @brief 실행부의 메인 진입 함수 (Parsing과의 인터페이스)
  * 이 함수는 자원 할당, 실행, 자원 해제의 명확한 라이프사이클을 관리합니다.

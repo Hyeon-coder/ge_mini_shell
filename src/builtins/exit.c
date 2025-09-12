@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 14:12:20 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/09 23:16:32 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/13 01:33:06 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,17 @@ void	bi_exit(t_ms *ms, int ex_code, int error)
 			free(ms->prompt);
 			ms->prompt = NULL;
 		}
-		close_fd(ms);
-		free_envp(ms);
+		close_fd(ms);   // execution 파트의 자원 정리 함수
+		free_envp(ms);  // utils의 자원 정리 함수
 		if (ms->pids)
 		{
 			free(ms->pids);
 			ms->pids = NULL;
 		}
-		if (!error)
+		if (!error && isatty(fileno(stdout))) // 에러가 아닐 때만 "exit" 메시지 출력
 			write(2, "exit\n", 5);
-		free_structs(ms);
+		free_structs(ms); // 파싱 관련 구조체 정리
+		// free(ms); // main에서 할당한 ms는 main에서 해제해야 합니다. 이 라인은 제거하는 것이 안전합니다.
 	}
 	exit(ex_code);
 }
