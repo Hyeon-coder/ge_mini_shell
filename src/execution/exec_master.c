@@ -115,7 +115,7 @@ void	run_executor(t_ms *ms)
 	i = -1;
 	while (++i < ms->cmd_no)
 		ms->pids[i] = -1; // PID 배열 초기화
-	// 3. AST 순회 및 명령어 실행 시작 (다음 단계에서 구현할 함수)
+	// 3. AST 순회 및 명령어 실행 시작
 	parse_cmds(ms, ms->ast);
 	// 4. 열려 있는 모든 파일 디스크립터 정리
 	close_fd(ms);
@@ -127,6 +127,8 @@ void	run_executor(t_ms *ms)
 			wait_help(ms);
 		set_interactive_signals();
 	}
+	// [추가] 모든 실행이 끝난 후, 변경된 표준 입출력을 최종 복구합니다.
+	reset_std(ms);
 	// 6. [메모리 해제] 할당했던 PID 배열 해제
 	free(ms->pids);
 	ms->pids = NULL;

@@ -52,10 +52,15 @@ void	run_execve(t_ms *ms, t_cmd *cmd)
 {
 	char	*path;
 
-	if (ft_strchr(cmd->full_cmd[0], '/')) // 상대/절대 경로
-		path = ft_strdup(cmd->full_cmd[0]);
-	else // PATH에서 검색
-		path = get_path(ms, cmd->full_cmd[0]);
+	path = NULL;
+	if (cmd->full_cmd && cmd->full_cmd[0])
+	{
+		if (ft_strchr(cmd->full_cmd[0], '/')) // 상대/절대 경로
+			path = ft_strdup(cmd->full_cmd[0]);
+		else // PATH에서 검색
+			// [수정] cmd 구조체 대신 명령어 문자열(cmd->full_cmd[0])을 전달합니다.
+			path = get_path(ms, cmd->full_cmd[0]);
+	}
 	if (!path || access(path, F_OK) != 0)
 	{
 		error_join(ms, cmd->full_cmd[0], "command not found");
@@ -66,8 +71,16 @@ void	run_execve(t_ms *ms, t_cmd *cmd)
 		error_join(ms, cmd->full_cmd[0], "Permission denied");
 		bi_exit(ms, 126, 1);
 	}
+	// execve 호출 직전에, 자식에게 불필요한 FD들을 모두 닫아줍니다.
+	if (ms->std_copy[0] != -1)
+		close(ms->std_copy[0]);
+	if (ms->std_copy[1] != -1)
+		close(ms->std_copy[1]);
+	close_pipes(ms);
+
 	execve(path, cmd->full_cmd, ms->envp);
-	// execve가 성공하면 아래 코드는 실행되지 않음
+	
+	// execve가 실패한 경우에만 아래 코드가 실행됩니다.
 	error_join(ms, cmd->full_cmd[0], strerror(errno));
 	free(path); // MEMORY FREE
 	bi_exit(ms, 127, 1);

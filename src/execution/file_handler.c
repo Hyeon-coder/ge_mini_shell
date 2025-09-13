@@ -6,7 +6,7 @@
 /* By: hyeon-coder <hyeon-coder@student.42.fr>      +#+  +:+       +#+        */
 /* +#+#+#+#+#+   +#+           */
 /* Created: 2025/09/13 07:20:00 by hyeon-coder      #+#    #+#             */
-/* Updated: 2025/09/13 07:20:00 by hyeon-coder     ###   ########.fr       */
+/* Updated: 2025/09/13/ 09:05:00 by hyeon-coder     ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -36,10 +36,10 @@ char	*heredoc_name(t_ms *ms, int i)
 
 /**
  * @brief 히어독 입력을 처리하고 임시 파일에 저장합니다.
- * @param ms 메인 구조체
+ * readline의 이벤트 훅을 사용하여 Ctrl+C 입력 시 즉시 중단되도록 처리합니다.
  * @param limiter 히어독 종료를 위한 구분자 문자열
  * @param name 임시 파일명
- * @param quoted 구분자가 따옴표로 감싸져 있었는지 여부 (변수 확장 결정)
+ * @param quoted 구분자 따옴표 여부 (변수 확장 결정)
  * @return 성공 시 0, 인터럽트(Ctrl+C) 시 -1
  */
 int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
@@ -47,20 +47,21 @@ int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
 	char	*line;
 	int		fd;
 
+	// 1. readline 이벤트 훅을 등록하여 Ctrl+C를 감지합니다.
+	signal(SIGINT, heredoc_sigint_handler);
+	rl_event_hook = heredoc_rl_event_hook;
 	fd = open(name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 		ms_error(ms, "Failed to create temporary file for HEREDOC", 1, 0);
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || ft_strcmp(line, limiter) == 0) // EOF 또는 구분자 입력
+		if (g_signal == SIGINT || !line || ft_strcmp(line, limiter) == 0)
 		{
 			if (line)
 				free(line);
 			break ;
 		}
-		// (minishell_team의 heredoc_help와 유사한 로직)
-		// 변수 확장이 필요한 경우(구분자가 따옴표로 안 감싸인 경우)
 		if (quoted == UNQUOTED)
 		{
 			char	*expanded_line;
@@ -76,6 +77,14 @@ int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
 		free(line);
 	}
 	close(fd);
+	// 2. 이벤트 훅과 시그널 핸들러를 원래대로 복구합니다.
+	rl_event_hook = NULL;
+	set_interactive_signals();
+	if (g_signal == SIGINT)
+	{
+		g_signal = 0;
+		return (-1);
+	}
 	return (0);
 }
 
@@ -87,33 +96,22 @@ int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 {
 	char	*temp_filename;
 
-	// MEMORY ALLOC: 히어독 임시 파일명 할당
 	temp_filename = heredoc_name(ms, ms->heredoc_no++);
-
-	// (minishell_team의 시그널 핸들러 설정 로직 참조)
-	// signal(SIGINT, handle_heredoc_signal);
-
-	if (handle_heredoc(ms, lim, temp_filename, quo) == -1) // 사용자 중단
+	if (handle_heredoc(ms, lim, temp_filename, quo) == -1)
 	{
-		// MEMORY FREE: 할당했으나 사용하지 않게 된 파일명 메모리 해제
 		unlink(temp_filename);
 		free(temp_filename);
 		ms->heredoc_no--;
 		return (1);
 	}
-
-	// MEMORY OWNERSHIP TRANSFER:
-	// 생성된 파일명의 소유권을 infile->name 포인터로 넘깁니다.
-	// 이제 이 메모리의 해제 책임은 infile 구조체를 해제하는 쪽에 있습니다.
 	if (infile->name)
-		free(infile->name); // 혹시 모를 이전 값 해제
-	infile->name = temp_filename;
+		free(infile->name);
+	infile->name = temp_filename; // 소유권 이전
 	return (0);
 }
 
 /**
  * @brief 모든 입력 리다이렉션(<, <<)을 처리합니다.
- * !! 메모리 누수 해결을 위한 핵심 수정 사항이 포함되어 있습니다. !!
  */
 int	handle_infiles(t_ms *ms, t_infile **infile)
 {
@@ -124,28 +122,21 @@ int	handle_infiles(t_ms *ms, t_infile **infile)
 	if (ms->std_copy[0] < 0)
 		ms_error(ms, "stdin duplication failed", 1, 0);
 	ms->reset[0] = 1;
-
 	while (infile[++i])
 	{
 		ms->fd_in = open(infile[i]->name, O_RDONLY);
 		if (ms->fd_in < 0)
 		{
-			// (에러 처리 로직)
 			perror(infile[i]->name);
+			reset_std(ms);
 			return (-1);
 		}
-		
-		// [WORKAROUND] utils 디렉터리 수정 불가로 인한 메모리 해제 로직
-		// 히어독인 경우, 파일을 열어 FD를 확보한 후 즉시 파일을 삭제하고,
-		// t_infile->name에 할당된 메모리를 여기서 직접 해제합니다.
 		if (infile[i]->heredoc == 1)
 		{
 			unlink(infile[i]->name);
-			// MEMORY FREE: start_heredoc에서 할당된 메모리를 여기서 해제
 			free(infile[i]->name);
-			infile[i]->name = NULL; // Dangling 포인터 방지
+			infile[i]->name = NULL;
 		}
-
 		if (dup2(ms->fd_in, STDIN_FILENO) < 0)
 			ms_error(ms, "stdin redirection failed", 1, 0);
 		close(ms->fd_in);
@@ -167,18 +158,17 @@ int	handle_outfiles(t_ms *ms, char **outfile, int *append)
 	if (ms->std_copy[1] < 0)
 		ms_error(ms, "stdout duplication failed", 1, 0);
 	ms->reset[1] = 1;
-
 	while (outfile[++i])
 	{
-		if (append[i] == 1) // >> (append)
+		if (append[i] == 1)
 			open_flags = O_WRONLY | O_CREAT | O_APPEND;
-		else // > (truncate)
+		else
 			open_flags = O_WRONLY | O_CREAT | O_TRUNC;
-		
 		ms->fd_out = open(outfile[i], open_flags, 0644);
 		if (ms->fd_out < 0)
 		{
 			perror(outfile[i]);
+			reset_std(ms);
 			return (-1);
 		}
 		if (dup2(ms->fd_out, STDOUT_FILENO) < 0)

@@ -97,21 +97,17 @@ void	exec_last_pipe(t_ms *ms, t_ast *ast)
  */
 void	run_pipes(t_ms *ms, t_ast *ast)
 {
-	// 이 함수는 parse_cmds에서 재귀적으로 호출되며, 
-	// 각 명령어 노드에 대해 적절한 exec_*_pipe 함수를 호출해야 합니다.
-	// 실제 구현에서는 minishell_team의 parse_cmds와 유사한 로직으로
-	// ast->left, ast->right를 탐색하며 순서에 맞게 호출해야 합니다.
-	// 여기서는 개념적인 예시를 보입니다.
-	(void)ast; 
+	// 파이프 생성
 	if (pipe(ms->ms_fd) < 0)
 		ms_error(ms, "Pipe failure", 1, 0);
 
-	// 예시: ms->ast를 순회하며 순서대로 exec_first, mid, last를 호출한다고 가정
-	// exec_first_pipe(ms, first_node);
-	// next_pipe(ms, 0);
-	// exec_mid_pipe(ms, mid_node);
-	// next_pipe(ms, 0);
-	// exec_last_pipe(ms, last_node);
+	// AST의 왼쪽 자식 노드 (파이프의 왼쪽에 있는 명령어)를 먼저 처리
+	// 이 노드가 또 다른 파이프일 수 있으므로 parse_cmds를 재귀 호출
+	parse_cmds(ms, ast->left);
 
-	close_pipes(ms);
+	// 파이프 정리 및 다음 파이프 준비
+	next_pipe(ms, (ms->cmd_index + 1) >= ms->cmd_no);
+
+	// AST의 오른쪽 자식 노드 (파이프의 오른쪽에 있는 명령어)를 처리
+	parse_cmds(ms, ast->right);
 }

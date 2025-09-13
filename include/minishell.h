@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/13 01:32:45 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/13 03:04:41 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,6 +296,8 @@ t_ms		*get_minishell(t_ms *ms);
 void		set_interactive_signals(void);
 void		set_noninteractive_signals(void);
 void		reset_child_signals(void);
+void		heredoc_sigint_handler(int sig);
+int 		heredoc_rl_event_hook(void);
 
 extern long long g_total_allocated_bytes;	// tmp
 void		print_ms_struct(t_ms *ms);

@@ -94,24 +94,26 @@ void	run_one(t_ms *ms, t_cmd *cmd)
 }
 
 /**
- * @brief 명령어 실행 흐름을 파이프라인 여부에 따라 분기합니다.
- * @param ms 메인 구조체
- * @param ast 현재 명령어 노드
+ * @brief 명령어 실행 흐름을 파이프라인 여부/위치에 따라 분기합니다.
  */
 void	start_cmds(t_ms *ms, t_ast *ast)
 {
-	if (ms->cmd_no == 1 && ast->cmd->full_cmd)
+	if (ms->cmd_no == 1) // 단일 명령어인 경우
 		run_one(ms, ast->cmd);
-	else
-		run_pipes(ms, ast); // 파이프라인 실행 (3단계 이후 구현)
-	if (g_signal != SIGINT)
-		reset_std(ms); // 리다이렉션 원상복구 (3단계 이후 구현)
+	else // 파이프라인의 일부인 경우
+	{
+		if (ms->cmd_index == 1) // 첫 번째 명령어
+			exec_first_pipe(ms, ast);
+		else if (ms->cmd_index == ms->cmd_no) // 마지막 명령어
+			exec_last_pipe(ms, ast);
+		else // 중간 명령어
+			exec_mid_pipe(ms, ast);
+	}
+	// reset_std는 run_executor의 루프가 끝난 후 한 번만 호출되므로 여기서 제거합니다.
 }
 
 /**
- * @brief AST를 재귀적으로 순회하며 실행할 노드를 찾는 "엔진" 역할을 합니다.
- * @param ms 메인 구조체
- * @param ast 현재 AST 노드
+ * @brief AST를 재귀적으로 순회하며 실행 순서를 제어하는 최종 "엔진"
  */
 void	parse_cmds(t_ms *ms, t_ast *ast)
 {
@@ -119,7 +121,17 @@ void	parse_cmds(t_ms *ms, t_ast *ast)
 		return ;
 	if (ast->type == NODE_PIPE)
 	{
+		// [수정] 파이프를 여기서 생성합니다.
+		if (pipe(ms->ms_fd) < 0)
+			ms_error(ms, "Pipe failure", 1, 0);
+		
+		// 왼쪽 자식(먼저 실행될 명령어)을 재귀 호출
 		parse_cmds(ms, ast->left);
+		
+		// [수정] 파이프의 FD를 다음 명령어를 위해 정리 및 교체
+		next_pipe(ms, (ms->cmd_index + 1) >= ms->cmd_no);
+		
+		// 오른쪽 자식(나중에 실행될 명령어)을 재귀 호출
 		parse_cmds(ms, ast->right);
 	}
 	else if (ast->type == NODE_COMMAND || ast->type == NODE_MISSCMD)
@@ -128,6 +140,6 @@ void	parse_cmds(t_ms *ms, t_ast *ast)
 		if (ast->cmd && ast->cmd->full_cmd)
 			start_cmds(ms, ast);
 		else
-			run_no_cmd(ms, ast); // "> a" 와 같이 명령어 없는 리다이렉션 처리
+			run_no_cmd(ms, ast);
 	}
 }

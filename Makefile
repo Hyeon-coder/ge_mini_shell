@@ -52,6 +52,7 @@ SRC = \
 	$(SRC_DIR)$(EXEC_DIR)exec_pipeline.c $(SRC_DIR)$(EXEC_DIR)execve_utils.c \
 	$(SRC_DIR)$(EXEC_DIR)file_handler.c $(SRC_DIR)$(EXEC_DIR)error.c \
 	$(SRC_DIR)$(EXEC_DIR)exec_utils.c $(SRC_DIR)$(EXEC_DIR)only_redir.c \
+	$(SRC_DIR)$(EXEC_DIR)heredoc_utils.c \
 	$(SRC_DIR)$(BLT_DIR)env_utils.c $(SRC_DIR)$(BLT_DIR)cd.c $(SRC_DIR)$(BLT_DIR)echo.c \
 	$(SRC_DIR)$(BLT_DIR)env.c $(SRC_DIR)$(BLT_DIR)exit.c $(SRC_DIR)$(BLT_DIR)export.c \
 	$(SRC_DIR)$(BLT_DIR)pwd.c $(SRC_DIR)$(BLT_DIR)unset.c $(SRC_DIR)$(BLT_DIR)export_utils.c \
