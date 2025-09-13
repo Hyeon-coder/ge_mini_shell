@@ -6,7 +6,7 @@
 /* By: hyeon-coder <hyeon-coder@student.42.fr>      +#+  +:+       +#+        */
 /* +#+#+#+#+#+   +#+           */
 /* Created: 2025/09/13 07:20:00 by hyeon-coder      #+#    #+#             */
-/* Updated: 2025/09/13/ 09:05:00 by hyeon-coder     ###   ########.fr       */
+/* Updated: 2025/09/13/ 09:15:00 by hyeon-coder     ###   ########.fr       */
 /* */
 /* ************************************************************************** */
 
@@ -21,13 +21,10 @@ char	*heredoc_name(t_ms *ms, int i)
 	char	*name;
 	char	*no;
 
-	// MEMORY ALLOC: 숫자를 문자열로 변환
 	no = ft_itoa(i);
 	if (!no)
 		ms_error(ms, "ft_itoa failure in heredoc", 1, 0);
-	// MEMORY ALLOC: ".heredoc"과 숫자 문자열 결합
 	name = ft_strjoin(".heredoc", no);
-	// MEMORY FREE: 숫자 문자열은 사용 후 즉시 해제
 	free(no);
 	if (!name)
 		ms_error(ms, "heredoc file generation failure", 1, 0);
@@ -37,9 +34,6 @@ char	*heredoc_name(t_ms *ms, int i)
 /**
  * @brief 히어독 입력을 처리하고 임시 파일에 저장합니다.
  * readline의 이벤트 훅을 사용하여 Ctrl+C 입력 시 즉시 중단되도록 처리합니다.
- * @param limiter 히어독 종료를 위한 구분자 문자열
- * @param name 임시 파일명
- * @param quoted 구분자 따옴표 여부 (변수 확장 결정)
  * @return 성공 시 0, 인터럽트(Ctrl+C) 시 -1
  */
 int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
@@ -47,7 +41,6 @@ int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
 	char	*line;
 	int		fd;
 
-	// 1. readline 이벤트 훅을 등록하여 Ctrl+C를 감지합니다.
 	signal(SIGINT, heredoc_sigint_handler);
 	rl_event_hook = heredoc_rl_event_hook;
 	fd = open(name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -77,7 +70,6 @@ int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
 		free(line);
 	}
 	close(fd);
-	// 2. 이벤트 훅과 시그널 핸들러를 원래대로 복구합니다.
 	rl_event_hook = NULL;
 	set_interactive_signals();
 	if (g_signal == SIGINT)
@@ -96,11 +88,14 @@ int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 {
 	char	*temp_filename;
 
-	temp_filename = heredoc_name(ms, ms->heredoc_no++);
+	// [수정] heredoc_no는 파싱 단계에서 이미 증가되었으므로, 여기서는 사용만 합니다.
+	// 파일 인덱스는 0부터 시작해야 하므로 (ms->heredoc_no - 1)을 사용합니다.
+	temp_filename = heredoc_name(ms, ms->heredoc_no - 1);
 	if (handle_heredoc(ms, lim, temp_filename, quo) == -1)
 	{
 		unlink(temp_filename);
 		free(temp_filename);
+		// [수정] 실패 시 파서가 증가시킨 카운터를 되돌립니다.
 		ms->heredoc_no--;
 		return (1);
 	}
@@ -134,6 +129,7 @@ int	handle_infiles(t_ms *ms, t_infile **infile)
 		if (infile[i]->heredoc == 1)
 		{
 			unlink(infile[i]->name);
+			// [WORKAROUND] utils를 수정할 수 없으므로, 여기서 직접 메모리 해제
 			free(infile[i]->name);
 			infile[i]->name = NULL;
 		}

@@ -103,33 +103,32 @@ void	run_executor(t_ms *ms)
 
 	if (!ms->ast || ms->heredoc_stop)
 		return ;
-	// 1. 실행기 초기화
 	init_executor(ms);
 	ms->cmd_no = count_cmds(ms->ast);
 	if (ms->cmd_no == 0)
 		return ;
-	// 2. [메모리 할당] 모든 자식 프로세스의 PID를 저장할 배열 할당
 	ms->pids = malloc(ms->cmd_no * sizeof(pid_t));
 	if (!ms->pids)
 		ms_error(ms, "PID array malloc fail", 1, 0);
 	i = -1;
 	while (++i < ms->cmd_no)
-		ms->pids[i] = -1; // PID 배열 초기화
-	// 3. AST 순회 및 명령어 실행 시작
+		ms->pids[i] = -1;
+	
 	parse_cmds(ms, ms->ast);
-	// 4. 열려 있는 모든 파일 디스크립터 정리
-	close_fd(ms);
-	// 5. 모든 자식 프로세스 대기
+	
+	// [최종 수정] 자식 프로세스들이 모두 생성된 후,
+	// 부모 프로세스는 더 이상 필요 없는 파이프 FD들을 모두 닫습니다.
+	close_pipes(ms);
+	
+	// 모든 자식 프로세스 대기
 	ms->pid_index = -1;
-	if (ms->child == true) // 단일 빌트인 명령이 아닐 경우에만 wait
+	if (ms->child == true)
 	{
 		while (++ms->pid_index < ms->cmd_no)
 			wait_help(ms);
 		set_interactive_signals();
 	}
-	// [추가] 모든 실행이 끝난 후, 변경된 표준 입출력을 최종 복구합니다.
 	reset_std(ms);
-	// 6. [메모리 해제] 할당했던 PID 배열 해제
 	free(ms->pids);
 	ms->pids = NULL;
 }
