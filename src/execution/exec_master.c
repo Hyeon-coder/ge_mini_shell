@@ -113,7 +113,11 @@ void	run_executor(t_ms *ms)
 	i = -1;
 	while (++i < ms->cmd_no)
 		ms->pids[i] = -1;
-	
+	if (ms->cmd_no > 1)
+	{
+		if (pipe(ms->ms_fd) < 0)
+			ms_error(ms, "Pipe faiure", 1, 0);
+	}
 	parse_cmds(ms, ms->ast);
 	
 	// [최종 수정] 자식 프로세스들이 모두 생성된 후,

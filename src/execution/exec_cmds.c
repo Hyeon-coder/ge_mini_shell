@@ -122,8 +122,8 @@ void	parse_cmds(t_ms *ms, t_ast *ast)
 	if (ast->type == NODE_PIPE)
 	{
 		// [수정] 파이프를 여기서 생성합니다.
-		if (pipe(ms->ms_fd) < 0)
-			ms_error(ms, "Pipe failure", 1, 0);
+		// if (pipe(ms->ms_fd) < 0)
+		// 	ms_error(ms, "Pipe failure", 1, 0);
 		
 		// 왼쪽 자식(먼저 실행될 명령어)을 재귀 호출
 		parse_cmds(ms, ast->left);
