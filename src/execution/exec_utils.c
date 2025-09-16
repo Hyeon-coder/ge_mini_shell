@@ -1,20 +1,17 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* exec_utils.c                                       :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: hyeon-coder <hyeon-coder@student.42.fr>      +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/09/13 07:30:00 by hyeon-coder      #+#    #+#             */
-/* Updated: 2025/09/13 07:30:00 by hyeon-coder     ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_utils.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/16 13:24:47 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/09/16 13:44:22 by juhyeonl         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/**
- * @brief 에러 메시지를 "minishell: name: error" 형식으로 결합하여 출력합니다.
- */
 void	error_join(t_ms *ms, char *name, char *error)
 {
 	char	*temp;
@@ -34,9 +31,6 @@ void	error_join(t_ms *ms, char *name, char *error)
 	free(temp2);
 }
 
-/**
- * @brief 열려 있는 모든 파이프 FD를 닫습니다.
- */
 void	close_pipes(t_ms *ms)
 {
 	if (ms->ms_fd[0] != -1)
@@ -56,9 +50,6 @@ void	close_pipes(t_ms *ms)
 	}
 }
 
-/**
- * @brief 열려 있는 모든 파일 디스크립터를 닫습니다.
- */
 void	close_fd(t_ms *ms)
 {
 	if (ms->fd_in != -1)
@@ -74,9 +65,6 @@ void	close_fd(t_ms *ms)
 	close_pipes(ms);
 }
 
-/**
- * @brief 표준 입출력을 원래대로 복구합니다.
- */
 void	reset_std(t_ms *ms)
 {
 	if (ms->reset[0] == 1)
@@ -93,4 +81,18 @@ void	reset_std(t_ms *ms)
 		close(ms->std_copy[1]);
 		ms->reset[1] = 0;
 	}
+}
+
+int	count_cmds(t_ast *ast)
+{
+	int	count;
+
+	count = 0;
+	if (!ast)
+		return (0);
+	if (ast->type == NODE_PIPE)
+		count += count_cmds(ast->left) + count_cmds(ast->right);
+	else
+		count++;
+	return (count);
 }

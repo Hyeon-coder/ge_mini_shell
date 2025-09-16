@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 17:50:16 by clu               #+#    #+#             */
-/*   Updated: 2025/09/10 22:54:06 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/16 13:33:25 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	free_ms(t_ms *ms)
 				free(ms->envp[i]);
 			i++;
 		}
-		if (ms->envp)			
+		if (ms->envp)
 			free(ms->envp);
 	}
 	if (ms)
@@ -58,7 +58,6 @@ void	free_structs(t_ms *ms)
 	}
 	clean_all_heredocs(ms);
 	ms->heredoc_no = 0;
-	// print_ms_struct(ms);		// tmp
 }
 
 void	free_segments(t_segment *segments)

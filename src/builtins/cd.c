@@ -3,14 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 17:36:51 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/09/13 01:25:01 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/16 13:25:50 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// 기존 cd.c 내용을 아래와 같이 수정합니다.
 #include "minishell.h"
 
 static void	handle_cd_error(char *path)
@@ -27,7 +26,7 @@ void	builtin_cd(t_ms *ms, t_cmd *cmd)
 	bool	is_oldpwd;
 
 	is_oldpwd = (cmd->full_cmd[1] && ft_strcmp(cmd->full_cmd[1], "-") == 0);
-	path = get_target_path(ms, cmd); // cd_utils.c 함수
+	path = get_target_path(ms, cmd);
 	if (!path)
 	{
 		ms->exit_status = 1;
@@ -40,10 +39,10 @@ void	builtin_cd(t_ms *ms, t_cmd *cmd)
 	}
 	else
 	{
-		update_pwd_variables(ms); // cd_utils.c 함수
+		update_pwd_variables(ms);
 		if (is_oldpwd)
 			builtin_pwd(ms);
 		ms->exit_status = 0;
 	}
-	free(path); // MEMORY FREE
+	free(path);
 }

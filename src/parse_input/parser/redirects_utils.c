@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirects_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 16:07:38 by mpierce           #+#    #+#             */
-/*   Updated: 2025/09/13 03:47:49 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/16 13:50:29 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@ bool	setup_heredoc(t_ms *ms, t_token *token, t_infile **infile)
 	if (start_heredoc(ms, token->next->value, *infile, quoted))
 	{
 		if (*infile)
-        {
-            if ((*infile)->name) 
-                free((*infile)->name);
-            free(*infile);
-            *infile = NULL;
-        }
+		{
+			if ((*infile)->name)
+				free((*infile)->name);
+			free(*infile);
+			*infile = NULL;
+		}
 		return (false);
 	}
 	return (true);

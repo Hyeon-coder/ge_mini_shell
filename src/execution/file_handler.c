@@ -1,21 +1,17 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* file_handler.c                                     :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: hyeon-coder <hyeon-coder@student.42.fr>      +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/09/13 07:20:00 by hyeon-coder      #+#    #+#             */
-/* Updated: 2025/09/13/ 09:15:00 by hyeon-coder     ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   file_handler.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/16 13:24:56 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/09/16 13:34:56 by juhyeonl         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/**
- * @brief 히어독 임시 파일명을 동적으로 생성합니다. (e.g., ".heredoc0")
- * @return 동적으로 할당된 파일명 문자열
- */
 char	*heredoc_name(t_ms *ms, int i)
 {
 	char	*name;
@@ -31,11 +27,6 @@ char	*heredoc_name(t_ms *ms, int i)
 	return (name);
 }
 
-/**
- * @brief 히어독 입력을 처리하고 임시 파일에 저장합니다.
- * readline의 이벤트 훅을 사용하여 Ctrl+C 입력 시 즉시 중단되도록 처리합니다.
- * @return 성공 시 0, 인터럽트(Ctrl+C) 시 -1
- */
 int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
 {
 	char	*line;
@@ -80,34 +71,24 @@ int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
 	return (0);
 }
 
-/**
- * @brief 히어독 처리를 시작합니다. 메모리 소유권 이전이 핵심입니다.
- * @return 성공 시 0, 실패(Ctrl+C) 시 1
- */
 int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 {
 	char	*temp_filename;
 
-	// [수정] heredoc_no는 파싱 단계에서 이미 증가되었으므로, 여기서는 사용만 합니다.
-	// 파일 인덱스는 0부터 시작해야 하므로 (ms->heredoc_no - 1)을 사용합니다.
 	temp_filename = heredoc_name(ms, ms->heredoc_no - 1);
 	if (handle_heredoc(ms, lim, temp_filename, quo) == -1)
 	{
 		unlink(temp_filename);
 		free(temp_filename);
-		// [수정] 실패 시 파서가 증가시킨 카운터를 되돌립니다.
 		ms->heredoc_no--;
 		return (1);
 	}
 	if (infile->name)
 		free(infile->name);
-	infile->name = temp_filename; // 소유권 이전
+	infile->name = temp_filename;
 	return (0);
 }
 
-/**
- * @brief 모든 입력 리다이렉션(<, <<)을 처리합니다.
- */
 int	handle_infiles(t_ms *ms, t_infile **infile)
 {
 	int	i;
@@ -129,7 +110,6 @@ int	handle_infiles(t_ms *ms, t_infile **infile)
 		if (infile[i]->heredoc == 1)
 		{
 			unlink(infile[i]->name);
-			// [WORKAROUND] utils를 수정할 수 없으므로, 여기서 직접 메모리 해제
 			free(infile[i]->name);
 			infile[i]->name = NULL;
 		}
@@ -141,9 +121,6 @@ int	handle_infiles(t_ms *ms, t_infile **infile)
 	return (0);
 }
 
-/**
- * @brief 모든 출력 리다이렉션(>, >>)을 처리합니다.
- */
 int	handle_outfiles(t_ms *ms, char **outfile, int *append)
 {
 	int	i;

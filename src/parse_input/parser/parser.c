@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:57:40 by clu               #+#    #+#             */
-/*   Updated: 2025/09/09 20:49:13 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/16 13:32:25 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,10 @@ t_ast	*parse_cmd(t_token **tokens, t_ms *ms)
 	}
 	if (!node)
 	{
-		// free(ms->cmd->infile);
+		free(ms->cmd->infile);
 		free_cmd(cmd);
 		node = NULL;
 	}
-	
 	return (node);
 }
 
@@ -118,7 +117,6 @@ bool	process_cmd_name(t_token **current, t_cmd *cmd, int *arg, t_ms *ms)
 		return (false);
 	return (true);
 }
-
 
 /*
 ** For word tokens, add them to the command's full_cmd array.

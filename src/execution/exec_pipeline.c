@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* exec_pipeline.c                                    :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: hyeon-coder <hyeon-coder@student.42.fr>      +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/09/13 07:25:00 by hyeon-coder      #+#    #+#             */
-/* Updated: 2025/09/13 10:15:00 by hyeon-coder     ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_pipeline.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/16 13:24:43 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/09/16 13:36:06 by juhyeonl         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
@@ -38,7 +38,6 @@ void	exec_first_pipe(t_ms *ms, t_ast *ast)
 			bi_exit(ms, 1, 1);
 		if (dup2(ms->ms_fd[1], STDOUT_FILENO) < 0)
 			ms_error(ms, "dup2 failed", 1, 1);
-		// [수정] 자식은 더 이상 사용하지 않는 파이프 FD를 모두 닫는다.
 		close_pipes(ms);
 		run_cmd(ms, ast->cmd);
 	}
@@ -58,7 +57,6 @@ void	exec_mid_pipe(t_ms *ms, t_ast *ast)
 			ms_error(ms, "dup2 failed", 1, 1);
 		if (dup2(ms->ms_fd[1], STDOUT_FILENO) < 0)
 			ms_error(ms, "dup2 failed", 1, 1);
-		// [수정] 자식은 더 이상 사용하지 않는 파이프 FD를 모두 닫는다.
 		close_pipes(ms);
 		run_cmd(ms, ast->cmd);
 	}
@@ -76,7 +74,6 @@ void	exec_last_pipe(t_ms *ms, t_ast *ast)
 			bi_exit(ms, 1, 1);
 		if (dup2(ms->prev_fd, STDIN_FILENO) < 0)
 			ms_error(ms, "dup2 failed", 1, 1);
-		// [수정] 자식은 더 이상 사용하지 않는 파이프 FD를 모두 닫는다.
 		close_pipes(ms);
 		run_cmd(ms, ast->cmd);
 	}
