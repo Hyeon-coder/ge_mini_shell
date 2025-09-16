@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/13 03:04:41 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/16 15:31:47 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # include <string.h>
 # include <signal.h>
 # include <termios.h>
+# include <limits.h>
 
 // Define error messages
 # define SHLV "minishell: warning: shell level (%d) too high, resetting to 1\n"
@@ -230,7 +231,7 @@ void		*x_malloc(t_ms *ms, size_t size);
 char		*x_strdup(t_ms *ms, const char *s);
 char		*x_substr(t_ms *ms, const char *s, unsigned int start, size_t len);
 char		*x_strjoin_free(t_ms *ms, char *s1, char *s2);
-void 		ft_free_infile(t_infile **array);
+void		ft_free_infile(t_infile **array);
 void		free_envp(t_ms *ms);
 void		free_ms(t_ms *ms);
 void		free_segments(t_segment *seg);
@@ -255,6 +256,10 @@ void		arr_dup_fail(t_ms *ms, char **arr, int j);
 /* --- Execution Entry Point --- */
 void		run_executor(t_ms *ms);
 
+void		prepare_executor_resources(t_ms *ms);
+void		wait_for_processes(t_ms *ms);
+void		finalize_execution(t_ms *ms);
+
 /* --- AST Traversal & Command Dispatch --- */
 void		parse_cmds(t_ms *ms, t_ast *ast);
 void		start_cmds(t_ms *ms, t_ast *ast);
@@ -262,6 +267,7 @@ void		run_cmd(t_ms *ms, t_cmd *cmd);
 void		run_one(t_ms *ms, t_cmd *cmd);
 void		run_no_cmd(t_ms *ms, t_ast *ast);
 int			check_for_bi(t_cmd *cmd);
+int			count_cmds(t_ast *ast);
 
 /* --- Pipeline Handling --- */
 void		run_pipes(t_ms *ms, t_ast *ast);
@@ -275,6 +281,13 @@ int			handle_files(t_ms *ms, t_cmd *cmd);
 int			handle_infiles(t_ms *ms, t_infile **infile);
 int			handle_outfiles(t_ms *ms, char **outfile, int *append);
 void		reset_std(t_ms *ms);
+
+void		dup_fail(t_ms *ms);
+void		redi_fail(t_ms *ms);
+int			process_single_infile(t_ms *ms, t_infile *infile);
+void		heredoc_input_loop(t_ms *ms, int fd,
+				const char *limiter, int quoted);
+int			cleanup_heredoc(int fd);
 
 /* --- Here-document Handling --- */
 int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
@@ -297,12 +310,6 @@ void		set_interactive_signals(void);
 void		set_noninteractive_signals(void);
 void		reset_child_signals(void);
 void		heredoc_sigint_handler(int sig);
-int 		heredoc_rl_event_hook(void);
-
-extern long long g_total_allocated_bytes;	// tmp
-void		print_ms_struct(t_ms *ms);
-void		*track_malloc(size_t size);
-void		track_free(void *ptr, size_t size);
-void		print_mem_usage(const char *label);
+int			heredoc_rl_event_hook(void);
 
 #endif

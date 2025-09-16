@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:08 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 13:51:43 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/16 15:05:27 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,35 +64,15 @@ int	handle_files(t_ms *ms, t_cmd *cmd)
 
 void	run_executor(t_ms *ms)
 {
-	int	i;
-
 	if (!ms->ast || ms->heredoc_stop)
 		return ;
 	init_executor(ms);
 	ms->cmd_no = count_cmds(ms->ast);
 	if (ms->cmd_no == 0)
 		return ;
-	ms->pids = malloc(ms->cmd_no * sizeof(pid_t));
-	if (!ms->pids)
-		ms_error(ms, "PID array malloc fail", 1, 0);
-	i = -1;
-	while (++i < ms->cmd_no)
-		ms->pids[i] = -1;
-	if (ms->cmd_no > 1)
-	{
-		if (pipe(ms->ms_fd) < 0)
-			ms_error(ms, "Pipe faiure", 1, 0);
-	}
+	prepare_executor_resources(ms);
 	parse_cmds(ms, ms->ast);
 	close_pipes(ms);
-	ms->pid_index = -1;
-	if (ms->child == true)
-	{
-		while (++ms->pid_index < ms->cmd_no)
-			wait_help(ms);
-		set_interactive_signals();
-	}
-	reset_std(ms);
-	free(ms->pids);
-	ms->pids = NULL;
+	wait_for_processes(ms);
+	finalize_execution(ms);
 }

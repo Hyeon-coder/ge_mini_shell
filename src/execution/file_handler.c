@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:56 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 13:34:56 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/16 15:48:39 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,46 +29,15 @@ char	*heredoc_name(t_ms *ms, int i)
 
 int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
 {
-	char	*line;
-	int		fd;
+	int	fd;
 
 	signal(SIGINT, heredoc_sigint_handler);
 	rl_event_hook = heredoc_rl_event_hook;
 	fd = open(name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 		ms_error(ms, "Failed to create temporary file for HEREDOC", 1, 0);
-	while (1)
-	{
-		line = readline("> ");
-		if (g_signal == SIGINT || !line || ft_strcmp(line, limiter) == 0)
-		{
-			if (line)
-				free(line);
-			break ;
-		}
-		if (quoted == UNQUOTED)
-		{
-			char	*expanded_line;
-			bool	was_expanded;
-
-			was_expanded = false;
-			expanded_line = expand_input(ms, line, &was_expanded);
-			ft_putendl_fd(expanded_line, fd);
-			free(expanded_line);
-		}
-		else
-			ft_putendl_fd(line, fd);
-		free(line);
-	}
-	close(fd);
-	rl_event_hook = NULL;
-	set_interactive_signals();
-	if (g_signal == SIGINT)
-	{
-		g_signal = 0;
-		return (-1);
-	}
-	return (0);
+	heredoc_input_loop(ms, fd, limiter, quoted);
+	return (cleanup_heredoc(fd));
 }
 
 int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
@@ -95,28 +64,12 @@ int	handle_infiles(t_ms *ms, t_infile **infile)
 
 	i = -1;
 	ms->std_copy[0] = dup(STDIN_FILENO);
-	if (ms->std_copy[0] < 0)
-		ms_error(ms, "stdin duplication failed", 1, 0);
+	dup_fail(ms);
 	ms->reset[0] = 1;
 	while (infile[++i])
 	{
-		ms->fd_in = open(infile[i]->name, O_RDONLY);
-		if (ms->fd_in < 0)
-		{
-			perror(infile[i]->name);
-			reset_std(ms);
+		if (process_single_infile(ms, infile[i]) != 0)
 			return (-1);
-		}
-		if (infile[i]->heredoc == 1)
-		{
-			unlink(infile[i]->name);
-			free(infile[i]->name);
-			infile[i]->name = NULL;
-		}
-		if (dup2(ms->fd_in, STDIN_FILENO) < 0)
-			ms_error(ms, "stdin redirection failed", 1, 0);
-		close(ms->fd_in);
-		ms->fd_in = -1;
 	}
 	return (0);
 }
@@ -128,8 +81,7 @@ int	handle_outfiles(t_ms *ms, char **outfile, int *append)
 
 	i = -1;
 	ms->std_copy[1] = dup(STDOUT_FILENO);
-	if (ms->std_copy[1] < 0)
-		ms_error(ms, "stdout duplication failed", 1, 0);
+	dup_fail(ms);
 	ms->reset[1] = 1;
 	while (outfile[++i])
 	{
@@ -144,8 +96,7 @@ int	handle_outfiles(t_ms *ms, char **outfile, int *append)
 			reset_std(ms);
 			return (-1);
 		}
-		if (dup2(ms->fd_out, STDOUT_FILENO) < 0)
-			ms_error(ms, "stdout redirection failed", 1, 0);
+		redi_fail(ms);
 		close(ms->fd_out);
 		ms->fd_out = -1;
 	}

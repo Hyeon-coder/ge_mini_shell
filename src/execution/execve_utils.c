@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:51 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 13:35:38 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/16 15:10:29 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,20 @@ char	*get_path(t_ms *ms, char *cmd)
 	return (NULL);
 }
 
+static void	chck_path(t_ms *ms, t_cmd *cmd, char *path)
+{
+	if (!path || access(path, F_OK) != 0)
+	{
+		error_join(ms, cmd->full_cmd[0], "command not found");
+		bi_exit(ms, 127, 1);
+	}
+	if (access(path, X_OK) != 0)
+	{
+		error_join(ms, cmd->full_cmd[0], "Permission denied");
+		bi_exit(ms, 126, 1);
+	}
+}
+
 void	run_execve(t_ms *ms, t_cmd *cmd)
 {
 	char	*path;
@@ -52,16 +66,7 @@ void	run_execve(t_ms *ms, t_cmd *cmd)
 		else
 			path = get_path(ms, cmd->full_cmd[0]);
 	}
-	if (!path || access(path, F_OK) != 0)
-	{
-		error_join(ms, cmd->full_cmd[0], "command not found");
-		bi_exit(ms, 127, 1);
-	}
-	if (access(path, X_OK) != 0)
-	{
-		error_join(ms, cmd->full_cmd[0], "Permission denied");
-		bi_exit(ms, 126, 1);
-	}
+	chck_path(ms, cmd, path);
 	if (ms->std_copy[0] != -1)
 		close(ms->std_copy[0]);
 	if (ms->std_copy[1] != -1)
