@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec_master.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:08 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 15:05:27 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/18 00:24:14 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// Initializes all variables for the executor before running commands.
 void	init_executor(t_ms *ms)
 {
 	ms->fd_in = -1;
@@ -30,6 +31,7 @@ void	init_executor(t_ms *ms)
 	ms->reset[1] = 0;
 }
 
+// Waits for a single child process and handles its exit status.
 void	wait_help(t_ms *ms)
 {
 	if (ms->pids[ms->pid_index] == -1)
@@ -47,6 +49,7 @@ void	wait_help(t_ms *ms)
 	}
 }
 
+// Sets up file redirections for a command.
 int	handle_files(t_ms *ms, t_cmd *cmd)
 {
 	if (cmd->infile && g_signal != SIGINT)
@@ -62,6 +65,7 @@ int	handle_files(t_ms *ms, t_cmd *cmd)
 	return (0);
 }
 
+// Orchestrates the entire command execution process, from setup to cleanup.
 void	run_executor(t_ms *ms)
 {
 	if (!ms->ast || ms->heredoc_stop)

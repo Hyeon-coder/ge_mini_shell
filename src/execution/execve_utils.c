@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   execve_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:51 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 15:10:29 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/18 00:40:04 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// Searches for the executable path of a command in the PATH environment variable.
 char	*get_path(t_ms *ms, char *cmd)
 {
 	char	**paths;
@@ -40,6 +41,7 @@ char	*get_path(t_ms *ms, char *cmd)
 	return (NULL);
 }
 
+// Checks if a given path is valid and executable.
 static void	chck_path(t_ms *ms, t_cmd *cmd, char *path)
 {
 	if (!path || access(path, F_OK) != 0)
@@ -54,6 +56,7 @@ static void	chck_path(t_ms *ms, t_cmd *cmd, char *path)
 	}
 }
 
+// Executes an external command using the execve system call.
 void	run_execve(t_ms *ms, t_cmd *cmd)
 {
 	char	*path;

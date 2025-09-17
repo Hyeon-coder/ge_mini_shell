@@ -3,27 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   file_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 15:11:24 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 15:51:10 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/18 00:50:28 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// Prints an error and exits if dup fails.
 void	dup_fail(t_ms *ms)
 {
 	if (ms->std_copy[1] < 0)
 		ms_error(ms, "stdout duplication failed", 1, 0);
 }
 
+// Prints an error and exits if dup2 fails.
 void	redi_fail(t_ms *ms)
 {
 	if (dup2(ms->fd_out, STDOUT_FILENO) < 0)
 		ms_error(ms, "stdout redirection failed", 1, 0);
 }
 
+// Processes a single input file, handling its redirection.
 int	process_single_infile(t_ms *ms, t_infile *infile)
 {
 	ms->fd_in = open(infile->name, O_RDONLY);
@@ -45,6 +48,7 @@ int	process_single_infile(t_ms *ms, t_infile *infile)
 	return (0);
 }
 
+// Reads user input for a here-document until a limiter is found.
 void	heredoc_input_loop(t_ms *ms, int fd, const char *limiter, int quoted)
 {
 	char	*line;
@@ -73,6 +77,7 @@ void	heredoc_input_loop(t_ms *ms, int fd, const char *limiter, int quoted)
 	}
 }
 
+// Closes the here-document file descriptor and restores signals handlers.
 int	cleanup_heredoc(int fd)
 {
 	close(fd);

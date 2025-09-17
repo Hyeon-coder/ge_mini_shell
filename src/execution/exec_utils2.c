@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 15:02:05 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 15:04:49 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/18 00:33:35 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// Allocates resources like PID arrays and pipes before execution.
 void	prepare_executor_resources(t_ms *ms)
 {
 	int	i;
@@ -29,6 +30,7 @@ void	prepare_executor_resources(t_ms *ms)
 	}
 }
 
+// Waits for child processes to finish.
 void	wait_for_processes(t_ms *ms)
 {
 	if (ms->child == true)
@@ -40,6 +42,7 @@ void	wait_for_processes(t_ms *ms)
 	}
 }
 
+// Performs final cleanup of resources after all commands are executed.
 void	finalize_execution(t_ms *ms)
 {
 	reset_std(ms);

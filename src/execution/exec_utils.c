@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:47 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 13:44:22 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/18 00:31:40 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// Combines and prints an error message to standard error.
 void	error_join(t_ms *ms, char *name, char *error)
 {
 	char	*temp;
@@ -31,6 +32,7 @@ void	error_join(t_ms *ms, char *name, char *error)
 	free(temp2);
 }
 
+// Closes all file descriptors related to pipes.
 void	close_pipes(t_ms *ms)
 {
 	if (ms->ms_fd[0] != -1)
@@ -50,6 +52,7 @@ void	close_pipes(t_ms *ms)
 	}
 }
 
+// Closes file descriptors for redirections and pipes.
 void	close_fd(t_ms *ms)
 {
 	if (ms->fd_in != -1)
@@ -65,6 +68,7 @@ void	close_fd(t_ms *ms)
 	close_pipes(ms);
 }
 
+// Restores standard input and output to their original state.
 void	reset_std(t_ms *ms)
 {
 	if (ms->reset[0] == 1)
@@ -83,6 +87,7 @@ void	reset_std(t_ms *ms)
 	}
 }
 
+// Counts the number of commands in the AST.
 int	count_cmds(t_ast *ast)
 {
 	int	count;

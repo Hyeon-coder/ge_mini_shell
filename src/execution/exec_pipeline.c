@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec_pipeline.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:43 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 13:36:06 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/18 00:28:06 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// Sets up pipes for the next command in the pipeline.
 void	next_pipe(t_ms *ms, int last)
 {
 	if (ms->prev_fd != -1)
@@ -26,6 +27,7 @@ void	next_pipe(t_ms *ms, int last)
 		ms_error(ms, "Pipe failure", 1, 0);
 }
 
+// Executes the first command in a pipeline.
 void	exec_first_pipe(t_ms *ms, t_ast *ast)
 {
 	ms->pids[ms->pid_index++] = fork();
@@ -43,6 +45,7 @@ void	exec_first_pipe(t_ms *ms, t_ast *ast)
 	}
 }
 
+// Executes a command in the middle of a pipeline.
 void	exec_mid_pipe(t_ms *ms, t_ast *ast)
 {
 	ms->pids[ms->pid_index++] = fork();
@@ -62,6 +65,7 @@ void	exec_mid_pipe(t_ms *ms, t_ast *ast)
 	}
 }
 
+// Executes the last command in a pipeline.
 void	exec_last_pipe(t_ms *ms, t_ast *ast)
 {
 	ms->pids[ms->pid_index++] = fork();
@@ -79,6 +83,7 @@ void	exec_last_pipe(t_ms *ms, t_ast *ast)
 	}
 }
 
+// Sets up the pipeline and dispatches commands for execution.
 void	run_pipes(t_ms *ms, t_ast *ast)
 {
 	if (pipe(ms->ms_fd) < 0)

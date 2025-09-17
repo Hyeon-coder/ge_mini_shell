@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   only_redir.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:25:02 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 13:25:24 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/18 00:53:20 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// Executes a command that only consists of redirections.
 void	run_redir(t_ms *ms, t_ast *ast)
 {
 	ms->pids[ms->pid_index++] = fork();
@@ -28,6 +29,7 @@ void	run_redir(t_ms *ms, t_ast *ast)
 	}
 }
 
+// Handles pipelines that contain only redirections without a command.
 void	run_no_cmd(t_ms *ms, t_ast *ast)
 {
 	if (pipe(ms->ms_fd) < 0)

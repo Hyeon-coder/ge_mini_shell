@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   file_handler.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:56 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 15:48:39 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/18 00:46:12 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// Generates a unique temporary filename a here-document.
 char	*heredoc_name(t_ms *ms, int i)
 {
 	char	*name;
@@ -27,6 +28,7 @@ char	*heredoc_name(t_ms *ms, int i)
 	return (name);
 }
 
+// Creates a temporary file and handles user input for a here-document.
 int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
 {
 	int	fd;
@@ -40,6 +42,7 @@ int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
 	return (cleanup_heredoc(fd));
 }
 
+// Starts the here-document process and assigns the temporary filename.
 int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 {
 	char	*temp_filename;
@@ -58,6 +61,7 @@ int	start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo)
 	return (0);
 }
 
+// Processes a list of input files for redirection.
 int	handle_infiles(t_ms *ms, t_infile **infile)
 {
 	int	i;
@@ -74,6 +78,7 @@ int	handle_infiles(t_ms *ms, t_infile **infile)
 	return (0);
 }
 
+// Processes a list of output files for redirection.
 int	handle_outfiles(t_ms *ms, char **outfile, int *append)
 {
 	int	i;

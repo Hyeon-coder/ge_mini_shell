@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:22:34 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 13:29:42 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/18 00:19:21 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// Check if a command is a built-in command.
 int	check_for_bi(t_cmd *cmd)
 {
 	if (!cmd || !cmd->full_cmd || !cmd->full_cmd[0])
@@ -27,6 +28,7 @@ int	check_for_bi(t_cmd *cmd)
 	return (0);
 }
 
+// Executes a command by calling either a built-in function or execve
 void	run_cmd(t_ms *ms, t_cmd *cmd)
 {
 	if (check_for_bi(cmd))
@@ -52,6 +54,7 @@ void	run_cmd(t_ms *ms, t_cmd *cmd)
 		bi_exit(ms, ms->exit_status, 1);
 }
 
+// Executes a single command without pipes.
 void	run_one(t_ms *ms, t_cmd *cmd)
 {
 	if (check_for_bi(cmd))
@@ -76,6 +79,7 @@ void	run_one(t_ms *ms, t_cmd *cmd)
 	}
 }
 
+// Dispatches commands for execution based on their position in a pipeline.
 void	start_cmds(t_ms *ms, t_ast *ast)
 {
 	if (ms->cmd_no == 1)
@@ -91,6 +95,7 @@ void	start_cmds(t_ms *ms, t_ast *ast)
 	}
 }
 
+// Recursively traverses the AST to parse and dispatch commands for execution.
 void	parse_cmds(t_ms *ms, t_ast *ast)
 {
 	if (!ast || g_signal == SIGINT)
