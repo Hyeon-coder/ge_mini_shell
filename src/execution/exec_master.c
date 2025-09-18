@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:08 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/18 00:24:14 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/18 15:25:38 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ void	run_executor(t_ms *ms)
 	if (ms->cmd_no == 0)
 		return ;
 	prepare_executor_resources(ms);
+	set_noninteractive_signals();
 	parse_cmds(ms, ms->ast);
 	close_pipes(ms);
 	wait_for_processes(ms);

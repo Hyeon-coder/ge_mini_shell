@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/18 14:45:12 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/18 14:58:00 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,7 +283,7 @@ int			handle_outfiles(t_ms *ms, char **outfile, int *append);
 void		reset_std(t_ms *ms);
 
 void		dup_fail(t_ms *ms, int i);
-void		redi_fail(t_ms *ms);
+void		redi_fail(t_ms *ms, bool is_out);
 int			process_single_infile(t_ms *ms, t_infile *infile);
 void		heredoc_input_loop(t_ms *ms, int fd,
 				const char *limiter, int quoted);

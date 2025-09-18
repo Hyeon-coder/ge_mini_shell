@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:56 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/18 14:44:36 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/18 14:59:16 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ int	handle_outfiles(t_ms *ms, char **outfile, int *append)
 			reset_std(ms);
 			return (-1);
 		}
-		redi_fail(ms);
+		redi_fail(ms, true);
 		close(ms->fd_out);
 		ms->fd_out = -1;
 	}

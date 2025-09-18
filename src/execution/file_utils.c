@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 15:11:24 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/18 14:48:53 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/18 14:59:03 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,18 @@ void	dup_fail(t_ms *ms, int i)
 }
 
 // Prints an error and exits if dup2 fails.
-void	redi_fail(t_ms *ms)
+void	redi_fail(t_ms *ms, bool is_out)
 {
-	if (dup2(ms->fd_out, STDOUT_FILENO) < 0)
-		ms_error(ms, "stdout redirection failed", 1, 0);
+	if (is_out == true)
+	{
+		if (dup2(ms->fd_out, STDOUT_FILENO) < 0)
+			ms_error(ms, "stdout redirection failed", 1, 0);
+	}
+	else
+	{
+		if (dup2(ms->fd_in, STDIN_FILENO) < 0)
+			ms_error(ms, "stdin redirection failed", 1, 0);
+	}
 }
 
 // Processes a single input file, handling its redirection.
@@ -42,9 +50,7 @@ int	process_single_infile(t_ms *ms, t_infile *infile)
 		free(infile->name);
 		infile->name = NULL;
 	}
-	redi_fail(ms);
-	if (dup2(ms->fd_in, STDIN_FILENO) < 0)
-		ms_error(ms, "stdin redirection failed", 1, 0);
+	redi_fail(ms, false);
 	close(ms->fd_in);
 	ms->fd_in = -1;
 	return (0);

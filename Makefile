@@ -101,3 +101,4 @@ full: re
 	@echo "Cleaned up all object files"
 
 .PHONY: all clean fclean re full
+.SECONDARY: ($OBJ)

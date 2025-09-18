@@ -6,13 +6,14 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:51 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/18 00:40:04 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/18 15:06:51 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Searches for the executable path of a command in the PATH environment variable.
+// Searches for the executable path of a command
+// 										in the PATH environment variable.
 char	*get_path(t_ms *ms, char *cmd)
 {
 	char	**paths;
