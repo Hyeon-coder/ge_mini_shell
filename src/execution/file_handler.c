@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:56 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/18 00:46:12 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/18 14:44:36 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ int	handle_infiles(t_ms *ms, t_infile **infile)
 
 	i = -1;
 	ms->std_copy[0] = dup(STDIN_FILENO);
-	dup_fail(ms);
+	dup_fail(ms, 0);
 	ms->reset[0] = 1;
 	while (infile[++i])
 	{
@@ -86,7 +86,7 @@ int	handle_outfiles(t_ms *ms, char **outfile, int *append)
 
 	i = -1;
 	ms->std_copy[1] = dup(STDOUT_FILENO);
-	dup_fail(ms);
+	dup_fail(ms, 1);
 	ms->reset[1] = 1;
 	while (outfile[++i])
 	{

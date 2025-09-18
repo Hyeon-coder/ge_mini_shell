@@ -6,16 +6,16 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 15:11:24 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/18 00:50:28 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/18 14:48:53 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // Prints an error and exits if dup fails.
-void	dup_fail(t_ms *ms)
+void	dup_fail(t_ms *ms, int i)
 {
-	if (ms->std_copy[1] < 0)
+	if (ms->std_copy[i] < 0)
 		ms_error(ms, "stdout duplication failed", 1, 0);
 }
 
@@ -43,6 +43,8 @@ int	process_single_infile(t_ms *ms, t_infile *infile)
 		infile->name = NULL;
 	}
 	redi_fail(ms);
+	if (dup2(ms->fd_in, STDIN_FILENO) < 0)
+		ms_error(ms, "stdin redirection failed", 1, 0);
 	close(ms->fd_in);
 	ms->fd_in = -1;
 	return (0);
