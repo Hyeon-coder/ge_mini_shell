@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:43 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/22 02:18:14 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/22 02:27:04 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,10 @@ void	exec_first_pipe(t_ms *ms, t_ast *ast)
 		if (dup2(ms->ms_fd[1], STDOUT_FILENO) < 0)
 			ms_error(ms, "dup2 failed", 1, 1);
 		close_pipes(ms);
-		run_cmd(ms, ast->cmd);
+		if (ast->cmd && ast->cmd->full_cmd)
+			run_cmd(ms, ast->cmd);
+		else
+			bi_exit(ms, 0, 1);
 	}
 }
 
@@ -64,7 +67,10 @@ void	exec_mid_pipe(t_ms *ms, t_ast *ast)
 		if (dup2(ms->ms_fd[1], STDOUT_FILENO) < 0)
 			ms_error(ms, "dup2 failed", 1, 1);
 		close_pipes(ms);
-		run_cmd(ms, ast->cmd);
+		if (ast->cmd && ast->cmd->full_cmd) // 명령어가 있는 경우
+			run_cmd(ms, ast->cmd);
+		else // 명령어가 없는 경우
+			bi_exit(ms, 0, 1);
 	}
 }
 
@@ -84,7 +90,10 @@ void	exec_last_pipe(t_ms *ms, t_ast *ast)
 		if (dup2(ms->prev_fd, STDIN_FILENO) < 0)
 			ms_error(ms, "dup2 failed", 1, 0);
 		close_pipes(ms);
-		run_cmd(ms, ast->cmd);
+		if (ast->cmd && ast->cmd->full_cmd) // 명령어가 있는 경우
+			run_cmd(ms, ast->cmd);
+		else // 명령어가 없는 경우
+			bi_exit(ms, 0, 1);
 	}
 }
 
