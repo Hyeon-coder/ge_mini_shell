@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:47 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/22 02:01:56 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/22 02:50:56 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	close_fd(t_ms *ms)
 	{
 		close(ms->std_copy[1]);
 		ms->std_copy[1] = -1;
-	}	
+	}
 	close_pipes(ms);
 }
 

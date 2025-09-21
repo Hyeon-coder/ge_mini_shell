@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/22 02:29:58 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/22 02:49:40 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,7 +265,6 @@ void		parse_cmds(t_ms *ms, t_ast *ast);
 void		start_cmds(t_ms *ms, t_ast *ast);
 void		run_cmd(t_ms *ms, t_cmd *cmd);
 void		run_one(t_ms *ms, t_cmd *cmd);
-void		run_no_cmd(t_ms *ms, t_ast *ast);
 int			check_for_bi(t_cmd *cmd);
 int			count_cmds(t_ast *ast);
 

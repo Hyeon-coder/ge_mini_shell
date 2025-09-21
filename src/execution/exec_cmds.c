@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:22:34 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/22 02:28:00 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/22 02:49:15 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void	start_cmds(t_ms *ms, t_ast *ast)
 		if (ast->cmd && ast->cmd->full_cmd)
 			run_one(ms, ast->cmd);
 		else
-			run_redir(ms, ast); // 단일 리디렉션만 있는 경우
+			run_redir(ms, ast);
 	}
 	else
 	{
@@ -114,9 +114,6 @@ void	parse_cmds(t_ms *ms, t_ast *ast)
 	else if (ast->type == NODE_COMMAND || ast->type == NODE_MISSCMD)
 	{
 		ms->cmd_index++;
-		// if (ast->cmd && ast->cmd->full_cmd)
-			start_cmds(ms, ast);
-		// else
-		// 	run_no_cmd(ms, ast);
+		start_cmds(ms, ast);
 	}
 }
