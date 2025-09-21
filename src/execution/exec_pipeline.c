@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:43 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/22 02:27:04 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/22 02:39:22 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	exec_first_pipe(t_ms *ms, t_ast *ast)
 		reset_child_signals();
 		if (handle_files(ms, ast->cmd) < 0)
 			bi_exit(ms, 1, 1);
-		close(ms->ms_fd[0]);
+		// close(ms->ms_fd[0]);
 		if (dup2(ms->ms_fd[1], STDOUT_FILENO) < 0)
 			ms_error(ms, "dup2 failed", 1, 1);
 		close_pipes(ms);
@@ -60,8 +60,8 @@ void	exec_mid_pipe(t_ms *ms, t_ast *ast)
 		reset_child_signals();
 		if (handle_files(ms, ast->cmd) < 0)
 			bi_exit(ms, 1, 1);
-		close(ms->ms_fd[0]);
-		close(ms->prev_fd);
+		// close(ms->ms_fd[0]);
+		// close(ms->prev_fd);
 		if (dup2(ms->prev_fd, STDIN_FILENO) < 0)
 			ms_error(ms, "dup2 failed", 1, 1);
 		if (dup2(ms->ms_fd[1], STDOUT_FILENO) < 0)
@@ -85,8 +85,8 @@ void	exec_last_pipe(t_ms *ms, t_ast *ast)
 		reset_child_signals();
 		if (handle_files(ms, ast->cmd) < 0)
 			bi_exit(ms, 1, 1);
-		close(ms->ms_fd[0]);
-		close(ms->ms_fd[1]);
+		// close(ms->ms_fd[0]);
+		// close(ms->ms_fd[1]);
 		if (dup2(ms->prev_fd, STDIN_FILENO) < 0)
 			ms_error(ms, "dup2 failed", 1, 0);
 		close_pipes(ms);

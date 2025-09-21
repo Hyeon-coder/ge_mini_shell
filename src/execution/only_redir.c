@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:25:02 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/18 00:53:20 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/22 02:36:21 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,19 @@ void	run_redir(t_ms *ms, t_ast *ast)
 		reset_child_signals();
 		if (handle_files(ms, ast->cmd))
 			bi_exit(ms, 1, 1);
-		reset_std(ms);
-		close_fd(ms);
+		// reset_std(ms);
+		// close_fd(ms);
 		bi_exit(ms, 0, 1);
 	}
 }
 
 // Handles pipelines that contain only redirections without a command.
-void	run_no_cmd(t_ms *ms, t_ast *ast)
-{
-	if (pipe(ms->ms_fd) < 0)
-		ms_error(ms, "Pipe failure", 1, 0);
-	run_redir(ms, ast);
-	if (ms->cmd_no > 1)
-		next_pipe(ms, ms->cmd_index + 1 >= ms->cmd_no);
-	reset_std(ms);
-}
+// void	run_no_cmd(t_ms *ms, t_ast *ast)
+// {
+// 	if (pipe(ms->ms_fd) < 0)
+// 		ms_error(ms, "Pipe failure", 1, 0);
+// 	run_redir(ms, ast);
+// 	if (ms->cmd_no > 1)
+// 		next_pipe(ms, ms->cmd_index + 1 >= ms->cmd_no);
+// 	reset_std(ms);
+// }

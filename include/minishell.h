@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/18 14:58:00 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/22 02:29:58 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -281,7 +281,7 @@ int			handle_files(t_ms *ms, t_cmd *cmd);
 int			handle_infiles(t_ms *ms, t_infile **infile);
 int			handle_outfiles(t_ms *ms, char **outfile, int *append);
 void		reset_std(t_ms *ms);
-
+void		run_redir(t_ms *ms, t_ast *ast);
 void		dup_fail(t_ms *ms, int i);
 void		redi_fail(t_ms *ms, bool is_out);
 int			process_single_infile(t_ms *ms, t_infile *infile);
