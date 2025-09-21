@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:43 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/18 00:28:06 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/22 01:50:38 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	exec_last_pipe(t_ms *ms, t_ast *ast)
 		if (handle_files(ms, ast->cmd) < 0)
 			bi_exit(ms, 1, 1);
 		if (dup2(ms->prev_fd, STDIN_FILENO) < 0)
-			ms_error(ms, "dup2 failed", 1, 1);
+			ms_error(ms, "dup2 failed", 1, 0);
 		close_pipes(ms);
 		run_cmd(ms, ast->cmd);
 	}
