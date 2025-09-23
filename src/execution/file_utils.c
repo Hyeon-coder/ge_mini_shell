@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   file_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 15:11:24 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/18 14:59:03 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/23 13:21:38 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,13 +86,14 @@ void	heredoc_input_loop(t_ms *ms, int fd, const char *limiter, int quoted)
 }
 
 // Closes the here-document file descriptor and restores signals handlers.
-int	cleanup_heredoc(int fd)
+int	cleanup_heredoc(t_ms *ms, int fd)
 {
 	close(fd);
 	rl_event_hook = NULL;
 	set_interactive_signals();
 	if (g_signal == SIGINT)
 	{
+		ms->heredoc_stop = true;
 		g_signal = 0;
 		return (-1);
 	}

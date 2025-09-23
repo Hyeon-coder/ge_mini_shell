@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   file_handler.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:56 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/18 14:59:16 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/23 13:22:08 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	handle_heredoc(t_ms *ms, const char *limiter, char *name, int quoted)
 	if (fd == -1)
 		ms_error(ms, "Failed to create temporary file for HEREDOC", 1, 0);
 	heredoc_input_loop(ms, fd, limiter, quoted);
-	return (cleanup_heredoc(fd));
+	return (cleanup_heredoc(ms, fd));
 }
 
 // Starts the here-document process and assigns the temporary filename.
