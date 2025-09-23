@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 15:11:24 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/23 13:21:38 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/23 13:47:41 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	heredoc_input_loop(t_ms *ms, int fd, const char *limiter, int quoted)
 	while (1)
 	{
 		line = readline("> ");
-		if (g_signal == SIGINT || !line || ft_strcmp(line, limiter) == 0)
+		if (!line || ft_strcmp(line, limiter) == 0 || g_signal == SIGINT)
 		{
 			if (line)
 				free(line);

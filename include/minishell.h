@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/09/22 02:49:40 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/23 13:38:25 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,7 +286,7 @@ void		redi_fail(t_ms *ms, bool is_out);
 int			process_single_infile(t_ms *ms, t_infile *infile);
 void		heredoc_input_loop(t_ms *ms, int fd,
 				const char *limiter, int quoted);
-int			cleanup_heredoc(int fd);
+int			cleanup_heredoc(t_ms *ms, int fd);
 
 /* --- Here-document Handling --- */
 int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
