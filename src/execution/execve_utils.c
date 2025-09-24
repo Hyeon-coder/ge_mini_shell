@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:51 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/18 15:06:51 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/24 20:07:41 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ void	run_execve(t_ms *ms, t_cmd *cmd)
 {
 	char	*path;
 
+	if (cmd->full_cmd && (!cmd->full_cmd[0] || !cmd->full_cmd[0][0]))
+		bi_exit(ms, 127, 1);
 	path = NULL;
 	if (cmd->full_cmd && cmd->full_cmd[0])
 	{

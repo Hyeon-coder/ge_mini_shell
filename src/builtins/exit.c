@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:20:45 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/16 13:39:21 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/09/24 19:58:26 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	bi_exit(t_ms *ms, int ex_code, int error)
 			free(ms->pids);
 			ms->pids = NULL;
 		}
-		if (!error && isatty(fileno(stdout)))
+		if (!error && !ms->child)
 			write(2, "exit\n", 5);
 		free_structs(ms);
 	}
