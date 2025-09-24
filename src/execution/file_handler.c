@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:56 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/24 20:14:37 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/25 00:27:32 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,35 +79,6 @@ int	handle_infiles(t_ms *ms, t_infile **infile)
 }
 
 // Processes a list of output files for redirection.
-// int	handle_outfiles(t_ms *ms, char **outfile, int *append)
-// {
-// 	int	i;
-// 	int	open_flags;
-
-// 	i = -1;
-// 	ms->std_copy[1] = dup(STDOUT_FILENO);
-// 	dup_fail(ms, 1);
-// 	ms->reset[1] = 1;
-// 	while (outfile[++i])
-// 	{
-// 		if (append[i] == 1)
-// 			open_flags = O_WRONLY | O_CREAT | O_APPEND;
-// 		else
-// 			open_flags = O_WRONLY | O_CREAT | O_TRUNC;
-// 		ms->fd_out = open(outfile[i], open_flags, 0644);
-// 		if (ms->fd_out < 0)
-// 		{
-// 			perror(outfile[i]);
-// 			reset_std(ms);
-// 			return (-1);
-// 		}
-// 		redi_fail(ms, true);
-// 		close(ms->fd_out);
-// 		ms->fd_out = -1;
-// 	}
-// 	return (0);
-// }
-
 int	handle_outfiles(t_ms *ms, char **outfile, int *append)
 {
 	int	i;
@@ -130,11 +101,7 @@ int	handle_outfiles(t_ms *ms, char **outfile, int *append)
 			reset_std(ms);
 			return (-1);
 		}
-		// 모든 출력을 마지막 파일로 리다이렉션
-		if (i == ft_array_length(outfile) - 1)
-		{
-			redi_fail(ms, true);
-		}
+		redi_fail(ms, true);
 		close(ms->fd_out);
 		ms->fd_out = -1;
 	}

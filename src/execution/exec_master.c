@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:24:08 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/09/24 20:15:07 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/09/25 00:28:38 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,38 +50,19 @@ void	wait_help(t_ms *ms)
 }
 
 // Sets up file redirections for a command.
-// int	handle_files(t_ms *ms, t_cmd *cmd)
-// {
-// 	if (cmd->infile && g_signal != SIGINT)
-// 	{
-// 		if (handle_infiles(ms, cmd->infile) < 0)
-// 			return (1);
-// 	}
-// 	if (cmd->outfile && g_signal != SIGINT)
-// 	{
-// 		if (handle_outfiles(ms, cmd->outfile, cmd->append) < 0)
-// 			return (1);
-// 	}
-// 	return (0);
-// }
-
 int	handle_files(t_ms *ms, t_cmd *cmd)
 {
-	int i;
+	int	i;
 
-	// 출력 리다이렉션을 먼저 처리합니다.
 	if (cmd->outfile && g_signal != SIGINT)
 	{
 		if (handle_outfiles(ms, cmd->outfile, cmd->append) < 0)
 			return (1);
 	}
-
-	// 그 다음 입력 리다이렉션을 처리합니다.
 	if (cmd->infile && g_signal != SIGINT)
 	{
 		if (handle_infiles(ms, cmd->infile) < 0)
 		{
-			// 입력 리다이렉션 오류 시, 이전에 생성된 출력 파일들을 삭제합니다.
 			i = 0;
 			while (cmd->outfile && cmd->outfile[i])
 			{
